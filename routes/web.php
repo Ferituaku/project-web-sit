@@ -35,7 +35,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Rute untuk akademik
     Route::group(['middleware' => 'role:akademik'], function () {
-        Route::get('/akademik/dashboard', [AkademikController::class, 'akademik'])->name('dashboard');
+        Route::get('/akademik/dashboard', [AkademikController::class, 'akademik'])->name('akademik.dashboard');
     });
 
     // Rute untuk dosen
@@ -51,7 +51,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['middleware' => 'role:kaprodi,dosen'], function () {
         Route::get('/kaprodi/dashboard', [KaprodiController::class, 'kaprodi'])->name('kaprodi.dashboard');
         Route::get('/kaprodi/buatjadwal', [KaprodiController::class, 'buatjadwal'])->name('kaprodi.buatjadwal');
-        Route::get('/dosen/dashboard', [KaprodiController::class, 'dosen'])->name('dosen.dashboard');
+        Route::get('/dosen/dashboard', [DosenController::class, 'dosen'])->name('dosen.dashboard');
     });
 
     // Rute untuk dekan

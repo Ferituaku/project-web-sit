@@ -1,10 +1,37 @@
 @extends('layout')
-@section('title', "Home Page")
-@section('content')
+@section('title', "Dashboard Akademik")
+@section('contentAkd')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
-@auth
-<section>
-    <main>
+
+<style>
+    .card {
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card {
+        transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+
+<div class="d-flex">
+
+    @include('akademik.sidebar')
+    <!-- Main Content -->
+    <main class="flex-grow-1" style="margin-left: 250px;">
+        @include('akademik.header')
+
+
         <div class="container-lg py-1">
             <div class="row" style="margin-left:25vh; margin-top:10vh">
                 <div class="col-md-8 d-inline-block">
@@ -184,7 +211,7 @@
                 </div>
             </div>
     </main>
-</section>
-@endauth
+</div>
+
 
 @endsection
