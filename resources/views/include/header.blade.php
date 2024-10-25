@@ -1,4 +1,4 @@
-<!-- Header -->
+<!-- Header
 @auth
 <header class="fixed-top p-3 mb-6 w-full border-bottom" style="margin-left:33.9vh; background-color:#FFFFFF;">
     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-end">
@@ -19,4 +19,4 @@
     </div>
 
 </header>
-@endauth
+@endauth -->

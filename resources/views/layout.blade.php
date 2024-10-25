@@ -23,7 +23,7 @@
         @yield('contentDsn')
         @break
         @case('akademik')
-        @yield('akademik.contentAkd')
+        @yield('contentAkd')
         @break
         @case('dekan')
         @yield('contentDkn')
