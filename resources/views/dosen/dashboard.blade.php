@@ -91,6 +91,9 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scriptDsn')
 
 <script>
     $(document).ready(function() {

@@ -9,11 +9,11 @@ class KaprodiController extends Controller
 {
     public function kaprodi()
     {
-        return view('kaprodi/dashboard');
+        return view('kaprodi.dashboard');
     }
     public function buatjadwal()
     {
-        return view('kaprodi/buatjadwal');
+        return view('kaprodi.buatjadwal');
     }
     public function pilihmenu()
     {

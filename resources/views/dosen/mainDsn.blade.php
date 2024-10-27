@@ -105,6 +105,7 @@
         </header>
 
         @yield('content')
+        @yield('scriptDsn')
 
     </main>
 </div>
@@ -113,45 +114,6 @@
 
 
 <script>
-    $(document).ready(function() {
-        $('#linkDoswalVerifikasi').on('click', function(e) {
-            e.preventDefault();
-            let url = $(this).attr('href');
-
-            $.get(url, function(data) {
-                $('#contentArea').html(data);
-            });
-        });
-
-        var ctx = document.getElementById('irsChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Belum', 'Sudah'],
-                datasets: [{
-                    label: 'Status Verifikasi IRS Mahasiswa',
-                    data: [5, 35],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(75, 192, 192, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(75, 192, 192, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    });
-
     function setActiveSidebarItem() {
         var currentPage = window.location.href;
 

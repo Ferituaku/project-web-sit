@@ -82,7 +82,7 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-grow-1" style="margin-left: 250px;">
+    <main class="flex-grow-1" style="margin-left: 260px;">
         <!-- Header -->
         <header class="bg-white p-3 border-bottom shadow-sm fixed-top" style="margin-left: 250px;">
             <div class="d-flex justify-content-between align-items-center">
@@ -103,9 +103,10 @@
                 </div>
             </div>
         </header>
+        <div class="container-fluid py-2" style="margin-top: 70px;">
 
-        @yield('content')
-
+            @yield('content')
+        </div>
     </main>
 </div>
 

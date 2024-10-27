@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\Http\Request;
 
-abstract class AkademikController extends Controller
+class akademikControl extends Controller
 {
     public function akademik()
     {

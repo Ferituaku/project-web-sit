@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\akademikControl;
 use App\Http\Controllers\AkademikController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\KaprodiController;
@@ -36,7 +36,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Rute untuk akademik
     Route::group(['middleware' => 'role:akademik'], function () {
-        Route::get('/akademik/dashboard', [AkademikController::class, 'akademik'])->name('akademik.dashboard');
+        Route::get('/akademik/dashboard', [akademikControl::class, 'akademik'])->name('akademik.dashboard');
     });
 
     // Rute untuk dosen
@@ -54,6 +54,13 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/kaprodi/buatjadwal', [KaprodiController::class, 'buatjadwal'])->name('kaprodi.buatjadwal');
         // Route::get('/dosen/dashboard', [DosenController::class, 'dosen'])->name('dosen.dashboard');
     });
+
+    // Route::prefix('kaprodi')->name('kaprodi.')->group(function () {
+    //     Route::get('/dashboard', [KaprodiController::class, 'dashboard'])->name('dashboard');
+    //     Route::get('/jadwal', [KaprodiController::class, 'buatJadwal'])->name('buatjadwal');
+    //     // Route::get('/status-mahasiswa', [KaprodiController::class, 'statusMahasiswa'])->name('status');
+    //     // Route::get('/statistik', [KaprodiController::class, 'statistik'])->name('statistik');
+    // });
 
     // Rute untuk dekan
     Route::group(['middleware' => 'role:dekan,dosen, kaprodi'], function () {

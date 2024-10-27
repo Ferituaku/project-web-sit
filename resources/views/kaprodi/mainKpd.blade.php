@@ -1,15 +1,6 @@
 @extends('layout')
 
 @section('contentKpd')
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
-<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
     :root {
@@ -33,6 +24,13 @@
     .sidebar .nav-link {
         color: var(--text-color);
         transition: background-color 0.3s, color 0.3s;
+    }
+
+
+    .sidebar .nav-link.active {
+        color: #0d6efd;
+        background-color: rgba(13, 110, 253, 0.1);
+        border-left: 3px solid #0d6efd;
     }
 
     .sidebar .nav-link:hover,
@@ -81,7 +79,7 @@
             <!-- Navigation Menu -->
             <ul class="nav nav-pills flex-column mb-auto">
                 <li class="nav-item mb-2">
-                    <a href="#" class="nav-link active d-flex align-items-center">
+                    <a href="{{route('kaprodi.dashboard')}}" class="nav-link active d-flex align-items-center">
                         <i class="bi bi-speedometer2 me-2"></i>
                         dashboard
                     </a>
@@ -89,7 +87,7 @@
                 <li class="nav-item mb-2">
                     <a href="{{route('kaprodi.buatjadwal')}}" class="nav-link d-flex align-items-center">
                         <i class="bi bi-calendar me-2"></i>
-                        Buat Jadwal Kuliah
+                        Manajemen Jadwal
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -136,15 +134,53 @@
             </div>
         </header>
         <div class="container-fluid py-2" style="margin-top: 70px;">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item active" aria-current="page">Dashboard Kaprodi</li>
-                </ol>
-            </nav>
+
             @yield('content')
             @yield('scriptKpd')
         </div>
     </main>
 </div>
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function setActiveSidebarItem() {
+            // Dapatkan current route name dari Laravel
+            const currentRoute = '{{ Route::currentRouteName() }}';
+
+            // Pilih semua nav-link di sidebar
+            const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
+
+            sidebarLinks.forEach(link => {
+                // Reset semua active state
+                link.classList.remove('active');
+                // Jika route cocok dengan current route, set active
+                if (linkRoute && currentRoute === linkRoute) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Jalankan fungsi saat halaman dimuat
+        setActiveSidebarItem();
+    });
+</script> -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function setActiveSidebarItem() {
+            var currentPage = window.location.href;
+
+            var sidebarLinks = document.querySelectorAll('.sidebar .nav-link')
+
+            sidebarLinks.forEach(function(link) {
+                link.classList.remove('active');
+
+                if (currentPage == includes(link.getAttribute('href'))) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        setActiveSidebarItem();
+    });
+</script>
+
 
 @endsections
