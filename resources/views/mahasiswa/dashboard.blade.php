@@ -170,7 +170,7 @@ background: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 10
                     <h4 class="mb-1">IPK</h4>
                     <p class="h2 mb-2">3.7</p>
                     <h4 class="mb-1">SKS</h4>
-                    <p class="h2">86</p>
+                    <p class="h2">90</p>
                 </div>
             </div>
         </div>
