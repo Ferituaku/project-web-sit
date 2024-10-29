@@ -37,6 +37,13 @@ Route::group(['middleware' => 'auth'], function () {
     // Rute untuk akademik
     Route::group(['middleware' => 'role:akademik'], function () {
         Route::get('/akademik/dashboard', [akademikControl::class, 'akademik'])->name('akademik.dashboard');
+        Route::get('/akademik/aturkelas', [akademikControl::class, 'aturkelas'])->name('akademik.aturkelas');
+
+        // New routes for RuangKelas CRUD operations
+        Route::post('/akademik/ruangkelas', [akademikControl::class, 'storeRuangKelas'])->name('akademik.ruangkelas.store');
+        Route::get('/akademik/ruangkelas/{id}', [akademikControl::class, 'getRuangKelas'])->name('akademik.ruangkelas.get');
+        Route::put('/akademik/ruangkelas/{id}', [akademikControl::class, 'updateRuangKelas'])->name('akademik.ruangkelas.update');
+        Route::delete('/akademik/ruangkelas/{id}', [akademikControl::class, 'destroyRuangKelas'])->name('akademik.ruangkelas.destroy');
     });
 
     // Rute untuk dosen

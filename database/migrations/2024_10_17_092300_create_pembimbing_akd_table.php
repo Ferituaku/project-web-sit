@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
         });
+        Schema::table('pembimbing_akd', function (Blueprint $table) {
+            $table->foreign('email')->references('email')->on('users')->onDelete('cascade');
+        });
     }
 
     /**

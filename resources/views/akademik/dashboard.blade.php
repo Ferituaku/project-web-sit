@@ -14,43 +14,59 @@
     </nav>
 
 
-    <div class="card shadow-sm">
-        <div class="col-md-2 mt-3">
-            <div class="card mb-4 mb-md-0" style="border-radius: 1rem; backdrop-filter: blur(10px); background: rgba(91, 84, 184, 0.4);">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
                 <div class="card-body">
-                    <div class=" text-center">
-
-                        <h2 class="mb-0">Status Akademik</h2>
-
-                        <div class="d-flex justify-content-between align-items-center mt-4 px-5">
-                            <div class="stats">
-                                <h4 class="mb-0 ">Semester Akademik Sekarang</h4>
-                                <span>2024/2025 Ganjil</span>
-                            </div>
-                            <div class="stats">
-                                <h4 class="mb-0 px-2">Semester</h4>
-                                <span>5</span>
-
-                            </div>
-
-
-                            <div class="stats">
-                                <h4 class="mb-0 px-4">Status</h4>
-                                <span class="btn active btn-success">AKTIF</span>
-
-                            </div>
-
-                        </div>
-
-                    </div>
+                    <h5 class="card-title">Jumlah Ruang Kelas</h5>
+                    <p class="card-text">20</p>
                 </div>
             </div>
         </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Jumlah Mahasiswa</h5>
+                    <p class="card-text">1000</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Jumlah Mata Kuliah</h5>
+                    <p class="card-text">10</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Jumlah Pendaftaran</h5>
+                    <p class="card-text">40</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <a href="#" class="btn btn-primary">Manajemen Ruang Kelas</a>
+        </div>
+        <div class="col-md-4">
+            <a href="#" class="btn btn-primary">Manajemen Mahasiswa</a>
+        </div>
+        <div class="col-md-4">
+            <a href="#" class="btn btn-primary">Manajemen Mata Kuliah</a>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <a href="#" class="btn btn-primary">Manajemen Pendaftaran</a>
+        </div>
     </div>
 </div>
-
-
 
 
 

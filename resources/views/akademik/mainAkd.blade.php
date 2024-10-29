@@ -48,13 +48,13 @@
             <!-- Navigation Menu -->
             <ul class="nav nav-pills flex-column mb-auto">
                 <li class="nav-item mb-2">
-                    <a href="" class="nav-link active d-flex align-items-center">
+                    <a href="{{ route('akademik.dashboard') }}" class="nav-link active d-flex align-items-center">
                         <i class="bi bi-speedometer2 me-2"></i>
                         Dashboard
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="" class="nav-link d-flex align-items-center">
+                    <a href="{{ route('akademik.aturkelas') }}" class="nav-link d-flex align-items-center">
                         <i class="bi bi-file-earmark-check me-2"></i>
                         Pengaturan Ruang Kelas
                     </a>
@@ -106,6 +106,7 @@
         <div class="container-fluid py-2" style="margin-top: 70px;">
 
             @yield('content')
+            @yield('scripts');
         </div>
     </main>
 </div>

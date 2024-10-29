@@ -27,7 +27,7 @@ background: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 10
                         <h4>{{ auth()->user()->name }}</h4>
                         <p class="text-light mb-1">{{ auth()->user()->email }}</p>
                         <p class="text-light mb-1">NIM: 242345678000</p>
-                        <p class="text-light mb-1">No. Telp: (098) 765-4321</p>
+                        <p class="text-light mb-1">No. Telp: 08776565340 </p>
                         <p class="text-light mb-0">Alamat: Pandeglang, Banten</p>
                     </div>
                 </div>

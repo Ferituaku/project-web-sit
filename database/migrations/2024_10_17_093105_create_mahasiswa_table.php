@@ -21,6 +21,10 @@ return new class extends Migration
         Schema::table('mahasiswa', function (Blueprint $table) {
             $table->foreign('nip')->references('nip')->on('pembimbing_akd')->onDelete('cascade');
         });
+
+        Schema::table('mahasiswa', function (Blueprint $table) {
+            $table->foreign('email')->references('email')->on('users')->onDelete('cascade');
+        });
     }
 
     /**
