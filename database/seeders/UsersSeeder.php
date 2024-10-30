@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\RuangKelas;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -47,6 +48,20 @@ class UsersSeeder extends Seeder
         ];
         foreach ($userData as $key => $val) {
             User::create($val);
+        }
+
+        $ruangKelas = [
+            [
+                'koderuang' => 'A102',
+                'kapasitas' => 40,
+            ],
+            [
+                'koderuang' => 'A202',
+                'kapasitas' => 30,
+            ],
+        ];
+        foreach ($ruangKelas as $key => $val) {
+            RuangKelas::create($val);
         }
     }
 }

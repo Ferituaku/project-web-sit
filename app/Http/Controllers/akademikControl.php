@@ -10,76 +10,118 @@ class akademikControl extends Controller
 {
     public function akademik()
     {
-        return view('akademik/dashboard');
+        return view('akademik.dashboard');
     }
 
     public function aturkelas()
     {
-        // Get all ruang kelas for display in the view
-        $ruangKelas = RuangKelas::orderBy('koderuang')->paginate(10);
-        return view('akademik/aturkelas', compact('ruangKelas'));
+        $ruangKelas = RuangKelas::with('jadwalKuliah')->paginate(10);
+        return view('akademik.aturkelas', compact('ruangKelas'));
     }
 
-    // CRUD methods for RuangKelas
+    public function indexRuangKelas()
+    {
+        $ruangKelas = RuangKelas::with('jadwalKuliah')->paginate(10);
+        return view('akademik.ruangkelas.index', compact('ruangKelas'));
+    }
+
     public function storeRuangKelas(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'koderuang' => 'required|unique:ruangKelas,koderuang',
+            'koderuang' => 'required|unique:ruangkelas,koderuang',
             'kapasitas' => 'required|integer|min:1'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'errors' => $validator->errors()
+                'message' => $validator->errors()->first()
             ], 422);
         }
 
-        RuangKelas::create($request->all());
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Ruang kelas berhasil ditambahkan'
-        ]);
+        try {
+            RuangKelas::create($request->all());
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Ruang kelas berhasil ditambahkan'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal menambahkan ruang kelas'
+            ], 500);
+        }
     }
 
-    public function updateRuangKelas(Request $request, $id)
+    public function editRuangKelas($koderuang)
+    {
+        try {
+            $ruangKelas = RuangKelas::where('koderuang', $koderuang)->firstOrFail();
+            return response()->json($ruangKelas);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Ruang kelas tidak ditemukan'
+            ], 404);
+        }
+    }
+
+    public function updateRuangKelas(Request $request, $koderuang)
     {
         $validator = Validator::make($request->all(), [
-            'koderuang' => 'required|unique:ruangKelas,koderuang,' . $id,
+            'new_koderuang' => 'required|unique:ruangkelas,koderuang,' . $koderuang . ',koderuang',
             'kapasitas' => 'required|integer|min:1'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'errors' => $validator->errors()
+                'message' => $validator->errors()->first()
             ], 422);
         }
 
-        $ruangKelas = RuangKelas::findOrFail($id);
-        $ruangKelas->update($request->all());
+        try {
+            $ruangKelas = RuangKelas::where('koderuang', $koderuang)->firstOrFail();
+            $ruangKelas->update([
+                'koderuang' => $request->new_koderuang,
+                'kapasitas' => $request->kapasitas
+            ]);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Ruang kelas berhasil diperbarui'
-        ]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Ruang kelas berhasil diperbarui'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui ruang kelas'
+            ], 500);
+        }
     }
 
-    public function getRuangKelas($id)
+    public function destroyRuangKelas($koderuang)
     {
-        $ruangKelas = RuangKelas::findOrFail($id);
-        return response()->json($ruangKelas);
-    }
+        try {
+            $ruangKelas = RuangKelas::where('koderuang', $koderuang)->firstOrFail();
 
-    public function destroyRuangKelas($id)
-    {
-        $ruangKelas = RuangKelas::findOrFail($id);
-        $ruangKelas->delete();
+            // Check if there are any related schedules
+            if ($ruangKelas->jadwalKuliah->count() > 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Tidak dapat menghapus ruang kelas karena masih memiliki jadwal terkait'
+                ], 422);
+            }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Ruang kelas berhasil dihapus'
-        ]);
+            $ruangKelas->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Ruang kelas berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal menghapus ruang kelas'
+            ], 500);
+        }
     }
 }

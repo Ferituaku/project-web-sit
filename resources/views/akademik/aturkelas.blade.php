@@ -54,6 +54,7 @@
                             <th>Kode Ruang</th>
                             <th>Kapasitas</th>
                             <th>Status</th>
+                            <th>Jadwal Terisi</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -67,15 +68,16 @@
                                 @if($ruang->jadwalKuliah->isEmpty())
                                 <span class="badge bg-success">Tersedia</span>
                                 @else
-                                <span class="badge bg-warning">Terjadwal</span>
+                                <span class="badge bg-warning">Terisi</span>
                                 @endif
                             </td>
+                            <td>{{ $ruang->jadwalKuliah->count() }} jadwal</td>
                             <td>
                                 <div class="btn-group">
-                                    <button class="btn btn-sm btn-info me-1" onclick="editRoom({{ $ruang->id}})">
+                                    <button class="btn btn-sm btn-info me-1" onclick="editRoom('{{ $ruang->koderuang }}')">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteRoom({{$ruang -> $id}})">
+                                    <button class="btn btn-sm btn-danger" onclick="deleteRoom('{{ $ruang->koderuang }}')">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -106,6 +108,7 @@
             </div>
             <div class="modal-body">
                 <form id="addRoomForm">
+                    @csrf
                     <div class="mb-3">
                         <label class="form-label">Kode Ruang</label>
                         <input type="text" class="form-control" name="koderuang" required>
@@ -134,10 +137,12 @@
             </div>
             <div class="modal-body">
                 <form id="editRoomForm">
-                    <input type="hidden" name="room_id">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="koderuang" id="edit_koderuang">
                     <div class="mb-3">
                         <label class="form-label">Kode Ruang</label>
-                        <input type="text" class="form-control" name="koderuang" required>
+                        <input type="text" class="form-control" name="new_koderuang" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Kapasitas</label>
@@ -157,6 +162,17 @@
 
 @section('scripts')
 <script>
+    function showAlert(type, message) {
+        const alertContainer = document.getElementById('alert-container');
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        alertContainer.innerHTML = `
+            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+    }
+
     function saveRoom() {
         const form = document.getElementById('addRoomForm');
         const formData = new FormData(form);
@@ -175,7 +191,7 @@
                     $('#addRoomModal').modal('hide');
                     location.reload();
                 } else {
-                    showAlert('error', 'Terjadi kesalahan. Silakan coba lagi.');
+                    showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
                 }
             })
             .catch(error => {
@@ -183,13 +199,13 @@
             });
     }
 
-    function editRoom(id) {
-        fetch(`/akademik/ruangkelas/${id}`)
+    function editRoom(koderuang) {
+        fetch(`/akademik/ruangkelas/${koderuang}/edit`)
             .then(response => response.json())
             .then(data => {
                 const form = document.getElementById('editRoomForm');
-                form.elements['room_id'].value = data.id;
-                form.elements['koderuang'].value = data.koderuang;
+                form.elements['edit_koderuang'].value = data.koderuang;
+                form.elements['new_koderuang'].value = data.koderuang;
                 form.elements['kapasitas'].value = data.kapasitas;
                 $('#editRoomModal').modal('show');
             });
@@ -198,14 +214,13 @@
     function updateRoom() {
         const form = document.getElementById('editRoomForm');
         const formData = new FormData(form);
-        const roomId = form.elements['room_id'].value;
+        const koderuang = form.elements['edit_koderuang'].value;
 
-        fetch(`/akademik/ruangkelas/${roomId}`, {
+        fetch(`/akademik/ruangkelas/${koderuang}`, {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'X-HTTP-Method-Override': 'PUT'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
             })
             .then(response => response.json())
@@ -215,7 +230,7 @@
                     $('#editRoomModal').modal('hide');
                     location.reload();
                 } else {
-                    showAlert('error', 'Terjadi kesalahan. Silakan coba lagi.');
+                    showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
                 }
             })
             .catch(error => {
@@ -223,9 +238,9 @@
             });
     }
 
-    function deleteRoom(id) {
+    function deleteRoom(koderuang) {
         if (confirm('Apakah Anda yakin ingin menghapus ruang kelas ini?')) {
-            fetch(`/akademik/ruangkelas/${id}`, {
+            fetch(`/akademik/ruangkelas/${koderuang}`, {
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -237,7 +252,7 @@
                         showAlert('success', data.message);
                         location.reload();
                     } else {
-                        showAlert('error', 'Terjadi kesalahan. Silakan coba lagi.');
+                        showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
                     }
                 })
                 .catch(error => {
@@ -245,5 +260,22 @@
                 });
         }
     }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function(e) {
+        const searchValue = e.target.value.toLowerCase();
+        const tableBody = document.querySelector('tbody');
+        const rows = tableBody.getElementsByTagName('tr');
+
+        for (let row of rows) {
+            const koderuang = row.cells[1].textContent.toLowerCase();
+            row.style.display = koderuang.includes(searchValue) ? '' : 'none';
+        }
+    });
+
+    // Refresh button
+    document.getElementById('refreshTable').addEventListener('click', function() {
+        location.reload();
+    });
 </script>
 @endsection

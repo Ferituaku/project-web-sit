@@ -6,25 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('jadwal_kuliah', function (Blueprint $table) {
+        Schema::create('jadwalKuliah', function (Blueprint $table) {
             $table->id();
-
+            $table->string('ruangkelas_id');
             $table->unsignedInteger('kodemk');
-            $table->string('pengampu');
+            $table->string('dosen');
             $table->string('hari');
-            $table->string('jam');
+            $table->time('jam_mulai');
+            $table->time('jam_selesai');
             $table->timestamps();
+
+            $table->foreign('ruangkelas_id')->references('koderuang')->on('ruangkelas')->onDelete('cascade');
+            $table->foreign('kodemk')->references('kodemk')->on('matakuliah')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('jadwal_kuliah');

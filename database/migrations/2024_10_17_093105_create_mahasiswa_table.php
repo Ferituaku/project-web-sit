@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('mahasiswa', function (Blueprint $table) {
             $table->unsignedBigInteger('nim')->primary();
-            $table->string('name');
             $table->string('email')->unique();
             $table->bigInteger('nip')->unsigned();
         });

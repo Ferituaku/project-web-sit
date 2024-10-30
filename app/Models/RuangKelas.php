@@ -15,6 +15,6 @@ class RuangKelas extends Model
 
     public function jadwalKuliah(): HasMany
     {
-        return $this->hasMany(JadwalKuliah::class, 'koderuang');
+        return $this->hasMany(JadwalKuliah::class, 'ruangkelas_id', 'koderuang');
     }
 }

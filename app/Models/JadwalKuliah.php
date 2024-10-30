@@ -9,15 +9,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class JadwalKuliah extends Model
 {
     use HasFactory;
-    protected $fillable = ['kodemk', 'hari', 'jam', 'nip', 'koderuang'];
+    protected $table = 'jadwalKuliah';
 
-    public function RuangKelas(): BelongsTo
+    protected $fillable = [
+        'ruang_id',
+        'kodemk',
+        'dosen',
+        'hari',
+        'jam_mulai',
+        'jam_selesai'
+    ];
+    public function ruangKelas(): BelongsTo
     {
-        return $this->belongsTo(RuangKelas::class, 'koderuang');
+        return $this->belongsTo(RuangKelas::class, 'ruangkelas_id', 'koderuang');
     }
     public function MataKuliah(): BelongsTo
     {
-        return $this->belongsTo(Matakuliah::class, 'kodemk');
+        return $this->belongsTo(Matakuliah::class, 'kodemk', 'kodemk');
     }
     public function Pengampu(): BelongsTo
     {
