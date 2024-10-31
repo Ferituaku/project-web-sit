@@ -8,9 +8,15 @@ use Illuminate\Support\Facades\Validator;
 
 class akademikControl extends Controller
 {
+
     public function akademik()
     {
-        return view('akademik.dashboard');
+        $ruangKelas = RuangKelas::count();
+
+
+        return view('akademik.dashboard', compact(
+            'ruangKelas',
+        ));
     }
 
     public function aturkelas()
@@ -103,16 +109,9 @@ class akademikControl extends Controller
     {
         try {
             $ruangKelas = RuangKelas::where('koderuang', $koderuang)->firstOrFail();
-
-            // Check if there are any related schedules
-            if ($ruangKelas->jadwalKuliah->count() > 0) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Tidak dapat menghapus ruang kelas karena masih memiliki jadwal terkait'
-                ], 422);
-            }
-
+           
             $ruangKelas->delete();
+            
             return response()->json([
                 'status' => 'success',
                 'message' => 'Ruang kelas berhasil dihapus'

@@ -65,13 +65,12 @@
                             <td>{{ $ruang->koderuang }}</td>
                             <td>{{ $ruang->kapasitas }} orang</td>
                             <td>
-                                @if($ruang->jadwalKuliah->isEmpty())
-                                <span class="badge bg-success">Tersedia</span>
+                                @if($ruang->jadwalKuliah->where('approved', true)->count() > 0)
+                                <span class="badge bg-success">Disetujui</span>
                                 @else
-                                <span class="badge bg-warning">Terisi</span>
+                                <span class="badge bg-warning">Belum Disetujui</span>
                                 @endif
                             </td>
-                            <td>{{ $ruang->jadwalKuliah->count() }} jadwal</td>
                             <td>
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-info me-1" onclick="editRoom('{{ $ruang->koderuang }}')">
@@ -217,7 +216,7 @@
         const koderuang = form.elements['edit_koderuang'].value;
 
         fetch(`/akademik/ruangkelas/${koderuang}`, {
-                method: 'POST',
+                method: 'PUT',
                 body: formData,
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -252,7 +251,7 @@
                         showAlert('success', data.message);
                         location.reload();
                     } else {
-                        showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
+                        showAlert('error', data.status === 'error' ? data.message : 'Terjadi kesalahan. Silakan coba lagi.');
                     }
                 })
                 .catch(error => {
@@ -260,7 +259,6 @@
                 });
         }
     }
-
     // Search functionality
     document.getElementById('searchInput').addEventListener('keyup', function(e) {
         const searchValue = e.target.value.toLowerCase();

@@ -89,7 +89,7 @@
                 <li class="nav-item mb-2">
                     <a href="#" class="nav-link text-muted d-flex align-items-center">
                         <i class="bi bi-file-earmark-text me-2"></i>
-                        Laporan Akademik
+                        Persetujuan Jadwal
                     </a>
                 </li>
                 <li class="nav-item mb-2">

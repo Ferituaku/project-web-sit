@@ -42,6 +42,7 @@ Route::group(['middleware' => 'auth'], function () {
         // New routes for RuangKelas CRUD operations
         Route::post('/akademik/ruangkelas', [akademikControl::class, 'storeRuangKelas'])->name('akademik.ruangkelas.store');
         Route::get('/akademik/ruangkelas/{id}', [akademikControl::class, 'getRuangKelas'])->name('akademik.ruangkelas.get');
+        Route::get('/akademik/ruangkelas/{id}/edit', [akademikControl::class, 'editRuangKelas'])->name('akademik.ruangkelas.edit');
         Route::put('/akademik/ruangkelas/{id}', [akademikControl::class, 'updateRuangKelas'])->name('akademik.ruangkelas.update');
         Route::delete('/akademik/ruangkelas/{id}', [akademikControl::class, 'destroyRuangKelas'])->name('akademik.ruangkelas.destroy');
     });
