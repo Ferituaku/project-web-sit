@@ -3,7 +3,6 @@
 @section('contentDkn')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
-<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -81,27 +80,27 @@
             <!-- Navigation Menu -->
             <ul class="nav nav-pills flex-column mb-auto">
                 <li class="nav-item mb-2">
-                    <a href="#" class="nav-link active d-flex align-items-center">
+                    <a href="{{ route('dekan.dashboard') }}" class="nav-link d-flex align-items-center">
                         <i class="bi bi-speedometer2 me-2"></i>
                         Dashboard Dekan
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="#" class="nav-link text-muted d-flex align-items-center">
+                    <a href="{{route('dekan.persetujuan')}}" class="nav-link d-flex align-items-center">
                         <i class="bi bi-file-earmark-text me-2"></i>
+                        Persetujuan Kelas
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="#" class="nav-link d-flex align-items-center">
+                        <i class="bi bi-people me-2"></i>
                         Persetujuan Jadwal
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="#" class="nav-link text-muted d-flex align-items-center">
-                        <i class="bi bi-people me-2"></i>
-                        Data Fakultas
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="#" class="nav-link text-muted d-flex align-items-center">
+                    <a href="#" class="nav-link d-flex align-items-center">
                         <i class="bi bi-graph-up me-2"></i>
-                        Statistik Akademik
+                        Laporan Akademik
                     </a>
                 </li>
             </ul>
@@ -145,7 +144,7 @@
             </nav>
 
             @yield('content')
-            @yield('scriptDkn')
+            @yield('scripts')
 
         </div>
     </main>

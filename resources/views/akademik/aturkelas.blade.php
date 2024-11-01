@@ -54,7 +54,6 @@
                             <th>Kode Ruang</th>
                             <th>Kapasitas</th>
                             <th>Status</th>
-                            <th>Jadwal Terisi</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -65,7 +64,7 @@
                             <td>{{ $ruang->koderuang }}</td>
                             <td>{{ $ruang->kapasitas }} orang</td>
                             <td>
-                                @if($ruang->jadwalKuliah->where('approved', true)->count() > 0)
+                                @if($ruang->approval)
                                 <span class="badge bg-success">Disetujui</span>
                                 @else
                                 <span class="badge bg-warning">Belum Disetujui</span>
@@ -198,25 +197,23 @@
             });
     }
 
-    function editRoom(koderuang) {
-        fetch(`/akademik/ruangkelas/${koderuang}/edit`)
-            .then(response => response.json())
-            .then(data => {
-                const form = document.getElementById('editRoomForm');
-                form.elements['edit_koderuang'].value = data.koderuang;
-                form.elements['new_koderuang'].value = data.koderuang;
-                form.elements['kapasitas'].value = data.kapasitas;
-                $('#editRoomModal').modal('show');
-            });
-    }
 
     function updateRoom() {
         const form = document.getElementById('editRoomForm');
         const formData = new FormData(form);
         const koderuang = form.elements['edit_koderuang'].value;
+        const newKoderuang = form.elements['new_koderuang'].value;
+        const kapasitas = form.elements['kapasitas'].value;
+
+        const payload = new URLSearchParams({
+            '_token': '{{ csrf_token() }}',
+            '_method': 'PUT',
+            'new_koderuang': newKoderuang,
+            'kapasitas': kapasitas
+        });
 
         fetch(`/akademik/ruangkelas/${koderuang}`, {
-                method: 'PUT',
+                method: 'POST',
                 body: formData,
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -233,6 +230,7 @@
                 }
             })
             .catch(error => {
+                console.error('Error:', error);
                 showAlert('error', 'Terjadi kesalahan sistem.');
             });
     }
@@ -242,7 +240,9 @@
             fetch(`/akademik/ruangkelas/${koderuang}`, {
                     method: 'DELETE',
                     headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     }
                 })
                 .then(response => response.json())
@@ -251,14 +251,40 @@
                         showAlert('success', data.message);
                         location.reload();
                     } else {
-                        showAlert('error', data.status === 'error' ? data.message : 'Terjadi kesalahan. Silakan coba lagi.');
+                        showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
                     }
                 })
                 .catch(error => {
+                    console.error('Error:', error);
                     showAlert('error', 'Terjadi kesalahan sistem.');
                 });
         }
     }
+
+    function editRoom(koderuang) {
+        fetch(`/akademik/ruangkelas/${koderuang}/edit`, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'error') {
+                    showAlert('error', data.message);
+                    return;
+                }
+                const form = document.getElementById('editRoomForm');
+                form.elements['edit_koderuang'].value = data.koderuang;
+                form.elements['new_koderuang'].value = data.koderuang;
+                form.elements['kapasitas'].value = data.kapasitas;
+                $('#editRoomModal').modal('show');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('error', 'Terjadi kesalahan saat mengambil data ruang.');
+            });
+    }
+
     // Search functionality
     document.getElementById('searchInput').addEventListener('keyup', function(e) {
         const searchValue = e.target.value.toLowerCase();

@@ -34,8 +34,8 @@ class UsersSeeder extends Seeder
                 'password' => bcrypt('123')
             ],
             [
-                'name' => 'Dr. Ahmed Dicks S.Kom, M. Si, P.Hd',
-                'email' => 'ahdick@lecturer.com',
+                'name' => 'Dr. Antoni S.Kom, M. Si, P.Hd',
+                'email' => 'antoni@lecturer.com',
                 'role' => 'dekan',
                 'password' => bcrypt('123')
             ],
@@ -57,6 +57,14 @@ class UsersSeeder extends Seeder
             ],
             [
                 'koderuang' => 'A202',
+                'kapasitas' => 30,
+            ],
+            [
+                'koderuang' => 'E101',
+                'kapasitas' => 50,
+            ],
+            [
+                'koderuang' => 'B101',
                 'kapasitas' => 30,
             ],
         ];

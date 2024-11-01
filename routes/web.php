@@ -41,14 +41,13 @@ Route::group(['middleware' => 'auth'], function () {
 
         // New routes for RuangKelas CRUD operations
         Route::post('/akademik/ruangkelas', [akademikControl::class, 'storeRuangKelas'])->name('akademik.ruangkelas.store');
-        Route::get('/akademik/ruangkelas/{id}', [akademikControl::class, 'getRuangKelas'])->name('akademik.ruangkelas.get');
-        Route::get('/akademik/ruangkelas/{id}/edit', [akademikControl::class, 'editRuangKelas'])->name('akademik.ruangkelas.edit');
-        Route::put('/akademik/ruangkelas/{id}', [akademikControl::class, 'updateRuangKelas'])->name('akademik.ruangkelas.update');
-        Route::delete('/akademik/ruangkelas/{id}', [akademikControl::class, 'destroyRuangKelas'])->name('akademik.ruangkelas.destroy');
+        Route::get('/akademik/ruangkelas/{koderuang}', [akademikControl::class, 'getRuangKelas'])->name('akademik.ruangkelas.get');
+        Route::get('/akademik/ruangkelas/{koderuang}/edit', [akademikControl::class, 'editRuangKelas'])->name('akademik.ruangkelas.edit');
+        Route::put('/akademik/ruangkelas/{koderuang}', [akademikControl::class, 'updateRuangKelas'])->name('akademik.ruangkelas.update');
+        Route::delete('/akademik/ruangkelas/{koderuang}', [akademikControl::class, 'destroyRuangKelas'])->name('akademik.ruangkelas.destroy');
     });
 
     // Rute untuk dosen
-
     Route::group(['middleware' => 'role:dosen,kaprodi,dekan'], function () {
         Route::get('/dosen/dashboard', [DosenController::class, 'dosen'])->name('dosen.dashboard');
         Route::get('/dosen/verifikasi', [DosenController::class, 'verifikasi'])->name('dosen.verifikasi');
@@ -63,17 +62,17 @@ Route::group(['middleware' => 'auth'], function () {
         // Route::get('/dosen/dashboard', [DosenController::class, 'dosen'])->name('dosen.dashboard');
     });
 
-    // Route::prefix('kaprodi')->name('kaprodi.')->group(function () {
-    //     Route::get('/dashboard', [KaprodiController::class, 'dashboard'])->name('dashboard');
-    //     Route::get('/jadwal', [KaprodiController::class, 'buatJadwal'])->name('buatjadwal');
-    //     // Route::get('/status-mahasiswa', [KaprodiController::class, 'statusMahasiswa'])->name('status');
-    //     // Route::get('/statistik', [KaprodiController::class, 'statistik'])->name('statistik');
-    // });
 
     // Rute untuk dekan
     Route::group(['middleware' => 'role:dekan,dosen, kaprodi'], function () {
         Route::get('/dekan/dashboard', [DekanController::class, 'dekan'])->name('dekan.dashboard');
-        // Route::get('/dosen/dashboard', [DosenController::class, 'dosen'])->name('dosen.dashboard');
+        Route::get('/dekan/persetujuan', [DekanController::class, 'persetujuan'])->name('dekan.persetujuan');
+        //Persetujuan Kelas
+        Route::get('/dekan/ruangkelas/approval', [DekanController::class, 'approveRuangKelas'])->name('dekan.ruangkelas.approval');
+        Route::put('/dekan/ruangkelas/{koderuang}/approve', [DekanController::class, 'approveRoom'])->name('dekan.ruangkelas.approve');
+        Route::put('/dekan/ruangkelas/{koderuang}/reject', [DekanController::class, 'rejectRoom'])->name('dekan.ruangkelas.reject');
+        //Perserujuan Jadwal
+
     });
 
     // Rute untuk pemilihan menu oleh dekan dan kaprodi

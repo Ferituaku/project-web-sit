@@ -22,18 +22,32 @@ class DekanController extends Controller
     {
         return view('dosen.dashboard');
     }
-
-    public function approveRuangKelas()
+    public function persetujuan()
     {
-        $ruangKelas = RuangKelas::with('jadwalKuliah')->where('approved', false)->paginate(10);
-        return view('dekanat.ruangkelas.index', compact('ruangKelas'));
+        $ruangKelas = RuangKelas::with('jadwalKuliah')->paginate(10);
+        return view('dekan.persetujuan', compact('ruangKelas'));
     }
 
-    public function approveRoom(Request $request, $koderuang)
+
+
+    // New method to show room approval page
+    public function ruangKelasApproval()
+    {
+        // Fetch all rooms with their current approval status
+        $ruangKelas = RuangKelas::with('jadwalKuliah')->paginate(10);
+        return view('dekan.ruangkelas.approval', compact('ruangKelas'));
+    }
+
+    // Method to approve a room
+    public function approveRoom($koderuang)
     {
         try {
             $ruangKelas = RuangKelas::where('koderuang', $koderuang)->firstOrFail();
-            $ruangKelas->jadwalKuliah()->update(['approved' => true]);
+
+            // Gunakan kolom 'approval' sesuai dengan migration
+            $ruangKelas->approval = true;
+            $ruangKelas->save();
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Ruang kelas berhasil disetujui'
@@ -41,24 +55,28 @@ class DekanController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Gagal menyetujui ruang kelas'
+                'message' => 'Gagal menyetujui ruang kelas: ' . $e->getMessage()
             ], 500);
         }
     }
 
-    public function rejectRoom(Request $request, $koderuang)
+    public function rejectRoom($koderuang)
     {
         try {
             $ruangKelas = RuangKelas::where('koderuang', $koderuang)->firstOrFail();
-            $ruangKelas->jadwalKuliah()->update(['approved' => false]);
+
+            // Gunakan kolom 'approval' sesuai dengan migration
+            $ruangKelas->approval = false;
+            $ruangKelas->save();
+
             return response()->json([
                 'status' => 'success',
-                'message' => 'Ruang kelas berhasil ditolak'
+                'message' => 'Ruang kelas ditolak'
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Gagal menolak ruang kelas'
+                'message' => 'Gagal menolak ruang kelas: ' . $e->getMessage()
             ], 500);
         }
     }

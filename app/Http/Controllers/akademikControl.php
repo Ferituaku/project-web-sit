@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\RuangKelas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class akademikControl extends Controller
@@ -107,19 +108,37 @@ class akademikControl extends Controller
 
     public function destroyRuangKelas($koderuang)
     {
+        DB::beginTransaction();
         try {
-            $ruangKelas = RuangKelas::where('koderuang', $koderuang)->firstOrFail();
-           
+            $ruangKelas = RuangKelas::where('koderuang', $koderuang)->first();
+
+            if (!$ruangKelas) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Ruang kelas tidak ditemukan'
+                ], 404);
+            }
+
+            // Check if room has associated schedules
+            if ($ruangKelas->jadwalKuliah()->count() > 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Tidak dapat menghapus ruang kelas karena masih memiliki jadwal kuliah'
+                ], 422);
+            }
+
             $ruangKelas->delete();
-            
+
+            DB::commit();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Ruang kelas berhasil dihapus'
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
-                'message' => 'Gagal menghapus ruang kelas'
+                'message' => 'Error: ' . $e->getMessage()
             ], 500);
         }
     }

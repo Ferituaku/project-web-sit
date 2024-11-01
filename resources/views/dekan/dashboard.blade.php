@@ -1,7 +1,7 @@
 @extends('dekan.mainDkn')
 @section('title', 'Dashboard Dekan')
-@section('content')
 
+@section('content')
 <div class="row g-4">
     <!-- User Info Card -->
     <div class="col-md-12">
@@ -68,7 +68,7 @@
     </div>
 </div>
 @endsection
-@section('scriptDkn')
+@section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     var ctx = document.getElementById('akademikChart').getContext('2d');

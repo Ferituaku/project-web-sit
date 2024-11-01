@@ -10,8 +10,12 @@ class RuangKelas extends Model
 {
     use HasFactory;
 
-    protected $table = 'ruangKelas';
-    protected $fillable = ['koderuang', 'kapasitas'];
+    protected $table = 'ruangkelas';
+    protected $primaryKey = 'koderuang';
+    protected $keyType = 'string';
+    public $incrementing = false;
+
+    protected $fillable = ['koderuang', 'kapasitas', 'approval'];
 
     public function jadwalKuliah(): HasMany
     {

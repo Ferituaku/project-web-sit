@@ -6,7 +6,7 @@
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('dekanat.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('dekan.dashboard') }}">Dashboard</a></li>
             <li class="breadcrumb-item active">Persetujuan Ruang Kelas</li>
         </ol>
     </nav>
@@ -17,11 +17,7 @@
     <!-- Main Card -->
     <div class="card shadow-sm">
         <div class="card-header bg-white py-3">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h5 class="mb-0 text-dark">Data Ruang Kelas</h5>
-                </div>
-            </div>
+            <h5 class="mb-0 text-dark">Daftar Ruang Kelas untuk Disetujui</h5>
         </div>
 
         <div class="card-body">
@@ -56,22 +52,24 @@
                             <td>{{ $ruang->koderuang }}</td>
                             <td>{{ $ruang->kapasitas }} orang</td>
                             <td>
-                                @if($ruang->jadwalKuliah->where('approved', true)->count() > 0)
+                                @if($ruang->approval)
                                 <span class="badge bg-success">Disetujui</span>
                                 @else
                                 <span class="badge bg-warning">Belum Disetujui</span>
                                 @endif
                             </td>
                             <td>
-                                @if($ruang->jadwalKuliah->where('approved', false)->count() > 0)
+                                @if(!$ruang->approval)
                                 <div class="btn-group">
-                                    <button class="btn btn-sm btn-success" onclick="approveRoom('{{ $ruang->koderuang }}')">
+                                    <button class="btn btn-sm btn-success me-1" onclick="approveRoom('{{ $ruang->koderuang }}')">
                                         <i class="bi bi-check-circle me-1"></i>Setujui
                                     </button>
                                     <button class="btn btn-sm btn-danger" onclick="rejectRoom('{{ $ruang->koderuang }}')">
                                         <i class="bi bi-x-circle me-1"></i>Tolak
                                     </button>
                                 </div>
+                                @else
+                                <span class="text-muted">Sudah disetujui</span>
                                 @endif
                             </td>
                         </tr>
@@ -89,63 +87,24 @@
         </div>
     </div>
 </div>
-
-<!-- Approve Room Modal -->
-<div class="modal fade" id="approveRoomModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Setujui Ruang Kelas</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Apakah Anda yakin ingin menyetujui ruang kelas ini?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-success" onclick="confirmApproveRoom()">Setujui</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Reject Room Modal -->
-<div class="modal fade" id="rejectRoomModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Tolak Ruang Kelas</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Apakah Anda yakin ingin menolak ruang kelas ini?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-danger" onclick="confirmRejectRoom()">Tolak</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 @endsection
 
 @section('scripts')
 <script>
     function showAlert(type, message) {
-        // Same as before
+        const alertContainer = document.getElementById('alert-container');
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        alertContainer.innerHTML = `
+            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
     }
 
     function approveRoom(koderuang) {
-        $('#approveRoomModal').modal('show');
-        // Set the koderuang value for the confirmation button
-        document.getElementById('confirmApproveRoom').dataset.koderuang = koderuang;
-    }
-
-    function confirmApproveRoom() {
-        const koderuang = document.getElementById('confirmApproveRoom').dataset.koderuang;
-        fetch(`/dekanat/ruangkelas/${koderuang}/approve`, {
-                method: 'POST',
+        fetch(`/dekan/ruangkelas/${koderuang}/approve`, {
+                method: 'PUT',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
@@ -154,7 +113,6 @@
             .then(data => {
                 if (data.status === 'success') {
                     showAlert('success', data.message);
-                    $('#approveRoomModal').modal('hide');
                     location.reload();
                 } else {
                     showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
@@ -166,15 +124,8 @@
     }
 
     function rejectRoom(koderuang) {
-        $('#rejectRoomModal').modal('show');
-        // Set the koderuang value for the confirmation button
-        document.getElementById('confirmRejectRoom').dataset.koderuang = koderuang;
-    }
-
-    function confirmRejectRoom() {
-        const koderuang = document.getElementById('confirmRejectRoom').dataset.koderuang;
-        fetch(`/dekanat/ruangkelas/${koderuang}/reject`, {
-                method: 'POST',
+        fetch(`/dekan/ruangkelas/${koderuang}/reject`, {
+                method: 'PUT',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
@@ -183,7 +134,6 @@
             .then(data => {
                 if (data.status === 'success') {
                     showAlert('success', data.message);
-                    $('#rejectRoomModal').modal('hide');
                     location.reload();
                 } else {
                     showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
@@ -195,6 +145,15 @@
     }
 
     // Search functionality
-    // Same as before
+    document.getElementById('searchInput').addEventListener('keyup', function(e) {
+        const searchValue = e.target.value.toLowerCase();
+        const tableBody = document.querySelector('tbody');
+        const rows = tableBody.getElementsByTagName('tr');
+
+        for (let row of rows) {
+            const koderuang = row.cells[1].textContent.toLowerCase();
+            row.style.display = koderuang.includes(searchValue) ? '' : 'none';
+        }
+    });
 </script>
 @endsection
