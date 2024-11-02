@@ -12,9 +12,10 @@ class JadwalKuliah extends Model
     protected $table = 'jadwalKuliah';
 
     protected $fillable = [
-        'ruang_id',
+        'ruangkelas_id',
         'kodemk',
-        'dosen',
+        'dosen_id',
+        'plot_semeter',
         'hari',
         'jam_mulai',
         'jam_selesai'
@@ -29,6 +30,6 @@ class JadwalKuliah extends Model
     }
     public function Pengampu(): BelongsTo
     {
-        return $this->belongsTo(PembimbingAkd::class, 'nip', 'nip');
+        return $this->belongsTo(PembimbingAkd::class, 'dosen_id', 'nip');
     }
 }

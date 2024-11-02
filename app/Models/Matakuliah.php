@@ -12,7 +12,9 @@ class Matakuliah extends Model
 
     protected $fillable = [
         'kodemk',
-        'nama'
+        'nama_mk',
+        'sks',
+        'semester'
     ];
 
     public function jadwalKuliah()

@@ -1,7 +1,9 @@
+<!-- buatjadwal.blade.php -->
 @extends('kaprodi.mainKpd')
 @section('title', 'Manajemen Jadwal')
 
 @section('content')
+
 <div class="container-fluid py-4">
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
@@ -11,10 +13,17 @@
         </ol>
     </nav>
 
-    <!-- Alert Section for CRUD Messages -->
+    <!-- Alert Section -->
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
@@ -43,14 +52,9 @@
                 <div class="col-md-3">
                     <select class="form-select" id="semester-filter">
                         <option value="">Semua Semester</option>
-                        <option value="1">Semester 1</option>
-                        <option value="2">Semester 2</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <select class="form-select" id="prodi-filter">
-                        <option value="">Semua Prodi</option>
-                        <option value="IF">Informatika</option>
+                        @for($i = 1; $i <= 8; $i++)
+                            <option value="{{ $i }}">Semester {{ $i }}</option>
+                            @endfor
                     </select>
                 </div>
                 <div class="col-md-6">
@@ -72,84 +76,135 @@
                             <th>Kode MK</th>
                             <th>Mata Kuliah</th>
                             <th>Dosen</th>
+                            <th>Semester</th>
                             <th>Hari</th>
                             <th>Waktu</th>
                             <th>Ruangan</th>
-                            <th>Status</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Table rows will be populated dynamically -->
+                        @foreach($jadwalKuliah as $index => $jadwal)
                         <tr>
-                            <td>1</td>
-                            <td>SIT001</td>
-                            <td>Algoritma dan Pemrograman</td>
-                            <td>Dr. John Doe</td>
-                            <td>Senin</td>
-                            <td>08:00 - 09:40</td>
-                            <td>A101</td>
-                            <td><span class="badge bg-success">Disetujui</span></td>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $jadwal->matakuliah->kodemk }}</td>
+                            <td>{{ $jadwal->matakuliah->nama_mk }}</td>
+                            <td>{{ $jadwal->dosen->name }}</td>
+                            <td>{{ $jadwal->plot_semester }}</td>
+                            <td>{{ $jadwal->hari }}</td>
+                            <td>{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</td>
+                            <td>{{ $jadwal->ruangKelas->koderuang }}</td>
                             <td>
                                 <div class="btn-group">
-                                    <button class="btn btn-sm btn-info me-1" data-bs-toggle="modal" data-bs-target="#editScheduleModal">
+                                    <button class="btn btn-sm btn-info me-1"
+                                        onclick="editJadwal({{ $jadwal->id }})"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editScheduleModal">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-danger" onclick="confirmDelete(1)">
+                                    <button class="btn btn-sm btn-danger"
+                                        onclick="confirmDelete({{ $jadwal->id }})">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
                             </td>
                         </tr>
+                        @endforeach
                     </tbody>
                 </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="row align-items-center mt-4">
-                <div class="col-md-6 text-muted">
-                    Menampilkan <span class="fw-bold">1</span> sampai <span class="fw-bold">10</span> dari <span class="fw-bold">50</span> data
-                </div>
-                <div class="col-md-6">
-                    <nav aria-label="Page navigation" class="float-end">
-                        <ul class="pagination mb-0">
-                            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                        </ul>
-                    </nav>
-                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal templates for CRUD operations -->
+<!-- Add Schedule Modal -->
 <div class="modal fade" id="addScheduleModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Jadwal Baru</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="addScheduleForm">
-                    <div class="mb-3">
-                        <label class="form-label">Kode Mata Kuliah</label>
-                        <input type="text" class="form-control" name="kode_mk" required>
+            <form action="{{ route('kaprodi.jadwal.store') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Mata Kuliah</label>
+                            <select class="form-select" name="kodemk" id="kodemk" required>
+                                <option value="">Pilih Mata Kuliah</option>
+                                @foreach($matakuliah as $mk)
+                                <option value="{{ $mk->kodemk }}" data-sks="{{ $mk->sks }}">
+                                    {{ $mk->kodemk }} - {{ $mk->nama_mk }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ruang Kelas</label>
+                            <select class="form-select @error('ruangkelas_id') is-invalid @enderror" name="ruangkelas_id" required>
+                                <option value="">Pilih Ruangan</option>
+                                @foreach($ruangKelas as $ruang)
+                                <option value="{{ $ruang->koderuang }}">{{ $ruang->koderuang }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mata Kuliah</label>
-                        <input type="text" class="form-control" name="nama_mk" required>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Dosen</label>
+                            <select class="form-select" name="dosen_id" required>
+                                <option value="">Pilih Dosen</option>
+                                @foreach($dosen as $d)
+                                <option value="{{ $d->id }}">{{ $d->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Plot Semester</label>
+                            <select class="form-select" name="plot_semester" required>
+                                <option value="">Pilih Semester</option>
+                                @for($i = 1; $i <= 8; $i++)
+                                    <option value="{{ $i }}">Semester {{ $i }}</option>
+                                    @endfor
+                            </select>
+                        </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-primary">Simpan</button>
-            </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Hari</label>
+                            <select class="form-select" name="hari" required>
+                                <option value="">Pilih Hari</option>
+                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $hari)
+                                <option value="{{ $hari }}">{{ $hari }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">SKS</label>
+                            <input type="number" class="form-control" id="sks" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Jam Mulai</label>
+                            <select class="form-select" name="jam_mulai" required>
+                                <option value="">Pilih Jam</option>
+                                @foreach($timeSlots as $time)
+                                <option value="{{ $time }}">{{ $time }}</option>
+                                @endforeach
+                            </select>
+                            @error('jam_mulai')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -163,49 +218,63 @@
         background-color: #f8f9fa;
     }
 
-    .table td {
-        vertical-align: middle;
+    .modal-lg {
+        max-width: 800px;
     }
 
-    .btn-group .btn {
-        padding: 0.25rem 0.5rem;
-    }
-
-    .pagination .page-link {
-        padding: 0.375rem 0.75rem;
-    }
-
-    .badge {
+    .form-label {
         font-weight: 500;
-    }
-
-    .modal-header {
-        background-color: #f8f9fa;
     }
 </style>
 @endsection
 
 @section('scriptKpd')
 <script>
-    // Placeholder for future JavaScript functionality
     document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('keyup', function() {
-            // Implement search logic
-        });
+        // Auto-fill SKS when mata kuliah is selected
+        const kodeMkSelect = document.getElementById('kodemk');
+        const sksInput = document.getElementById('sks');
 
-        // Refresh button
-        document.getElementById('refreshTable').addEventListener('click', function() {
-            // Implement refresh logic
+        kodeMkSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const sks = selectedOption.getAttribute('data-sks');
+            sksInput.value = sks || '';
         });
 
         // Delete confirmation
         window.confirmDelete = function(id) {
             if (confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) {
-                // Implement delete logic
+                window.location.href = `/kaprodi/jadwal/delete/${id}`;
             }
         };
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('tbody tr');
+
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Semester filter
+        const semesterFilter = document.getElementById('semester-filter');
+        semesterFilter.addEventListener('change', function() {
+            const semester = this.value;
+            const tableRows = document.querySelectorAll('tbody tr');
+
+            tableRows.forEach(row => {
+                const semesterCell = row.querySelector('td:nth-child(5)');
+                if (!semester || semesterCell.textContent === semester) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
     });
 </script>
 @endsection

@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-
+@stack('styles')
 <style>
     .sidebar {
         background: linear-gradient(180deg, #3a0ca3 0%, #4361ee 100%);
@@ -89,7 +89,7 @@
                 <h3 style="visibility:hidden;">Dashboard Akademik</h3>
                 <div class="dropdown">
                     <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ asset('img/budosen.jpg') }}" alt="user" width="32" height="32" class="rounded-circle me-2">
+                        <img src="{{ asset('img/steve.png') }}" alt="user" width="32" height="32" class="rounded-circle me-2">
                         <span class="text-dark">{{ auth()->user()->name }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
