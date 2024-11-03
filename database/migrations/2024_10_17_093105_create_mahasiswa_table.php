@@ -12,17 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('mahasiswa', function (Blueprint $table) {
-            $table->unsignedBigInteger('nim')->primary();
+            $table->integer('nim')->primary();
+            $table->string('name');
             $table->string('email')->unique();
-            $table->bigInteger('nip')->unsigned();
-        });
-
-        Schema::table('mahasiswa', function (Blueprint $table) {
-            $table->foreign('nip')->references('nip')->on('pembimbing_akd')->onDelete('cascade');
-        });
-
-        Schema::table('mahasiswa', function (Blueprint $table) {
-            $table->foreign('email')->references('email')->on('users')->onDelete('cascade');
         });
     }
 

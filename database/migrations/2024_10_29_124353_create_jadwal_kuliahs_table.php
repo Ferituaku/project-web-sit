@@ -12,7 +12,7 @@ return new class extends Migration
 
             $table->id();
             $table->string('ruangkelas_id');
-            $table->string('kodemk');
+            $table->integer('kodemk');
             $table->unsignedBigInteger('dosen_id');
             $table->integer('plot_semester');
             $table->enum('hari', ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']);
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->time('jam_selesai');
             $table->timestamps();
 
-            $table->foreign('dosen_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('dosen_id')->references('nip')->on('pembimbingakd')->onDelete('cascade');
             $table->foreign('ruangkelas_id')->references('koderuang')->on('ruangkelas')->onDelete('cascade');
             $table->foreign('kodemk')->references('kodemk')->on('matakuliah')->onDelete('cascade');
         });
@@ -28,6 +28,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('jadwal_kuliah');
+        Schema::dropIfExists('jadwalKuliah');
     }
 };

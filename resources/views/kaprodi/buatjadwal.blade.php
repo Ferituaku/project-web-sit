@@ -89,7 +89,7 @@
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $jadwal->matakuliah->kodemk }}</td>
                             <td>{{ $jadwal->matakuliah->nama_mk }}</td>
-                            <td>{{ $jadwal->dosen->name }}</td>
+                            <td>{{ $jadwal->pembimbingakd->name }}</td>
                             <td>{{ $jadwal->plot_semester }}</td>
                             <td>{{ $jadwal->hari }}</td>
                             <td>{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</td>
@@ -125,20 +125,33 @@
                 <h5 class="modal-title">Tambah Jadwal Baru</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ route('kaprodi.jadwal.store') }}" method="POST">
+            <form action="{{ route('kaprodi.jadwal.store') }}" method="POST" id="jadwalForm">
                 @csrf
                 <div class="modal-body">
+                    @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label">Mata Kuliah</label>
-                            <select class="form-select" name="kodemk" id="kodemk" required>
+                            <select class="form-select @error('kodemk') is-invalid @enderror"
+                                name="kodemk" id="kodemk" required>
                                 <option value="">Pilih Mata Kuliah</option>
                                 @foreach($matakuliah as $mk)
-                                <option value="{{ $mk->kodemk }}" data-sks="{{ $mk->sks }}">
+                                <option value="{{ $mk->kodemk }}" data-sks="{{ $mk->sks }}" {{ old('kodemk') == $mk->kodemk ? 'selected' : '' }}>
                                     {{ $mk->kodemk }} - {{ $mk->nama_mk }}
                                 </option>
                                 @endforeach
                             </select>
+                            @error('kodemk')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Ruang Kelas</label>
@@ -157,7 +170,7 @@
                             <select class="form-select" name="dosen_id" required>
                                 <option value="">Pilih Dosen</option>
                                 @foreach($dosen as $d)
-                                <option value="{{ $d->id }}">{{ $d->name }}</option>
+                                <option value="{{ $d->nip }}">{{ $d->name }}</option>
                                 @endforeach
                             </select>
                         </div>

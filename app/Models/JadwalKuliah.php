@@ -24,11 +24,11 @@ class JadwalKuliah extends Model
     {
         return $this->belongsTo(RuangKelas::class, 'ruangkelas_id', 'koderuang');
     }
-    public function MataKuliah(): BelongsTo
+    public function mataKuliah(): BelongsTo
     {
         return $this->belongsTo(Matakuliah::class, 'kodemk', 'kodemk');
     }
-    public function Pengampu(): BelongsTo
+    public function pembimbingakd(): BelongsTo
     {
         return $this->belongsTo(PembimbingAkd::class, 'dosen_id', 'nip');
     }

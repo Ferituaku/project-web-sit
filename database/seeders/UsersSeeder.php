@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\JadwalKuliah;
 use App\Models\Matakuliah;
+use App\Models\PembimbingAkd;
 use App\Models\RuangKelas;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -77,49 +78,49 @@ class UsersSeeder extends Seeder
 
         $matakuliah = [
             [
-                'kodemk' => 'SIT1101',
+                'kodemk' => 1101,
                 'nama_mk' => 'Algoritma Pemrograman',
                 'sks' => 4,
                 'semester' => 2,
             ],
             [
-                'kodemk' => 'SIT1102',
+                'kodemk' => 1102,
                 'nama_mk' => 'Basis Data',
                 'sks' => 3,
                 'semester' => 3,
             ],
             [
-                'kodemk' => 'SIT1103',
+                'kodemk' => 1103,
                 'nama_mk' => 'Pengembangan Berbasis Platform',
                 'sks' => 4,
                 'semester' => 5,
             ],
             [
-                'kodemk' => 'SIT1104',
+                'kodemk' => 1104,
                 'nama_mk' => 'Struktur Data',
                 'sks' => 3,
                 'semester' => 2,
             ],
             [
-                'kodemk' => 'SIT1105',
+                'kodemk' => 1105,
                 'nama_mk' => 'Sistem Operasi',
                 'sks' => 3,
                 'semester' => 3,
             ],
             [
-                'kodemk' => 'SIT1106',
+                'kodemk' => 1106,
                 'nama_mk' => 'Jaringan Komputer',
                 'sks' => 2,
                 'semester' => 4,
             ],
             [
-                'kodemk' => 'SIT1107',
+                'kodemk' => 1107,
                 'nama_mk' => 'Sistem Cerdas',
                 'sks' => 3,
                 'semester' => 4,
             ],
             [
-                'kodemk' => 'SIT1108',
+                'kodemk' => 1108,
                 'nama_mk' => 'Kewirausahaan',
                 'sks' => 2,
                 'semester' => 6,
@@ -128,6 +129,28 @@ class UsersSeeder extends Seeder
 
         foreach ($matakuliah as $mk) {
             Matakuliah::create($mk);
+        }
+
+        $pembimbingAkd = [
+            [
+                'nip' => 12231301,
+                'name' => 'Joyo Sujoyo S.Kom, M.Kom',
+                'email' => 'joyo@lecturer.com',
+            ],
+            [
+                'nip' => 12231302,
+                'name' => 'Diane S.Kom, M.Kom',
+                'email' => 'Diane@lecturer.com',
+            ],
+            [
+                'nip' => 12231303,
+                'name' => 'Richard S.Kom, M.Kom',
+                'email' => 'Richard@lecturer.com',
+            ],
+
+        ];
+        foreach ($pembimbingAkd as $pakad) {
+            PembimbingAkd::create($pakad);
         }
     }
 }

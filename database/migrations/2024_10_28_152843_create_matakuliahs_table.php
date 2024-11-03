@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('matakuliah', function (Blueprint $table) {
-            $table->string('kodemk')->primary();
+            $table->integer('kodemk')->primary();
             $table->string('nama_mk');
             $table->integer('sks');
             $table->integer('semester');

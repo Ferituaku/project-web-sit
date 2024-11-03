@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JadwalKuliah;
 use App\Models\Matakuliah;
+use App\Models\PembimbingAkd;
 use App\Models\RuangKelas;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -38,10 +39,10 @@ class KaprodiController extends Controller
         $matakuliah = Matakuliah::all();
 
         // Get users with specific roles
-        $dosen = User::whereIn('role', ['dosen', 'dekan', 'kaprodi'])->get();
+        $dosen = PembimbingAkd::all();
 
         // Get all schedules with their relationships
-        $jadwalKuliah = JadwalKuliah::with(['ruangkelas', 'matakuliah', 'dosen'])
+        $jadwalKuliah = JadwalKuliah::with(['ruangKelas', 'mataKuliah', 'pembimbingakd'])
             ->orderBy('hari')
             ->orderBy('jam_mulai')
             ->get();
@@ -87,15 +88,14 @@ class KaprodiController extends Controller
             DB::beginTransaction();
 
             // Validate request
-            $request->validate([
+            $validated = $request->validate([
                 'ruangkelas_id' => 'required|exists:ruangkelas,koderuang',
                 'kodemk' => 'required|exists:matakuliah,kodemk',
-                'dosen_id' => 'required|exists:users,id',
+                'dosen_id' => 'required|exists:pembimbingakd,nip',
                 'plot_semester' => 'required|integer|min:1|max:8',
                 'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
                 'jam_mulai' => 'required|date_format:H:i',
             ]);
-
             // Find the course to get SKS
             $mataKuliah = Matakuliah::where('kodemk', $request->kodemk)->firstOrFail();
 
@@ -103,60 +103,42 @@ class KaprodiController extends Controller
             $jamMulai = Carbon::createFromFormat('H:i', $request->jam_mulai);
             $jamSelesai = clone $jamMulai;
 
-            switch ($mataKuliah->sks) {
-                case 2:
-                    $jamSelesai->addHours(1)->addMinutes(40); // 2 SKS = 100 minutes
-                    break;
-                case 3:
-                    $jamSelesai->addHours(2)->addMinutes(30); // 3 SKS = 150 minutes
-                    break;
-                case 4:
-                    $jamSelesai->addHours(3)->addMinutes(20); // 4 SKS = 200 minutes
-                    break;
-                default:
-                    $jamSelesai->addHours(1); // Default 1 hour
-            }
+            // Perhitungan durasi berdasarkan SKS
+            $durasiMenit = $mataKuliah->sks * 50; // 50 menit per SKS
+            $jamSelesai->addMinutes($durasiMenit);
 
-            // Check for schedule conflicts
-            $conflicts = JadwalKuliah::where('hari', $request->hari)
-                ->where(function ($query) use ($request) {
-                    // Check room conflicts
-                    $query->where('ruangkelas_id', $request->ruangkelas_id);
-                    // Or check lecturer conflicts
-                    $query->orWhere('dosen_id', $request->dosen_id);
-                })
-                ->where(function ($query) use ($request, $jamSelesai) {
-                    $query->whereBetween('jam_mulai', [$request->jam_mulai, $jamSelesai->format('H:i')])
-                        ->orWhereBetween('jam_selesai', [$request->jam_mulai, $jamSelesai->format('H:i')])
-                        ->orWhere(function ($q) use ($request, $jamSelesai) {
-                            $q->where('jam_mulai', '<=', $request->jam_mulai)
-                                ->where('jam_selesai', '>=', $jamSelesai->format('H:i'));
-                        });
-                })->exists();
+            // Cek konflik jadwal
+            $conflicts = $this->checkScheduleConflicts(
+                $validated['hari'],
+                $validated['ruangkelas_id'],
+                $validated['dosen_id'],
+                $validated['jam_mulai'],
+                $jamSelesai->format('H:i')
+            );
 
             if ($conflicts) {
+                DB::rollBack();
                 return back()
                     ->withInput()
-                    ->with('error', 'Terdapat konflik jadwal pada waktu, ruangan, atau dosen yang dipilih.');
+                    ->with('error', 'Terdapat konflik jadwal. Silakan pilih waktu lain.');
             }
 
             // Create new schedule
-            $jadwal = JadwalKuliah::create([
-                'ruangkelas_id' => $request->ruangkelas_id,
-                'kodemk' => $request->kodemk,
-                'dosen_id' => $request->dosen_id,
-                'plot_semester' => $request->plot_semester,
-                'hari' => $request->hari,
-                'jam_mulai' => $request->jam_mulai,
-                'jam_selesai' => $jamSelesai->format('H:i')
-            ]);
+            $jadwal = new JadwalKuliah();
+            $jadwal->ruangkelas_id = $validated['ruangkelas_id'];
+            $jadwal->kodemk = $validated['kodemk'];
+            $jadwal->dosen_id = $validated['dosen_id'];
+            $jadwal->plot_semester = $validated['plot_semester'];
+            $jadwal->hari = $validated['hari'];
+            $jadwal->jam_mulai = $validated['jam_mulai'];
+            $jadwal->jam_selesai = $jamSelesai->format('H:i');
+            $jadwal->save();
+
+
             DB::commit();
-
-            // Log the successful creation
-            Log::info('Jadwal created successfully', ['jadwal_id' => $jadwal->id]);
-
-
-            return back()->with('success', 'Jadwal berhasil ditambahkan.');
+            return redirect()
+                ->route('kaprodi.buatjadwal')
+                ->with('success', 'Jadwal berhasil ditambahkan.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error creating jadwal: ' . $e->getMessage());
@@ -165,6 +147,23 @@ class KaprodiController extends Controller
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan saat menyimpan jadwal. ' . $e->getMessage());
         }
+    }
+
+    private function checkScheduleConflicts($hari, $ruangkelasId, $dosenId, $jamMulai, $jamSelesai)
+    {
+        return JadwalKuliah::where('hari', $hari)
+            ->where(function ($query) use ($ruangkelasId, $dosenId) {
+                $query->where('ruangkelas_id', $ruangkelasId)
+                    ->orWhere('dosen_id', $dosenId);
+            })
+            ->where(function ($query) use ($jamMulai, $jamSelesai) {
+                $query->whereBetween('jam_mulai', [$jamMulai, $jamSelesai])
+                    ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
+                    ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
+                        $q->where('jam_mulai', '<=', $jamMulai)
+                            ->where('jam_selesai', '>=', $jamSelesai);
+                    });
+            })->exists();
     }
 
     public function updateJadwal(Request $request, $id)
@@ -176,7 +175,7 @@ class KaprodiController extends Controller
         $request->validate([
             'ruangkelas_id' => 'required|exists:ruangkelas,koderuang',
             'kodemk' => 'required|exists:matakuliah,kodemk',
-            'dosen_id' => 'required|exists:users,id',
+            'dosen_id' => 'required|exists:pembimbingakd,nip',
             'plot_semester' => 'required|integer|min:1|max:8',
             'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'jam_mulai' => 'required|date_format:H:i',

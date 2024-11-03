@@ -8,18 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Mahasiswa extends Model
 {
     use HasFactory;
+    protected $table = 'mahasiswa';
+
 
     // Fillable attributes
     protected $fillable = [
         'nim',
         'name',
-        'email',
-        'nip'
+        'email'
     ];
 
     // Relation to PembimbingAkd
-    public function pembimbingAkd()
-    {
-        return $this->belongsTo(PembimbingAkd::class, 'nip', 'nip');
-    }
+    // public function pembimbingAkd()
+    // {
+    //     return $this->belongsTo(PembimbingAkd::class, 'nip', 'nip');
+    // }
 }
