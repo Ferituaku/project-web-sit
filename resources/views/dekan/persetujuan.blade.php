@@ -139,7 +139,7 @@
                     showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
                 }
             })
-            .catch(error => h {
+            .catch(error => {
                 showAlert('error', 'Terjadi kesalahan sistem.');
             });
     }
