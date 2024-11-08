@@ -1,9 +1,7 @@
-<!-- buatjadwal.blade.php -->
 @extends('kaprodi.mainKpd')
 @section('title', 'Manajemen Jadwal')
 
 @section('content')
-
 <div class="container-fluid py-4">
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
@@ -76,7 +74,12 @@
                             <th>Kode MK</th>
                             <th>Mata Kuliah</th>
                             <th>Dosen</th>
-                            <th>Semester</th>
+                            <th>Semester
+                                <button id="sortSemester" class="btn btn-sm p-0" title="Urutkan Semester">
+                                    <i id="sortIcon" class="bi bi-sort-down"></i>
+                                </button>
+                            </th>
+                            <th>Kelas</th>
                             <th>Hari</th>
                             <th>Waktu</th>
                             <th>Ruangan</th>
@@ -91,6 +94,7 @@
                             <td>{{ $jadwal->matakuliah->nama_mk }}</td>
                             <td>{{ $jadwal->pembimbingakd->name }}</td>
                             <td>{{ $jadwal->plot_semester }}</td>
+                            <td>{{ $jadwal->class_group }}</td>
                             <td>{{ $jadwal->hari }}</td>
                             <td>{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</td>
                             <td>{{ $jadwal->ruangKelas->koderuang }}</td>
@@ -137,6 +141,8 @@
                         </ul>
                     </div>
                     @endif
+
+                    <!-- Basic Information -->
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label">Mata Kuliah</label>
@@ -144,27 +150,12 @@
                                 name="kodemk" id="kodemk" required>
                                 <option value="">Pilih Mata Kuliah</option>
                                 @foreach($matakuliah as $mk)
-                                <option value="{{ $mk->kodemk }}" data-sks="{{ $mk->sks }}" {{ old('kodemk') == $mk->kodemk ? 'selected' : '' }}>
+                                <option value="{{ $mk->kodemk }}" data-sks="{{ $mk->sks }}">
                                     {{ $mk->kodemk }} - {{ $mk->nama_mk }}
                                 </option>
                                 @endforeach
                             </select>
-                            @error('kodemk')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Ruang Kelas</label>
-                            <select class="form-select @error('ruangkelas_id') is-invalid @enderror" name="ruangkelas_id" required>
-                                <option value="">Pilih Ruangan</option>
-                                @foreach($ruangKelas as $ruang)
-                                <option value="{{ $ruang->koderuang }}">{{ $ruang->koderuang }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label">Dosen</label>
                             <select class="form-select" name="dosen_id" required>
@@ -174,6 +165,9 @@
                                 @endforeach
                             </select>
                         </div>
+                    </div>
+
+                    <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label">Plot Semester</label>
                             <select class="form-select" name="plot_semester" required>
@@ -183,34 +177,19 @@
                                     @endfor
                             </select>
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Jumlah Kelas</label>
+                            <select class="form-select" name="group_count" id="groupCount">
+                                <option value="1">1 Kelas</option>
+                                <option value="2">2 Kelas</option>
+                                <option value="3">3 Kelas</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Hari</label>
-                            <select class="form-select" name="hari" required>
-                                <option value="">Pilih Hari</option>
-                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $hari)
-                                <option value="{{ $hari }}">{{ $hari }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">SKS</label>
-                            <input type="number" class="form-control" id="sks" readonly>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Jam Mulai</label>
-                            <select class="form-select" name="jam_mulai" required>
-                                <option value="">Pilih Jam</option>
-                                @foreach($timeSlots as $time)
-                                <option value="{{ $time }}">{{ $time }}</option>
-                                @endforeach
-                            </select>
-                            @error('jam_mulai')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    <!-- Dynamic Class Groups -->
+                    <div id="classGroups">
+                        <!-- Class group sections will be added here dynamically -->
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -238,28 +217,99 @@
     .form-label {
         font-weight: 500;
     }
+
+    .class-group-section {
+        border: 1px solid #dee2e6;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+    }
 </style>
 @endsection
 
 @section('scriptKpd')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Auto-fill SKS when mata kuliah is selected
-        const kodeMkSelect = document.getElementById('kodemk');
-        const sksInput = document.getElementById('sks');
+        // Flag untuk melacak arah urutan: true = ascending, false = descending
+        let isAscending = true;
 
-        kodeMkSelect.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const sks = selectedOption.getAttribute('data-sks');
-            sksInput.value = sks || '';
-        });
+        // Fungsi untuk mengurutkan tabel berdasarkan kolom semester
+        function sortTableBySemester() {
+            const tbody = document.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
 
-        // Delete confirmation
-        window.confirmDelete = function(id) {
-            if (confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) {
-                window.location.href = `/kaprodi/jadwal/delete/${id}`;
+            rows.sort((a, b) => {
+                const semesterA = parseInt(a.querySelector('td:nth-child(5)').textContent);
+                const semesterB = parseInt(b.querySelector('td:nth-child(5)').textContent);
+                return isAscending ? semesterA - semesterB : semesterB - semesterA;
+            });
+
+            // Bersihkan isi tabel dan tambahkan baris yang sudah diurutkan
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+
+            // Perbarui ikon panah berdasarkan urutan
+            document.getElementById('sortIcon').className = isAscending ? 'bi btn-outline-light  bi-sort-down' : 'bi btn-outline-light bi-sort-up';
+
+            // Ubah arah urutan untuk klik berikutnya
+            isAscending = !isAscending;
+        }
+
+        // Event listener untuk tombol sort
+        document.getElementById('sortSemester').addEventListener('click', sortTableBySemester);
+
+
+        const groupCountSelect = document.getElementById('groupCount');
+        const classGroupsContainer = document.getElementById('classGroups');
+
+        function createClassGroupSection(groupNumber) {
+            const groupLetter = String.fromCharCode(65 + groupNumber - 1); // Convert 1 to A, 2 to B, etc.
+            return `
+                <div class="class-group-section">
+                    <h6 class="mb-3">Kelas ${groupLetter}</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label">Hari</label>
+                            <select class="form-select" name="hari_${groupLetter}" required>
+                                <option value="">Pilih Hari</option>
+                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $hari)
+                                <option value="{{ $hari }}">{{ $hari }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Jam Mulai</label>
+                            <select class="form-select" name="jam_mulai_${groupLetter}" required>
+                                <option value="">Pilih Jam</option>
+                                @foreach($timeSlots as $time)
+                                <option value="{{ $time }}">{{ $time }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Ruang Kelas</label>
+                            <select class="form-select" name="ruangkelas_id_${groupLetter}" required>
+                                <option value="">Pilih Ruangan</option>
+                                @foreach($ruangKelas as $ruang)
+                                <option value="{{ $ruang->koderuang }}">{{ $ruang->koderuang }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateClassGroups() {
+            const count = parseInt(groupCountSelect.value);
+            classGroupsContainer.innerHTML = '';
+            for (let i = 1; i <= count; i++) {
+                classGroupsContainer.innerHTML += createClassGroupSection(i);
             }
-        };
+        }
+
+        groupCountSelect.addEventListener('change', updateClassGroups);
+        updateClassGroups(); // Initial creation
 
         // Search functionality
         const searchInput = document.getElementById('searchInput');
@@ -288,6 +338,13 @@
                 }
             });
         });
+
+        // Delete confirmation
+        window.confirmDelete = function(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) {
+                window.location.href = `/kaprodi/jadwal/delete/${id}`;
+            }
+        };
     });
 </script>
 @endsection

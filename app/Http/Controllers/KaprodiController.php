@@ -72,13 +72,22 @@ class KaprodiController extends Controller
             $jadwalMatrix[$jadwal->hari][] = $jadwal;
         }
 
+        // Get the maximum number of groups for any course
+        $maxGroupsResult = JadwalKuliah::select('kodemk', DB::raw('COUNT(DISTINCT class_group) as group_count'))
+            ->groupBy('kodemk')
+            ->orderBy('group_count', 'desc')
+            ->first();
+
+        $maxGroups = $maxGroupsResult ? $maxGroupsResult->group_count : 3;
+
         return view('kaprodi.buatjadwal', compact(
             'ruangKelas',
             'matakuliah',
             'dosen',
             'timeSlots',
             'jadwalMatrix',
-            'jadwalKuliah'
+            'jadwalKuliah',
+            'maxGroups'
         ));
     }
 
@@ -87,62 +96,72 @@ class KaprodiController extends Controller
         try {
             DB::beginTransaction();
 
-            // Validate request
-            $validated = $request->validate([
-                'ruangkelas_id' => 'required|exists:ruangkelas,koderuang',
+            $baseValidation = [
                 'kodemk' => 'required|exists:matakuliah,kodemk',
                 'dosen_id' => 'required|exists:pembimbingakd,nip',
                 'plot_semester' => 'required|integer|min:1|max:8',
-                'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
-                'jam_mulai' => 'required|date_format:H:i',
-            ]);
+            ];
+
+            // Validate base data
+            $request->validate($baseValidation);
+
             // Find the course to get SKS
             $mataKuliah = Matakuliah::where('kodemk', $request->kodemk)->firstOrFail();
 
-            // Calculate end time based on SKS
-            $jamMulai = Carbon::createFromFormat('H:i', $request->jam_mulai);
-            $jamSelesai = clone $jamMulai;
+            // Get the number of groups from the request
+            $groupCount = $request->input('group_count', 3);
 
-            // Perhitungan durasi berdasarkan SKS
-            $durasiMenit = $mataKuliah->sks * 50; // 50 menit per SKS
-            $jamSelesai->addMinutes($durasiMenit);
+            // Validate and create schedules for each class group
+            for ($i = 1; $i <= $groupCount; $i++) {
+                $group = chr(64 + $i); // Convert number to letter (1 = A, 2 = B, etc.)
 
-            // Cek konflik jadwal
-            $conflicts = $this->checkScheduleConflicts(
-                $validated['hari'],
-                $validated['ruangkelas_id'],
-                $validated['dosen_id'],
-                $validated['jam_mulai'],
-                $jamSelesai->format('H:i')
-            );
+                $request->validate([
+                    "hari_{$group}" => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
+                    "jam_mulai_{$group}" => 'required|date_format:H:i',
+                    "ruangkelas_id_{$group}" => 'required|exists:ruangkelas,koderuang',
+                ]);
 
-            if ($conflicts) {
-                DB::rollBack();
-                return back()
-                    ->withInput()
-                    ->with('error', 'Terdapat konflik jadwal. Silakan pilih waktu lain.');
+                $jamMulai = Carbon::createFromFormat('H:i', $request->{"jam_mulai_{$group}"});
+                $jamSelesai = clone $jamMulai;
+                $durasiMenit = $mataKuliah->sks * 50;
+                $jamSelesai->addMinutes($durasiMenit);
+
+                // Check for conflicts
+                $conflicts = $this->checkScheduleConflicts(
+                    $request->{"hari_{$group}"},
+                    $request->{"ruangkelas_id_{$group}"},
+                    $request->dosen_id,
+                    $request->{"jam_mulai_{$group}"},
+                    $jamSelesai->format('H:i')
+                );
+
+                if ($conflicts) {
+                    DB::rollBack();
+                    return back()
+                        ->withInput()
+                        ->with('error', "Terdapat konflik jadwal untuk kelas {$group}. Silakan pilih waktu lain.");
+                }
+
+                // Create new schedule for this class group
+                $jadwal = new JadwalKuliah();
+                $jadwal->ruangkelas_id = $request->{"ruangkelas_id_{$group}"};
+                $jadwal->kodemk = $request->kodemk;
+                $jadwal->dosen_id = $request->dosen_id;
+                $jadwal->plot_semester = $request->plot_semester;
+                $jadwal->class_group = $group;
+                $jadwal->hari = $request->{"hari_{$group}"};
+                $jadwal->jam_mulai = $request->{"jam_mulai_{$group}"};
+                $jadwal->jam_selesai = $jamSelesai->format('H:i');
+                $jadwal->save();
             }
-
-            // Create new schedule
-            $jadwal = new JadwalKuliah();
-            $jadwal->ruangkelas_id = $validated['ruangkelas_id'];
-            $jadwal->kodemk = $validated['kodemk'];
-            $jadwal->dosen_id = $validated['dosen_id'];
-            $jadwal->plot_semester = $validated['plot_semester'];
-            $jadwal->hari = $validated['hari'];
-            $jadwal->jam_mulai = $validated['jam_mulai'];
-            $jadwal->jam_selesai = $jamSelesai->format('H:i');
-            $jadwal->save();
-
 
             DB::commit();
             return redirect()
                 ->route('kaprodi.buatjadwal')
-                ->with('success', 'Jadwal berhasil ditambahkan.');
+                ->with('success', 'Jadwal untuk semua kelas berhasil ditambahkan.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error creating jadwal: ' . $e->getMessage());
-
             return back()
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan saat menyimpan jadwal. ' . $e->getMessage());

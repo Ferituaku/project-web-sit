@@ -9,12 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('jadwalKuliah', function (Blueprint $table) {
-
             $table->id();
             $table->string('ruangkelas_id');
             $table->integer('kodemk');
             $table->unsignedBigInteger('dosen_id');
             $table->integer('plot_semester');
+            $table->enum('class_group', ['A', 'B', 'C']); // Added class group field
             $table->enum('hari', ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']);
             $table->time('jam_mulai');
             $table->time('jam_selesai');
