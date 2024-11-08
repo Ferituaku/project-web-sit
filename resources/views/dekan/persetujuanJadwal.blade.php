@@ -17,7 +17,7 @@
     <!-- Main Card -->
     <div class="card shadow-sm">
         <div class="card-header bg-white py-3">
-            <h5 class="mb-0 text-dark">Daftar Jadwal Kuliah untuk Disetujui</h5>
+            <h5 class="mb-0 text-dark">Daftar Jadwal Kuliah </h5>
         </div>
 
         <div class="card-body">
