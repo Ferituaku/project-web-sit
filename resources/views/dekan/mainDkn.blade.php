@@ -92,7 +92,7 @@
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="#" class="nav-link d-flex align-items-center">
+                    <a href="{{route('dekan.persetujuanJadwal')}}" class="nav-link d-flex align-items-center">
                         <i class="bi bi-people me-2"></i>
                         Persetujuan Jadwal
                     </a>

@@ -69,6 +69,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['middleware' => 'role:dekan,dosen, kaprodi'], function () {
         Route::get('/dekan/dashboard', [DekanController::class, 'dekan'])->name('dekan.dashboard');
         Route::get('/dekan/persetujuan', [DekanController::class, 'persetujuan'])->name('dekan.persetujuan');
+        Route::get('/dekan/persetujuanJadwal', [DekanController::class, 'persetujuanJadwal'])->name('dekan.persetujuanJadwal');
         //Persetujuan Kelas
         Route::get('/dekan/ruangkelas/approval', [DekanController::class, 'approveRuangKelas'])->name('dekan.ruangkelas.approval');
         Route::put('/dekan/ruangkelas/{koderuang}/approve', [DekanController::class, 'approveRoom'])->name('dekan.ruangkelas.approve');

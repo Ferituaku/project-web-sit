@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JadwalKuliah;
 use App\Models\RuangKelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +27,11 @@ class DekanController extends Controller
     {
         $ruangKelas = RuangKelas::with('jadwalKuliah')->paginate(10);
         return view('dekan.persetujuan', compact('ruangKelas'));
+    }
+    public function persetujuanJadwal()
+    {
+        $jadwalKuliah = JadwalKuliah::with('ruangKelas')->paginate(10);
+        return view('dekan.persetujuanJadwal', compact('jadwalKuliah'));
     }
 
 
