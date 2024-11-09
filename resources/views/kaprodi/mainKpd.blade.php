@@ -104,15 +104,15 @@
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="#" class="nav-link d-flex align-items-center">
-                        <i class="bi bi-person-lines-fill me-2"></i>
-                        Status Mahasiswa
+                    <a href="{{route('kaprodi.daftarJadwal')}}" class="nav-link d-flex align-items-center">
+                        <i class="bi bi-calendar-week me-2"></i>
+                        Daftar Jadwal
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="#" class="nav-link d-flex align-items-center">
-                        <i class="bi bi-graph-up me-2"></i>
-                        Statistik Akademik
+                        <i class="bi bi-person-lines-fill me-2"></i>
+                        Status Mahasiswa
                     </a>
                 </li>
             </ul>

@@ -184,7 +184,7 @@
             return;
         }
 
-        
+
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         fetch(`/dekan/jadwal/${jadwalId}/reject`, {
@@ -281,3 +281,4 @@
         });
     });
 </script>
+@endpush
