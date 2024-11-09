@@ -107,9 +107,14 @@
                                 @elseif($jadwal->approval == '1')
                                 <span class="badge bg-success">Disetujui</span>
                                 @else
-                                <span class="badge bg-danger" data-bs-toggle="tooltip" title="{{ $jadwal->rejection_reason }}">
+                                <button class="badge bg-danger border-0 d-inline-flex align-items-center"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#rejectionReasonModal"
+                                    onclick="showRejectionReason(this)"
+                                    data-reason="{{ $jadwal->rejection_reason }}">
                                     Ditolak
-                                </span>
+                                    <i class=" bi bi-info-circle ms-1"></i>
+                                </button>
                                 @endif
                             </td>
                             <td>
@@ -219,6 +224,32 @@
     </div>
 </div>
 
+<!-- Rejection reason viewer -->
+<div class="modal fade" id="rejectionReasonModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                    Alasan Penolakan
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div>
+                    <label class="form-label fw-bold">Alasan Penolakan:</label>
+                    <p id="rejectionReason" class="mb-0">{{ $jadwal->rejection_reason }}</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @endsection
 
 @section('styles')
@@ -248,9 +279,11 @@
 @section('scriptKpd')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // menyimpan rejection reason modal
+        rejectionModal = new bootstrap.Modal(document.getElementById('rejectionReasonModal'));
+
         // Flag untuk melacak arah urutan: true = ascending, false = descending
         let isAscending = true;
-
         // Fungsi untuk mengurutkan tabel berdasarkan kolom semester
         function sortTableBySemester() {
             const tbody = document.querySelector('tbody');
@@ -318,6 +351,7 @@
             `;
         }
 
+        // grup kelas update
         function updateClassGroups() {
             const count = parseInt(groupCountSelect.value);
             classGroupsContainer.innerHTML = '';
@@ -339,7 +373,7 @@
             sksInput.value = sks || '';
         });
 
-        // Search functionality
+        // fungsi Search 
         const searchInput = document.getElementById('searchInput');
         searchInput.addEventListener('keyup', function() {
             const searchTerm = this.value.toLowerCase();
@@ -367,10 +401,24 @@
             });
         });
 
+        function showRejectionReason(button) {
+            const reason = button.getAttribute('data-reason');
+
+            document.getElementById('rejectionReason').textContent = `<p>${reason}</p>`;
+            // Set alasan penolakan
+            document.getElementById('rejectionReason').textContent = reason;
+
+            // Tampilkan modal
+            rejectionModal.show();
+        }
+
         // Delete confirmation
         window.confirmDelete = function(id) {
             if (confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) {
-                window.location.href = `/kaprodi/jadwal/delete/${id}`;
+                window.location.href = ` / kaprodi / jadwal / delete / $ {
+                        id
+                    }
+                    `;
             }
         };
     });

@@ -6,6 +6,7 @@ use App\Models\JadwalKuliah;
 use App\Models\RuangKelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class DekanController extends Controller
 {
@@ -124,6 +125,11 @@ class DekanController extends Controller
                 'message' => 'Jadwal kuliah berhasil ditolak',
                 'reload' => true
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->validator->errors()->first()
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',

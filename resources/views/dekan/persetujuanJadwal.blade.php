@@ -184,10 +184,10 @@
             return;
         }
 
-        // Get CSRF token from meta tag
+        
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        fetch(`/dekan/jadwal/${id}/reject`, {
+        fetch(`/dekan/jadwal/${jadwalId}/reject`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,

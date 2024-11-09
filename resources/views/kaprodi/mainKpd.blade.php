@@ -65,6 +65,19 @@
         background-color: var(--primary-color);
         color: #ffffff;
     }
+
+    .badge[onclick] {
+        cursor: pointer;
+    }
+
+    .badge[onclick]:hover {
+        opacity: 0.9;
+    }
+
+    #rejectionReason {
+        white-space: pre-wrap;
+        color: #dc3545;
+    }
 </style>
 
 
