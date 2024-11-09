@@ -18,6 +18,8 @@ return new class extends Migration
             $table->enum('hari', ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']);
             $table->time('jam_mulai');
             $table->time('jam_selesai');
+            $table->enum('approval', ['0', '1', '2'])->default('0');
+            $table->text('rejection_reason')->nullable();
             $table->timestamps();
 
             $table->foreign('dosen_id')->references('nip')->on('pembimbingakd')->onDelete('cascade');

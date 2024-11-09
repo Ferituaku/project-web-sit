@@ -57,6 +57,7 @@ class UsersSeeder extends Seeder
             [
                 'koderuang' => 'A102',
                 'kapasitas' => 40,
+                'approval' => 1,
             ],
             [
                 'koderuang' => 'A202',
@@ -69,6 +70,16 @@ class UsersSeeder extends Seeder
             [
                 'koderuang' => 'B101',
                 'kapasitas' => 30,
+            ],
+            [
+                'koderuang' => 'B102',
+                'kapasitas' => 30,
+                'approval' => 1,
+            ],
+            [
+                'koderuang' => 'B103',
+                'kapasitas' => 30,
+                'approval' => 1,
             ],
         ];
         foreach ($ruangKelas as $key => $val) {

@@ -18,7 +18,9 @@ class JadwalKuliah extends Model
         'plot_semeter',
         'hari',
         'jam_mulai',
-        'jam_selesai'
+        'jam_selesai',
+        'approval',
+        'rejection_reason'
     ];
     public function ruangKelas(): BelongsTo
     {

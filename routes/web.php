@@ -68,14 +68,17 @@ Route::group(['middleware' => 'auth'], function () {
     // Rute untuk dekan
     Route::group(['middleware' => 'role:dekan,dosen, kaprodi'], function () {
         Route::get('/dekan/dashboard', [DekanController::class, 'dekan'])->name('dekan.dashboard');
-        Route::get('/dekan/persetujuan', [DekanController::class, 'persetujuan'])->name('dekan.persetujuan');
-        Route::get('/dekan/persetujuanJadwal', [DekanController::class, 'persetujuanJadwal'])->name('dekan.persetujuanJadwal');
+
         //Persetujuan Kelas
+        Route::get('/dekan/persetujuan', [DekanController::class, 'persetujuanRuang'])->name('dekan.persetujuan');
         Route::get('/dekan/ruangkelas/approval', [DekanController::class, 'approveRuangKelas'])->name('dekan.ruangkelas.approval');
         Route::put('/dekan/ruangkelas/{koderuang}/approve', [DekanController::class, 'approveRoom'])->name('dekan.ruangkelas.approve');
         Route::put('/dekan/ruangkelas/{koderuang}/reject', [DekanController::class, 'rejectRoom'])->name('dekan.ruangkelas.reject');
-        //Perserujuan Jadwal
-
+        //Persetujuan Jadwal
+        Route::get('/dekan/persetujuanJadwal', [DekanController::class, 'persetujuanJadwal'])->name('dekan.persetujuanJadwal');
+        Route::get('/dekan/jadwal/approval', [DekanController::class, 'jadwalApproval'])->name('dekan.jadwal.approval');
+        Route::post('/dekan/jadwal/{id}/approve', [DekanController::class, 'approveJadwal'])->name('dekan.jadwal.approve');
+        Route::post('/dekan/jadwal/{id}/reject', [DekanController::class, 'rejectJadwal'])->name('dekan.jadwal.reject');
     });
 
     // Rute untuk pemilihan menu oleh dekan dan kaprodi

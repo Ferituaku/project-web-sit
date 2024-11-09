@@ -23,18 +23,11 @@ class DekanController extends Controller
     {
         return view('dosen.dashboard');
     }
-    public function persetujuan()
+    public function persetujuanRuang()
     {
         $ruangKelas = RuangKelas::with('jadwalKuliah')->paginate(10);
         return view('dekan.persetujuan', compact('ruangKelas'));
     }
-    public function persetujuanJadwal()
-    {
-        $jadwalKuliah = JadwalKuliah::with('ruangKelas')->paginate(10);
-        return view('dekan.persetujuanJadwal', compact('jadwalKuliah'));
-    }
-
-
 
     // New method to show room approval page
     public function ruangKelasApproval()
@@ -83,6 +76,57 @@ class DekanController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Gagal menolak ruang kelas: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function persetujuanJadwal()
+    {
+        $jadwalKuliah = JadwalKuliah::with(['ruangKelas', 'matakuliah', 'pembimbingakd'])->paginate(10);
+        return view('dekan.persetujuanJadwal', compact('jadwalKuliah'));
+    }
+
+    public function approveJadwal($id)
+    {
+        try {
+            $jadwal = JadwalKuliah::findOrFail(($id));
+            $jadwal->approval = '1';
+            $jadwal->rejection_reason = null;
+            $jadwal->save();
+
+            return response()->json([
+                'status' => 'sukses',
+                'pessan' => 'Jadwal Berhasil disetujui',
+                'reload' => true
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'pesan' => 'Gagal menyetujui jadwal: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    public function rejectJadwal(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'rejection_reason' => 'required|string|max:255'
+            ]);
+
+            $jadwal = JadwalKuliah::findOrFail($id);
+            $jadwal->approval = '2'; // 2 for rejected
+            $jadwal->rejection_reason = $request->rejection_reason;
+            $jadwal->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Jadwal kuliah ditolak',
+                'reload' => true
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal menolak jadwal: ' . $e->getMessage()
             ], 500);
         }
     }

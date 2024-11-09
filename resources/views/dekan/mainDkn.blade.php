@@ -93,7 +93,7 @@
                 </li>
                 <li class="nav-item mb-2">
                     <a href="{{route('dekan.persetujuanJadwal')}}" class="nav-link d-flex align-items-center">
-                        <i class="bi bi-people me-2"></i>
+                        <i class=" bi bi-calendar-check me-2"></i>
                         Persetujuan Jadwal
                     </a>
                 </li>
@@ -137,11 +137,7 @@
 
         <!-- Page Content -->
         <div class="container-fluid py-4" style="margin-top: 60px; margin-left:10px">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item active" aria-current="page">Dashboard Dekan</li>
-                </ol>
-            </nav>
+
 
             @yield('content')
             @yield('scripts')

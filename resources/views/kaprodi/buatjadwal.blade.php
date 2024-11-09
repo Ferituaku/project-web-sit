@@ -74,6 +74,7 @@
                             <th>Kode MK</th>
                             <th>Mata Kuliah</th>
                             <th>Dosen</th>
+                            <th>SKS</th>
                             <th>Semester
                                 <button id="sortSemester" class="btn btn-sm p-0" title="Urutkan Semester">
                                     <i id="sortIcon" class="bi bi-sort-down"></i>
@@ -83,6 +84,7 @@
                             <th>Hari</th>
                             <th>Waktu</th>
                             <th>Ruangan</th>
+                            <th>Status</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -93,11 +95,23 @@
                             <td>{{ $jadwal->matakuliah->kodemk }}</td>
                             <td>{{ $jadwal->matakuliah->nama_mk }}</td>
                             <td>{{ $jadwal->pembimbingakd->name }}</td>
+                            <td>{{$jadwal->matakuliah->sks}}</td>
                             <td>{{ $jadwal->plot_semester }}</td>
                             <td>{{ $jadwal->class_group }}</td>
                             <td>{{ $jadwal->hari }}</td>
                             <td>{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</td>
                             <td>{{ $jadwal->ruangKelas->koderuang }}</td>
+                            <td>
+                                @if($jadwal->approval == '0')
+                                <span class="badge bg-warning">Pending</span>
+                                @elseif($jadwal->approval == '1')
+                                <span class="badge bg-success">Disetujui</span>
+                                @else
+                                <span class="badge bg-danger" data-bs-toggle="tooltip" title="{{ $jadwal->rejection_reason }}">
+                                    Ditolak
+                                </span>
+                                @endif
+                            </td>
                             <td>
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-info me-1"
@@ -168,7 +182,11 @@
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label class="form-label">SKS</label>
+                            <input type="number" class="form-control" id="sks" readonly>
+                        </div>
+                        <div class="col-md-4">
                             <label class="form-label">Plot Semester</label>
                             <select class="form-select" name="plot_semester" required>
                                 <option value="">Pilih Semester</option>
@@ -177,7 +195,7 @@
                                     @endfor
                             </select>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Jumlah Kelas</label>
                             <select class="form-select" name="group_count" id="groupCount">
                                 <option value="1">1 Kelas</option>
@@ -310,6 +328,16 @@
 
         groupCountSelect.addEventListener('change', updateClassGroups);
         updateClassGroups(); // Initial creation
+
+        // isi otomatis sks sesuai database MK
+        const kodeMkSelect = document.getElementById('kodemk');
+        const sksInput = document.getElementById('sks');
+
+        kodeMkSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const sks = selectedOption.getAttribute('data-sks');
+            sksInput.value = sks || '';
+        });
 
         // Search functionality
         const searchInput = document.getElementById('searchInput');
