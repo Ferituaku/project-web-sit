@@ -98,8 +98,10 @@
                                         <i class="bi bi-x-circle me-1"></i>Tolak
                                     </button>
                                 </div>
-                                @else
+                                @elseif($jadwal->approval == '1')
                                 <span class="text-muted">Sudah disetujui</span>
+                                @elseif($jadwal->approval == '2')
+                                <span class="text-muted">Ditolak</span>
                                 @endif
                             </td>
                         </tr>
@@ -119,9 +121,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="rejectModalLabel">
-                    Alasan Penolakan
-                </h5>
+                <h5 class="modal-title" id="rejectModalLabel">Alasan Penolakan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -176,41 +176,53 @@
     }
 
     function submitRejection() {
-        document.querySelector('rejectModal .modal-footer .btn-danger').addEventListener('click', function() {
-            const id = document.getElementById('jadwal_id').value;
-            const reason = document.getElementById('rejection_reason').value;
+        const jadwalId = document.getElementById('jadwal_id').value;
+        const reason = document.getElementById('rejection_reason').value;
 
-            if (!reason.trim()) {
-                alert('Harap isi alasan penolakan');
-                return;
-            }
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        if (!reason.trim()) {
+            alert('Harap isi alasan penolakan');
+            return;
+        }
 
-            fetch(`/dekan/jadwal/${id}/reject`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        rejection_reason: reason
-                    })
+        // Get CSRF token from meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch(`/dekan/jadwal/${id}/reject`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    rejection_reason: reason
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('rejectModal'));
-                        modal.hide();
-                        showAlert('success', data.message);
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('rejectModal'));
+                    modal.hide();
+
+                    // Show success message
+                    showAlert('success', data.message);
+
+                    // Reload page after delay
+                    if (data.reload) {
                         setTimeout(() => location.reload(), 1500);
-                    } else {
-                        showAlert('error', data.message);
                     }
-                })
-                .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
-        });
+                } else {
+                    showAlert('error', data.message || 'Terjadi kesalahan');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('error', 'Terjadi kesalahan saat memproses permintaan');
+            });
     }
+
+
 
     function showAlert(type, message) {
         const alertContainer = document.getElementById('alert-container');
@@ -223,6 +235,7 @@
             </div>
         `;
 
+        // Auto remove alert after 3 seconds
         setTimeout(() => {
             const alert = alertContainer.querySelector('.alert');
             if (alert) {
@@ -230,7 +243,6 @@
             }
         }, 3000);
     }
-
     document.addEventListener('DOMContentLoaded', function() {
 
         let isAscending = true;
@@ -259,6 +271,8 @@
 
         // Event listener untuk tombol sort
         document.getElementById('sortSemester').addEventListener('click', sortTableBySemester);
+
+
 
 
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));

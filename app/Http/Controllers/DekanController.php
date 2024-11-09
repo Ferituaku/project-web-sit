@@ -106,6 +106,7 @@ class DekanController extends Controller
             ], 500);
         }
     }
+
     public function rejectJadwal(Request $request, $id)
     {
         try {
@@ -114,13 +115,13 @@ class DekanController extends Controller
             ]);
 
             $jadwal = JadwalKuliah::findOrFail($id);
-            $jadwal->approval = '2'; // 2 for rejected
+            $jadwal->approval = '2';
             $jadwal->rejection_reason = $request->rejection_reason;
             $jadwal->save();
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Jadwal kuliah ditolak',
+                'message' => 'Jadwal kuliah berhasil ditolak',
                 'reload' => true
             ]);
         } catch (\Exception $e) {
