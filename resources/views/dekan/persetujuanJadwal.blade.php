@@ -117,7 +117,7 @@
 <!-- Rejection Modal -->
 <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-cnotent">
+        <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="rejectModalLabel">
                     Alasan Penolakan
@@ -126,10 +126,10 @@
             </div>
             <div class="modal-body">
                 <form id="rejectForm">
-                    <input type="hidden" name="jadwal_id" id="reject_jadwal_id">
+                    <input type="hidden" id="jadwal_id" name="jadwal_id">
                     <div class="mb-3">
-                        <label for="rejectionReason" class="form-label">Alasan Penolakan</label>
-                        <textarea class="form-control" id="rejectionReason" name="rejection_reason" rows="3" required></textarea>
+                        <label for="rejection_reason" class="form-label">Alasan Penolakan</label>
+                        <textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="3" required></textarea>
                     </div>
                 </form>
             </div>
@@ -145,8 +145,10 @@
 
 @push('scripts')
 <script>
-    function showRejectModal(id) {
-        document.getElementById('id').value = id;
+    function showRejectModalJadwal(id) {
+        // Set jadwal_id ke input hidden
+        document.getElementById('jadwal_id').value = id;
+        document.getElementById('rejection_reason').value = '';
         const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
         modal.show();
     }
@@ -174,36 +176,40 @@
     }
 
     function submitRejection() {
-        const id = document.getElementById('id').value;
-        const reason = document.getElementById('rejection_reason').value;
+        document.querySelector('rejectModal .modal-footer .btn-danger').addEventListener('click', function() {
+            const id = document.getElementById('jadwal_id').value;
+            const reason = document.getElementById('rejection_reason').value;
 
-        if (!reason.trim()) {
-            alert('Harap isi alasan penolakan');
-            return;
-        }
+            if (!reason.trim()) {
+                alert('Harap isi alasan penolakan');
+                return;
+            }
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        fetch(`/dekan/jadwal/${id}/reject`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    rejection_reason: reason
+            fetch(`/dekan/jadwal/${id}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        rejection_reason: reason
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('rejectModal'));
-                    modal.hide();
-                    showAlert('success', data.message);
-                    setTimeout(() => location.reload(), 1500);
-                } else {
-                    showAlert('error', data.message);
-                }
-            })
-            .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('rejectModal'));
+                        modal.hide();
+                        showAlert('success', data.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showAlert('error', data.message);
+                    }
+                })
+                .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
+        });
     }
 
     function showAlert(type, message) {
@@ -226,6 +232,35 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+
+        let isAscending = true;
+
+        // Fungsi untuk mengurutkan tabel berdasarkan kolom semester
+        function sortTableBySemester() {
+            const tbody = document.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            rows.sort((a, b) => {
+                const semesterA = parseInt(a.querySelector('td:nth-child(5)').textContent);
+                const semesterB = parseInt(b.querySelector('td:nth-child(5)').textContent);
+                return isAscending ? semesterA - semesterB : semesterB - semesterA;
+            });
+
+            // Bersihkan isi tabel dan tambahkan baris yang sudah diurutkan
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+
+            // Perbarui ikon panah berdasarkan urutan
+            document.getElementById('sortIcon').className = isAscending ? 'bi btn-outline-light  bi-sort-down' : 'bi btn-outline-light bi-sort-up';
+
+            // Ubah arah urutan untuk klik berikutnya
+            isAscending = !isAscending;
+        }
+
+        // Event listener untuk tombol sort
+        document.getElementById('sortSemester').addEventListener('click', sortTableBySemester);
+
+
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
