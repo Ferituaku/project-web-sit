@@ -12,13 +12,8 @@
     <div class="row g-4">
         <!-- User Info Card -->
         <div class="col-md-8">
-            <div class="card h-100" style="border:none; border-radius: 1rem; background: hsla(0, 0%, 100%, 1);
-
-background: linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
-
-background: -moz-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
-
-background: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);">
+            <div class="card h-100" style="border:none; border-radius: 1rem; background: rgb(99,181,255);
+background: linear-gradient(90deg, rgba(99,181,255,1) 0%, rgba(39,123,255,1) 44%, rgba(0,177,255,1) 100%);">
                 <div class=" row card-body">
                     <div class="col-sm-4">
                         <img src="{{ asset('img/pakvinsen.jpeg') }}" alt="avatar" class="rounded-circle img-fluid mb-3" style="width: 200px; margin:2rem">
@@ -36,25 +31,20 @@ background: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 10
 
         <!-- Calendar Card -->
         <div class="col-md-4">
-            <div class="card h-100" style="border:none; border-radius: 1rem; background: hsla(0, 0%, 100%, 1);
-
-background: linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
-
-background: -moz-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
-
-background: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
+            <div class="card h-100" style="border:none; border-radius: 1rem; background: rgb(99,181,255);
+background: linear-gradient(90deg, rgba(99,181,255,1) 0%, rgba(39,123,255,1) 44%, rgba(0,177,255,1) 100%);
 
 
 ">
                 <div class="card-body">
                     <div id="calendar" style="width: 345px; height: 240px;">
-                        <table class="table-condensed table-bordered table-striped" style="width: 100%; height: 100%;">
+                        <table class="table-condensed table-bordered table-striped table-light" style="width: 100%; height: 100%;">
                             <thead>
                                 <tr>
                                     <th colspan="7">
                                         <span class="btn-group">
                                             <a class="btn"><i class="icon-chevron-left"></i></a>
-                                            <a class="btn active" style="padding:2px 80px 2px 80px;">February 2012</a>
+                                            <a class="btn active" style="padding:2px 80px 2px 80px;">Desember 2024</a>
                                             <a class="btn"><i class="icon-chevron-right"></i></a>
                                         </span>
                                     </th>
@@ -124,13 +114,8 @@ background: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 10
 
         <!-- Academic Status Card -->
         <div class="col-md-8">
-            <div class="card" style="border:none;  border-radius: 1rem; background: hsla(0, 0%, 100%, 1);
-
-background: linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
-
-background: -moz-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
-
-background: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
+            <div class="card" style="border:none;  border-radius: 1rem; background: rgb(99,181,255);
+background: linear-gradient(90deg, rgba(99,181,255,1) 0%, rgba(39,123,255,1) 44%, rgba(0,177,255,1) 100%);
 
 
 ">
@@ -156,13 +141,8 @@ background: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 10
 
         <!-- GPA and Credits Card -->
         <div class="col-md-4">
-            <div class="card" style="border:none; border-radius: 1rem; background: hsla(0, 0%, 100%, 1);
-
-background: linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
-
-background: -moz-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
-
-background: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
+            <div class="card" style="border:none; border-radius: 1rem; background: rgb(99,181,255);
+background: linear-gradient(90deg, rgba(99,181,255,1) 0%, rgba(39,123,255,1) 44%, rgba(0,177,255,1) 100%);
 
 
 ">
@@ -177,4 +157,7 @@ background: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 10
 
     </div>
 </div>
+
+
+
 @endsection

@@ -32,6 +32,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/mahasiswa/herreg', [MahasiswaController::class, 'herreg'])->name('mahasiswa.herreg');
         Route::get('/mahasiswa/akademisi', [MahasiswaController::class, 'akademisi'])->name('mahasiswa.akademisi');
         Route::get('/mahasiswa/kulon', [MahasiswaController::class, 'kulon'])->name('mahasiswa.kulon');
+        Route::get('/mahasiswa/buatirs', [MahasiswaController::class, 'buatirs'])->name('mahasiswa.buatirs');
     });
 
     // Rute untuk akademik

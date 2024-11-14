@@ -239,7 +239,6 @@
 
                 <div>
                     <label class="form-label fw-bold">Alasan Penolakan:</label>
-                    <p id="rejectionReason" class="mb-0">{{ $jadwal->rejection_reason }}</p>
                 </div>
             </div>
             <div class="modal-footer">

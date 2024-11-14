@@ -1,73 +1,94 @@
 @extends('mahasiswa.mainMhs')
-@section('title', 'Akademisi Mahasiswa')
+@section('title', 'Buat IRS')
 
 @section('content')
-<!-- Page Content -->
-<div class="container-fluid py-4" style="margin-top: 50px; margin-left:10px">
+<div class="container-fluid py-4">
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('mahasiswa.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">Akademisi Mahasiswa</li>
+            <li class="breadcrumb-item"><a href="{{ route('mahasiswa.akademisi') }}">Akademisi</a></li>
+            <li class="breadcrumb-item active">Buat IRS</li>
         </ol>
     </nav>
-    <div class="row g-4">
-        <!-- User Info Card -->
-        <div class="col-md-8">
-            <div class="card h-100" style="border:none; border-radius: 1rem; background: hsla(0, 0%, 100%, 1);
 
-background: linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
-
-background: -moz-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
-
-background: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);">
-                <div class=" row card-body">
-                    <div class="col-sm-4">
-                        <img src="{{ asset('img/pakvinsen.jpeg') }}" alt="avatar" class="rounded-circle img-fluid mb-3" style="width: 200px; margin:2rem">
+    <div class="row">
+        <!-- SKS Counter Card -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <div class="col align-items-center">
+                    <div class="col-md-6">
+                        <h5 class="mb-0">Total SKS Dipilih: <span id="selected-sks">0</span>/24</h5>
                     </div>
-                    <div class="col-sm-4" style="margin-left:4rem; margin-top: 3.5rem;">
-                        <h4>{{ auth()->user()->name }}</h4>
-                        <p class="text-light mb-1">{{ auth()->user()->email }}</p>
-                        <p class="text-light mb-1">NIM: 242345678000</p>
-                        <p class="text-light mb-1">No. Telp: (098) 765-4321</p>
-                        <p class="text-light mb-0">Alamat: Pandeglang, Banten</p>
+                    <div class="col-md-6 text-end">
+                        <button class="btn btn-primary" id="submit-irs" disabled>
+                            Simpan IRS
+                        </button>
                     </div>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- Academic Status Card -->
-        <div class="col-md-8">
-            <div class="card" style="border:none;  border-radius: 1rem; background: hsla(0, 0%, 100%, 1);
-
-background: linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
-
-background: -moz-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
-
-background: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 0%, hsla(209, 100%, 89%, 1) 14%, hsla(217, 100%, 66%, 1) 49%);
-
-
-">
-                <div class="card-body text-center mb-2">
-                    <h2 class="mb-4">Status Akademik</h2>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <h5>Semester Akademik Sekarang</h5>
-                            <p>2024/2025 Ganjil</p>
-                        </div>
-                        <div class="col-md-4">
-                            <h5>Semester</h5>
-                            <p>5</p>
-                        </div>
-                        <div class="col-md-4">
-                            <h5>Status</h5>
-                            <span class="badge bg-success">AKTIF</span>
-                        </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Filter Semester</label>
+                        <select class="form-select" id="semester-filter">
+                            <option value="">Semua Semester</option>
+                            @for($i = 1; $i <= 8; $i++)
+                                <option value="{{ $i }}" {{ request('semester') == $i ? 'selected' : '' }}>
+                                Semester {{ $i }}
+                                </option>
+                                @endfor
+                        </select>
                     </div>
                 </div>
             </div>
         </div>
 
+
+
+        <!-- Schedule Matrix Card -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="mb-0">Buat IRS</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center" style="width: 100px;">Jam</th>
+                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $day)
+                                <th class="text-center">{{ $day }}</th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody>
+    
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+
+<style>
+    .schedule-card {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        overflow: hidden;
+    }
+
+    .schedule-card:hover {
+        transform: scale(1.02);
+        z-index: 2;
+    }
+
+    .schedule-card.selected-class {
+        background-color: #e3f2fd !important;
+        border: 2px solid #2196f3 !important;
+    }
+</style>
 @endsection

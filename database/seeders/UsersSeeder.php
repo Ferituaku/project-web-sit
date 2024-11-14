@@ -163,5 +163,23 @@ class UsersSeeder extends Seeder
         foreach ($pembimbingAkd as $pakad) {
             PembimbingAkd::create($pakad);
         }
+        $jadwalKuliah = [
+            [
+                'ruangkelas_id' => 'A102',
+                'kodemk' => 1104,
+                'dosen_id' => 12231301,
+                'plot_semester' => 2,
+                'class_group' => 'A',
+                'hari' => 'Rabu',
+                'jam_mulai' => '07:00:00',
+                'jam_selesai' => '09:30:00',
+                'approval' => '1',
+                'rejection_reason' => null,
+            ],
+
+        ];
+        foreach ($jadwalKuliah as $jadwal) {
+            JadwalKuliah::create($jadwal);
+        }
     }
 }
