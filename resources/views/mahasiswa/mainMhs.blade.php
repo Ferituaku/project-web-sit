@@ -6,6 +6,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 
 <style>
     :root {
@@ -170,7 +171,8 @@
                 </div>
             </div>
         </header>
-        <div style="padding: 20px;">
+        <div class="container-fluid py-2" style="margin-top: 50px;">
+
             @yield('content')
             @yield('scripts')
         </div>

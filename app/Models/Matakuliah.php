@@ -14,11 +14,16 @@ class Matakuliah extends Model
         'kodemk',
         'nama_mk',
         'sks',
-        'semester'
+        'semester',
+        'prodi_id',
     ];
 
     public function jadwalKuliah()
     {
         return $this->hasMany(JadwalKuliah::class, 'kodemk', 'kodemk');
+    }
+    public function prodi()
+    {
+        return $this->belongsTo(ProgramStudi::class, 'prodi_id', 'id');
     }
 }

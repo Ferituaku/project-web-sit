@@ -62,6 +62,7 @@
                             @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $day)
                             <td class="p-2">
                                 @foreach($scheduleMatrix[$time][$day] as $jadwal)
+                                @if($jadwal->approval == '1' || $jadwal->approval == '0')
                                 <div class="card border border-info mb-2 shadow-sm">
                                     <div class="card-body p-2">
                                         <h6 class="card-title mb-1">
@@ -70,11 +71,26 @@
                                         <p class="card-text small mb-1">
                                             (KODE:{{$jadwal->kodemk}})(SMT: {{ $jadwal->plot_semester }})<br>
                                             SKS: {{ $jadwal->matakuliah->sks }}<br>
-                                            Kelas: {{ $jadwal->class_group }}<br>
+                                            Kelas: {{ $jadwal->class_group }} ({{$jadwal->ruangKelas->koderuang}})<br>
                                             {{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}
+                                            @if($jadwal->approval == '0')
+                                            <span class="badge bg-warning">Pending</span>
+                                            @elseif($jadwal->approval == '1')
+                                            <span class="badge bg-success">Disetujui</span>
+                                            @else
+                                            <button class="badge bg-danger border-0 d-inline-flex align-items-center"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#rejectionReasonModal"
+                                                onclick="showRejectionReason(this)"
+                                                data-reason="{{ $jadwal->rejection_reason }}">
+                                                Ditolak
+                                                <i class=" bi bi-info-circle ms-1"></i>
+                                            </button>
+                                            @endif
                                         </p>
                                     </div>
                                 </div>
+                                @endif
                                 @endforeach
                             </td>
                             @endforeach

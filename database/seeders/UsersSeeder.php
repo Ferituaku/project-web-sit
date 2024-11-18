@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\JadwalKuliah;
 use App\Models\Matakuliah;
 use App\Models\PembimbingAkd;
+use App\Models\ProgramStudi;
 use App\Models\RuangKelas;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -17,6 +18,15 @@ class UsersSeeder extends Seeder
      */
     public function run(): void
     {
+        $programStudi = [
+            [
+                'id' => 1,
+                'nama' => 'Informatika',
+            ],
+        ];
+        foreach ($programStudi as $prodi) {
+            ProgramStudi::create($prodi);
+        }
         $userData = [
             [
                 'name' => 'Pak Jon',
@@ -89,49 +99,65 @@ class UsersSeeder extends Seeder
 
         $matakuliah = [
             [
+
                 'kodemk' => 1101,
+                'prodi_id' => 1,
                 'nama_mk' => 'Algoritma Pemrograman',
                 'sks' => 4,
                 'semester' => 2,
             ],
             [
+
                 'kodemk' => 1102,
+                'prodi_id' => 1,
                 'nama_mk' => 'Basis Data',
                 'sks' => 3,
                 'semester' => 3,
             ],
             [
+
                 'kodemk' => 1103,
+                'prodi_id' => 1,
                 'nama_mk' => 'Pengembangan Berbasis Platform',
                 'sks' => 4,
                 'semester' => 5,
             ],
             [
+
                 'kodemk' => 1104,
+                'prodi_id' => 1,
                 'nama_mk' => 'Struktur Data',
                 'sks' => 3,
                 'semester' => 2,
             ],
             [
+
                 'kodemk' => 1105,
+                'prodi_id' => 1,
                 'nama_mk' => 'Sistem Operasi',
                 'sks' => 3,
                 'semester' => 3,
             ],
             [
+
                 'kodemk' => 1106,
+                'prodi_id' => 1,
                 'nama_mk' => 'Jaringan Komputer',
                 'sks' => 2,
                 'semester' => 4,
             ],
             [
+
                 'kodemk' => 1107,
+                'prodi_id' => 1,
                 'nama_mk' => 'Sistem Cerdas',
                 'sks' => 3,
                 'semester' => 4,
             ],
             [
+
                 'kodemk' => 1108,
+                'prodi_id' => 1,
                 'nama_mk' => 'Kewirausahaan',
                 'sks' => 2,
                 'semester' => 6,
@@ -141,6 +167,7 @@ class UsersSeeder extends Seeder
         foreach ($matakuliah as $mk) {
             Matakuliah::create($mk);
         }
+
 
         $pembimbingAkd = [
             [
@@ -165,6 +192,7 @@ class UsersSeeder extends Seeder
         }
         $jadwalKuliah = [
             [
+                'prodi_id' => 1,
                 'ruangkelas_id' => 'A102',
                 'kodemk' => 1104,
                 'dosen_id' => 12231301,

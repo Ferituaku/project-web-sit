@@ -164,6 +164,15 @@
                     <!-- Basic Information -->
                     <div class="row mb-3">
                         <div class="col-md-6">
+                            <label class="form-label">Program Studi</label>
+                            <select class="form-select @error('prodi_id') is-invalid @enderror" name="prodi_id" required>
+                                <option value="">Pilih Program Studi</option>
+                                @foreach($program_studi as $p)
+                                <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label">Mata Kuliah</label>
                             <select class="form-select @error('kodemk') is-invalid @enderror"
                                 name="kodemk" id="kodemk" required>

@@ -10,10 +10,13 @@ return new class extends Migration
     {
         Schema::create('matakuliah', function (Blueprint $table) {
             $table->integer('kodemk')->primary();
+            $table->unsignedInteger('prodi_id');
             $table->string('nama_mk');
             $table->integer('sks');
             $table->integer('semester');
             $table->timestamps();
+
+            $table->foreign('prodi_id')->references('id')->on('program_studi')->onDelete('cascade');
         });
     }
 

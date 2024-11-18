@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\JadwalKuliah;
 use App\Models\Matakuliah;
 use App\Models\PembimbingAkd;
+use App\Models\ProgramStudi;
 use App\Models\RuangKelas;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -34,6 +35,8 @@ class KaprodiController extends Controller
     {
         // Get approved classrooms
         $ruangKelas = RuangKelas::where('approval', true)->get();
+
+        $program_studi = ProgramStudi::all();
 
         // Get all courses
         $matakuliah = Matakuliah::all();
@@ -82,6 +85,7 @@ class KaprodiController extends Controller
 
         return view('kaprodi.buatjadwal', compact(
             'ruangKelas',
+            'program_studi',
             'matakuliah',
             'dosen',
             'timeSlots',
@@ -97,6 +101,7 @@ class KaprodiController extends Controller
             DB::beginTransaction();
 
             $baseValidation = [
+                'prodi_id' => 'required|exists:program_studi,id',
                 'kodemk' => 'required|exists:matakuliah,kodemk',
                 'dosen_id' => 'required|exists:pembimbingakd,nip',
                 'plot_semester' => 'required|integer|min:1|max:8',
@@ -132,7 +137,8 @@ class KaprodiController extends Controller
                     $request->{"ruangkelas_id_{$group}"},
                     $request->dosen_id,
                     $request->{"jam_mulai_{$group}"},
-                    $jamSelesai->format('H:i')
+                    $jamSelesai->format('H:i'),
+                    $request->prodi_id
                 );
 
                 if ($conflicts) {
@@ -144,6 +150,7 @@ class KaprodiController extends Controller
 
                 // Create new schedule for this class group
                 $jadwal = new JadwalKuliah();
+                $jadwal->prodi_id = $request->prodi_id;
                 $jadwal->ruangkelas_id = $request->{"ruangkelas_id_{$group}"};
                 $jadwal->kodemk = $request->kodemk;
                 $jadwal->dosen_id = $request->dosen_id;
@@ -168,7 +175,7 @@ class KaprodiController extends Controller
         }
     }
 
-    private function checkScheduleConflicts($hari, $ruangkelasId, $dosenId, $jamMulai, $jamSelesai)
+    private function checkScheduleConflicts($hari, $ruangkelasId, $dosenId, $jamMulai, $jamSelesai, $prodiId)
     {
         return JadwalKuliah::where('hari', $hari)
             ->where(function ($query) use ($ruangkelasId, $dosenId) {
@@ -182,7 +189,9 @@ class KaprodiController extends Controller
                         $q->where('jam_mulai', '<=', $jamMulai)
                             ->where('jam_selesai', '>=', $jamSelesai);
                     });
-            })->exists();
+            })
+            ->where('prodi_id', $prodiId)
+            ->exists();
     }
 
     public function updateJadwal(Request $request, $id)

@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('jadwalKuliah', function (Blueprint $table) {
             $table->id();
+            $table->unsignedInteger('prodi_id');
             $table->string('ruangkelas_id');
             $table->integer('kodemk');
             $table->unsignedBigInteger('dosen_id');
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->text('rejection_reason')->nullable();
             $table->timestamps();
 
+            $table->foreign('prodi_id')->references('id')->on('program_studi')->onDelete('cascade');
             $table->foreign('dosen_id')->references('nip')->on('pembimbingakd')->onDelete('cascade');
             $table->foreign('ruangkelas_id')->references('koderuang')->on('ruangkelas')->onDelete('cascade');
             $table->foreign('kodemk')->references('kodemk')->on('matakuliah')->onDelete('cascade');

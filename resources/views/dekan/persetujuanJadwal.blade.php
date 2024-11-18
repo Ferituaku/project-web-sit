@@ -145,14 +145,6 @@
 
 @push('scripts')
 <script>
-    function showRejectModalJadwal(id) {
-        // Set jadwal_id ke input hidden
-        document.getElementById('jadwal_id').value = id;
-        document.getElementById('rejection_reason').value = '';
-        const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
-        modal.show();
-    }
-
     function approveJadwal(id) {
         if (!confirm('Apakah Anda yakin ingin menyetujui jadwal ini?')) return;
 
@@ -165,11 +157,11 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.status === 'sukses') {
-                    showAlert('sukses', data.message);
+                if (data.status === 'success') {
+                    showAlert('success', data.message);
                     setTimeout(() => location.reload(), 1500);
                 } else {
-                    showALert('error', data.message);
+                    showAlert('error', data.message);
                 }
             })
             .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
@@ -183,7 +175,6 @@
             alert('Harap isi alasan penolakan');
             return;
         }
-
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -201,14 +192,9 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // Close modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById('rejectModal'));
                     modal.hide();
-
-                    // Show success message
                     showAlert('success', data.message);
-
-                    // Reload page after delay
                     if (data.reload) {
                         setTimeout(() => location.reload(), 1500);
                     }
@@ -222,20 +208,17 @@
             });
     }
 
-
-
     function showAlert(type, message) {
         const alertContainer = document.getElementById('alert-container');
         const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
 
         alertContainer.innerHTML = `
-            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `;
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
 
-        // Auto remove alert after 3 seconds
         setTimeout(() => {
             const alert = alertContainer.querySelector('.alert');
             if (alert) {
