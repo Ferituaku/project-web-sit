@@ -30,6 +30,7 @@ class DekanController extends Controller
         return view('dekan.persetujuan', compact('ruangKelas'));
     }
 
+
     // New method to show room approval page
     public function ruangKelasApproval()
     {
@@ -86,6 +87,12 @@ class DekanController extends Controller
         $jadwalKuliah = JadwalKuliah::with(['ruangKelas', 'matakuliah', 'pembimbingakd'])->paginate(10);
         return view('dekan.persetujuanJadwal', compact('jadwalKuliah'));
     }
+    public function jadwalApproval()
+    {
+        // Fetch all rooms with their current approval status
+        $jadwalKuliah = JadwalKuliah::with(['ruangKelas', 'matakuliah', 'pembimbingakd'])->paginate(10);
+        return view('dekan.jadwal.approval', compact('jadwalKuliah'));
+    }
 
     public function approveJadwal($id)
     {
@@ -96,14 +103,14 @@ class DekanController extends Controller
             $jadwal->save();
 
             return response()->json([
-                'status' => 'sukses',
-                'pessan' => 'Jadwal Berhasil disetujui',
+                'status' => 'success',
+                'message' => 'Jadwal Berhasil disetujui',
                 'reload' => true
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'pesan' => 'Gagal menyetujui jadwal: ' . $e->getMessage()
+                'message' => 'Gagal menyetujui jadwal: ' . $e->getMessage()
             ], 500);
         }
     }

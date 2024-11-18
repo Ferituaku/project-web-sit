@@ -62,7 +62,7 @@
                             @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $day)
                             <td class="p-2">
                                 @foreach($scheduleMatrix[$time][$day] as $jadwal)
-                                @if($jadwal->approval == '1' || $jadwal->approval == '0')
+                                @if($jadwal->approval == '1')
                                 <div class="card border border-info mb-2 shadow-sm">
                                     <div class="card-body p-2">
                                         <h6 class="card-title mb-1">
