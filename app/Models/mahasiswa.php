@@ -21,7 +21,9 @@ class Mahasiswa extends Model
         'name',
         'prodi_id',
         'email',
-        'irs_id'
+        'irs_id',
+        'semester',
+        'sks',
     ];
 
     // Relation to PembimbingAkd
@@ -40,5 +42,9 @@ class Mahasiswa extends Model
     public function Irs(): HasOneOrManyThrough
     {
         return $this->hasOneThrough(JadwalKuliah::class, Irs::class);
+    }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'nim', 'nim');
     }
 }

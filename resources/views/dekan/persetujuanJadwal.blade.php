@@ -151,9 +151,9 @@
         fetch(`/dekan/jadwal/${id}/approve`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                }
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                },
             })
             .then(response => response.json())
             .then(data => {
@@ -164,48 +164,45 @@
                     showAlert('error', data.message);
                 }
             })
-            .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
+            .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan.'));
     }
 
     function submitRejection() {
         const jadwalId = document.getElementById('jadwal_id').value;
-        const reason = document.getElementById('rejection_reason').value;
+        const reason = document.getElementById('rejection_reason').value.trim();
 
-        if (!reason.trim()) {
+        if (!reason) {
             alert('Harap isi alasan penolakan');
             return;
         }
 
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
         fetch(`/dekan/jadwal/${jadwalId}/reject`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({
                     rejection_reason: reason
-                })
+                }),
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('rejectModal'));
-                    modal.hide();
+                    bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
                     showAlert('success', data.message);
-                    if (data.reload) {
-                        setTimeout(() => location.reload(), 1500);
-                    }
+                    setTimeout(() => location.reload(), 1500);
                 } else {
-                    showAlert('error', data.message || 'Terjadi kesalahan');
+                    showAlert('error', data.message || 'Terjadi kesalahan.');
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                showAlert('error', 'Terjadi kesalahan saat memproses permintaan');
-            });
+            .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan.'));
+    }
+
+    function showRejectModalJadwal(id) {
+        document.getElementById('jadwal_id').value = id; // Isi input hidden dengan ID
+        const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
+        modal.show();
     }
 
     function showAlert(type, message) {

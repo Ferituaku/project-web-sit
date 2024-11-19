@@ -118,6 +118,7 @@
                                 @endif
                             </td>
                             <td>
+                                @if($jadwal->approval == '0' || $jadwal->approval == '2')
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-info me-1"
                                         onclick="editJadwal({{ $jadwal->id }})"
@@ -130,6 +131,11 @@
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
+                                @else
+                                <div class="text-muted text-sm">
+                                    Sudah disetujui
+                                </div>
+                                @endif
                             </td>
                         </tr>
                         @endforeach
@@ -232,6 +238,94 @@
         </div>
     </div>
 </div>
+
+
+<!-- Edit Schedule Modal -->
+<div class="modal fade" id="editScheduleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Jadwal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form {{ route('kaprodi.jadwal.update', ['id' => $jadwal->id]) }}" method="POST" id="editScheduleForm">
+                @csrf
+                @method('GET')
+                <div class="modal-body">
+                    <!-- Error Section -->
+                    @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+
+                    <input type="hidden" name="jadwal_id" id="editJadwalId">
+
+                    <!-- Form Fields -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Mata Kuliah</label>
+                            <select class="form-select" name="kodemk" id="editKodemk" required>
+                                @foreach($matakuliah as $mk)
+                                <option value="{{ $mk->kodemk }}" data-sks="{{ $mk->sks }}">
+                                    {{ $mk->kodemk }} - {{ $mk->nama_mk }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Dosen</label>
+                            <select class="form-select" name="dosen_id" id="editDosenId" required>
+                                @foreach($dosen as $d)
+                                <option value="{{ $d->nip }}">{{ $d->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Hari</label>
+                            <select class="form-select" name="hari" id="editHari" required>
+                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $hari)
+                                <option value="{{ $hari }}">{{ $hari }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Jam Mulai</label>
+                            <input type="time" class="form-control" name="jam_mulai" id="editJamMulai" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Ruangan</label>
+                            <select class="form-select" name="ruangkelas_id" id="editRuangKelas" required>
+                                @foreach($ruangKelas as $ruang)
+                                <option value="{{ $ruang->koderuang }}">{{ $ruang->koderuang }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Plot Semester</label>
+                            <input type="number" class="form-control" name="plot_semester" id="editSemester" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary" onclick="updateJadwal()">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 <!-- Rejection reason viewer -->
 <div class="modal fade" id="rejectionReasonModal" tabindex="-1">
@@ -408,6 +502,23 @@
                 }
             });
         });
+
+        function editJadwal(id) {
+            // Fetch data berdasarkan ID jadwal
+
+            const jadwal = JSON.parse('<?php echo json_encode($jadwalKuliah); ?>').find(j => j.id === id);
+
+            if (jadwal) {
+                document.getElementById('editJadwalId').value = jadwal.id;
+                document.getElementById('editKodemk').value = jadwal.matakuliah.kodemk;
+                document.getElementById('editDosenId').value = jadwal.pembimbingakd.nip;
+                document.getElementById('editHari').value = jadwal.hari;
+                document.getElementById('editJamMulai').value = jadwal.jam_mulai;
+                document.getElementById('editJamSelesai').value = jadwal.jam_selesai;
+                document.getElementById('editRuangKelas').value = jadwal.ruangKelas.koderuang;
+                document.getElementById('editSemester').value = jadwal.plot_semester;
+            }
+        }
 
         function showRejectionReason(button) {
             const reason = button.getAttribute('data-reason');

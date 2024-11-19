@@ -18,8 +18,13 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', ['mahasiswa', 'dosen', 'akademik', 'dekan', 'kaprodi']);
+            $table->unsignedBigInteger('nim')->nullable();
+            $table->unsignedBigInteger('nip')->nullable();
             $table->rememberToken();
             $table->timestamps();
+
+            $table->foreign('nim')->references('nim')->on('mahasiswa')->onDelete('cascade');
+            // $table->foreign('nip')->references('nip')->on('pembimbingakd')->onDelete('cascade');
         });
 
         Schema::create('sessions', function (Blueprint $table) {

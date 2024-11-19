@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('irs', function (Blueprint $table) {
             $table->id();
-            $table->integer('nim');
+            $table->unsignedBigInteger('nim');
             $table->unsignedBigInteger('jadwal_id');
 
             $table->timestamps();

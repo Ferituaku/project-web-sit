@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -21,6 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'nim',
+        'nip'
     ];
 
     /**
@@ -45,4 +48,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function mahasiswa(): HasOne
+    {
+        return $this->hasOne(Mahasiswa::class, 'nim', 'nim')
+            ->where('role', 'mahasiswa');
+    }
+    // public function pembimbingakd(): HasOne
+    // {
+    //     return $this->hasOne(PembimbingAkd::class, 'nip', 'nip')
+    //         ->where('role', 'dosen, kaprodi, dekan');
+    // }
 }

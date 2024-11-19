@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\JadwalKuliah;
+use App\Models\Mahasiswa;
 use App\Models\Matakuliah;
 use App\Models\PembimbingAkd;
 use App\Models\ProgramStudi;
@@ -27,41 +28,7 @@ class UsersSeeder extends Seeder
         foreach ($programStudi as $prodi) {
             ProgramStudi::create($prodi);
         }
-        $userData = [
-            [
-                'name' => 'Pak Jon',
-                'email' => 'akademik@akademik.com',
-                'role' => 'akademik',
-                'password' => bcrypt('123')
-            ],
-            [
-                'name' => 'El Vinsen',
-                'email' => 'elvinsen@students.com',
-                'role' => 'mahasiswa',
-                'password' => bcrypt('123')
-            ],
-            [
-                'name' => 'Susi Susiastuti S.Kom, M.Kom',
-                'email' => 'susi@lecturer.com',
-                'role' => 'dosen',
-                'password' => bcrypt('123')
-            ],
-            [
-                'name' => 'Dr. Antoni S.Kom, M. Si, P.Hd',
-                'email' => 'antoni@lecturer.com',
-                'role' => 'dekan',
-                'password' => bcrypt('123')
-            ],
-            [
-                'name' => 'Budi Yono S.Kom, M.T',
-                'email' => 'budi@lecturer.com',
-                'role' => 'kaprodi',
-                'password' => bcrypt('123')
-            ]
-        ];
-        foreach ($userData as $key => $val) {
-            User::create($val);
-        }
+
 
         $ruangKelas = [
             [
@@ -190,6 +157,24 @@ class UsersSeeder extends Seeder
         foreach ($pembimbingAkd as $pakad) {
             PembimbingAkd::create($pakad);
         }
+
+        $mahasiswa = [
+            [
+                'nim' => 240601221001,
+                'name' => 'El Vinsen',
+                'email' => 'elvinsen@students.com',
+                'dosen_id' => 12231303,
+                'prodi_id' => 1,
+                'Semester' => 5,
+                'SKS' => 86
+            ],
+
+
+        ];
+        foreach ($mahasiswa as $mhs) {
+            Mahasiswa::create($mhs);
+        }
+
         $jadwalKuliah = [
             [
                 'prodi_id' => 1,
@@ -208,6 +193,46 @@ class UsersSeeder extends Seeder
         ];
         foreach ($jadwalKuliah as $jadwal) {
             JadwalKuliah::create($jadwal);
+        }
+
+        $userData = [
+            [
+                'name' => 'Pak Jon',
+                'email' => 'akademik@akademik.com',
+                'role' => 'akademik',
+                'password' => bcrypt('123')
+            ],
+            [
+                'name' => 'El Vinsen',
+                'email' => 'elvinsen@students.com',
+                'role' => 'mahasiswa',
+                'password' => bcrypt('123'),
+                'nim' => 240601221001,
+            ],
+            [
+                'name' => 'Susi Susiastuti S.Kom, M.Kom',
+                'email' => 'susi@lecturer.com',
+                'role' => 'dosen',
+                'password' => bcrypt('123'),
+                'nip' => 1902201234501,
+            ],
+            [
+                'name' => 'Dr. Antoni S.Kom, M. Si, P.Hd',
+                'email' => 'antoni@lecturer.com',
+                'role' => 'dekan',
+                'password' => bcrypt('123'),
+                'nip' => 1902201234502,
+            ],
+            [
+                'name' => 'Budi Yono S.Kom, M.T',
+                'email' => 'budi@lecturer.com',
+                'role' => 'kaprodi',
+                'password' => bcrypt('123'),
+                'nip' => 1902201234502,
+            ]
+        ];
+        foreach ($userData as $key => $val) {
+            User::create($val);
         }
     }
 }

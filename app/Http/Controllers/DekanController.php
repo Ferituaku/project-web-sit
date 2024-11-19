@@ -119,7 +119,7 @@ class DekanController extends Controller
     {
         try {
             $request->validate([
-                'rejection_reason' => 'required|string|max:255'
+                'rejection_reason' => 'required|string|max:255',
             ]);
 
             $jadwal = JadwalKuliah::findOrFail($id);
@@ -129,18 +129,18 @@ class DekanController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Jadwal kuliah berhasil ditolak',
-                'reload' => true
+                'message' => 'Jadwal kuliah berhasil ditolak.',
+                'reload' => true,
             ]);
         } catch (ValidationException $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->validator->errors()->first()
+                'message' => $e->validator->errors()->first(),
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Gagal menolak jadwal: ' . $e->getMessage()
+                'message' => 'Gagal menolak jadwal: ' . $e->getMessage(),
             ], 500);
         }
     }

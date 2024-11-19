@@ -263,7 +263,11 @@ class KaprodiController extends Controller
             'jam_selesai' => $jamSelesai->format('H:i')
         ]);
 
-        return back()->with('success', 'Jadwal berhasil diperbarui.');
+        $jadwal->update($request->all());
+        return redirect()->route('kaprodi.jadwal.update')->with('success', 'Jadwal berhasil diperbarui.');
+        // return back()->with('success', 'Jadwal berhasil diperbarui.');
+
+
     }
 
     public function deleteJadwal($id)
