@@ -14,12 +14,26 @@ return new class extends Migration
         Schema::create('irs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('nim');
-            $table->unsignedBigInteger('jadwal_id');
+            $table->unsignedBigInteger('jadwal_id_1')->nullable();
+            $table->unsignedBigInteger('jadwal_id_2')->nullable();
+            $table->unsignedBigInteger('jadwal_id_3')->nullable();
+            $table->unsignedBigInteger('jadwal_id_4')->nullable();
+            $table->unsignedBigInteger('jadwal_id_5')->nullable();
+            $table->unsignedBigInteger('jadwal_id_6')->nullable();
+            $table->unsignedBigInteger('jadwal_id_7')->nullable();
+            $table->unsignedBigInteger('jadwal_id_8')->nullable();
 
             $table->timestamps();
 
             $table->foreign('nim')->references('nim')->on('mahasiswa')->onDelete('cascade');
-            $table->foreign('jadwal_id')->references('id')->on('jadwalKuliah')->onDelete('cascade');
+            $table->foreign('jadwal_id_1')->references('id')->on('jadwalKuliah')->onDelete('cascade');
+            $table->foreign('jadwal_id_2')->references('id')->on('jadwalKuliah')->onDelete('cascade');
+            $table->foreign('jadwal_id_3')->references('id')->on('jadwalKuliah')->onDelete('cascade');
+            $table->foreign('jadwal_id_4')->references('id')->on('jadwalKuliah')->onDelete('cascade');
+            $table->foreign('jadwal_id_5')->references('id')->on('jadwalKuliah')->onDelete('cascade');
+            $table->foreign('jadwal_id_6')->references('id')->on('jadwalKuliah')->onDelete('cascade');
+            $table->foreign('jadwal_id_7')->references('id')->on('jadwalKuliah')->onDelete('cascade');
+            $table->foreign('jadwal_id_8')->references('id')->on('jadwalKuliah')->onDelete('cascade');
         });
     }
 

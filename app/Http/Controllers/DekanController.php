@@ -87,39 +87,32 @@ class DekanController extends Controller
         $jadwalKuliah = JadwalKuliah::with(['ruangKelas', 'matakuliah', 'pembimbingakd'])->paginate(10);
         return view('dekan.persetujuanJadwal', compact('jadwalKuliah'));
     }
-    public function jadwalApproval()
-    {
-        // Fetch all rooms with their current approval status
-        $jadwalKuliah = JadwalKuliah::with(['ruangKelas', 'matakuliah', 'pembimbingakd'])->paginate(10);
-        return view('dekan.jadwal.approval', compact('jadwalKuliah'));
-    }
 
     public function approveJadwal($id)
     {
         try {
-            $jadwal = JadwalKuliah::findOrFail(($id));
+            $jadwal = JadwalKuliah::where('id', $id)->findOrFail(($id));
             $jadwal->approval = '1';
             $jadwal->rejection_reason = null;
             $jadwal->save();
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'Jadwal Berhasil disetujui',
+                'status' => 'sukses',
+                'pessan' => 'Jadwal Berhasil disetujui',
                 'reload' => true
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Gagal menyetujui jadwal: ' . $e->getMessage()
+                'pesan' => 'Gagal menyetujui jadwal: ' . $e->getMessage()
             ], 500);
         }
     }
-
     public function rejectJadwal(Request $request, $id)
     {
         try {
             $request->validate([
-                'rejection_reason' => 'required|string|max:255',
+                'rejection_reason' => 'required|string|max:255'
             ]);
 
             $jadwal = JadwalKuliah::findOrFail($id);
@@ -129,18 +122,18 @@ class DekanController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Jadwal kuliah berhasil ditolak.',
-                'reload' => true,
+                'message' => 'Jadwal kuliah berhasil ditolak',
+                'reload' => true
             ]);
         } catch (ValidationException $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->validator->errors()->first(),
+                'message' => $e->validator->errors()->first()
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Gagal menolak jadwal: ' . $e->getMessage(),
+                'message' => 'Gagal menolak jadwal: ' . $e->getMessage()
             ], 500);
         }
     }

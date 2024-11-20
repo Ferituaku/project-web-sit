@@ -30,9 +30,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/mahasiswa/biaya', [MahasiswaController::class, 'biaya'])->name('mahasiswa.biaya');
         Route::get('/mahasiswa/jadwal', [MahasiswaController::class, 'jadwal'])->name('mahasiswa.jadwal');
         Route::get('/mahasiswa/herreg', [MahasiswaController::class, 'herreg'])->name('mahasiswa.herreg');
-        Route::get('/mahasiswa/akademisi', [MahasiswaController::class, 'akademisi'])->name('mahasiswa.akademisi');
-        Route::get('/mahasiswa/kulon', [MahasiswaController::class, 'kulon'])->name('mahasiswa.kulon');
+        Route::get('/mahasiswa/irs', [MahasiswaController::class, 'irs'])->name('mahasiswa.irs');
         // Route::get('/mahasiswa/buatirs', [MahasiswaController::class, 'buatirs'])->name('mahasiswa.buatirs');
+        Route::get('/mahasiswa/akademisi', [MahasiswaController::class, 'akademisi'])->name('mahasiswa.akademisi');
+        Route::post('/mahasiswa/save-irs', [MahasiswaController::class, 'saveIrs'])->name('mahasiswa.saveIrs');
     });
 
     // Rute untuk akademik
@@ -80,7 +81,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::put('/dekan/ruangkelas/{koderuang}/reject', [DekanController::class, 'rejectRoom'])->name('dekan.ruangkelas.reject');
         //Persetujuan Jadwal
         Route::get('/dekan/persetujuanJadwal', [DekanController::class, 'persetujuanJadwal'])->name('dekan.persetujuanJadwal');
-        Route::get('/dekan/jadwal/approval', [DekanController::class, 'jadwalApproval'])->name('dekan.jadwal.approval');
+        // Route::get('/dekan/jadwal/approval', [DekanController::class, 'jadwalApproval'])->name('dekan.jadwal.approval');
+        // Rute untuk persetujuan jadwal oleh dekan
         Route::post('/dekan/jadwal/{id}/approve', [DekanController::class, 'approveJadwal'])->name('dekan.jadwal.approve');
         Route::post('/dekan/jadwal/{id}/reject', [DekanController::class, 'rejectJadwal'])->name('dekan.jadwal.reject');
     });
