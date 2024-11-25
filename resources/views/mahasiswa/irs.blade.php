@@ -22,7 +22,10 @@
                         <th>Dosen Pengampu</th>
                     </thead>
                     <tbody>
-                        
+                        <td>
+                            <!-- Your IRS data will be inserted here -->
+
+                        </td>
                     </tbody>
                 </table>
             </div>

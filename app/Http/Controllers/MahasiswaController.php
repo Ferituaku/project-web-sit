@@ -36,12 +36,25 @@ class MahasiswaController extends Controller
     {
         return view('mahasiswa/biaya');
     }
+    public function akademik()
+    {
+        return view('mahasiswa.akademikMhs.akademik-base');
+    }
+    public function khs()
+    {
+        return view('mahasiswa.akademikMhs.khs');
+    }
 
+    public function transkrip()
+    {
+        return view('mahasiswa.akademikMhs.transkrip');
+    }
     public function irs()
     {
         $mahasiswa = Auth::user();
         $jadwal = Irs::all();
-        //     $irs = $mahasiswa->irs;
+        $irs = $mahasiswa->irs;
+
 
         //     if ($irs->count() > 0) {
         //         $jadwal = $irs->map(function ($item) {
@@ -55,7 +68,7 @@ class MahasiswaController extends Controller
     }
 
 
-    public function akademisi(Request $request)
+    public function buatIrs(Request $request)
     {
         try {
             $semester = $request->input('semester');
@@ -65,6 +78,8 @@ class MahasiswaController extends Controller
             $currentIrs = Irs::where('nim', $mahasiswa->nim)->first();
 
             // Get all selected jadwal IDs
+
+            // Perubahan buat pada table IRS 1 nim 1 jadwal_id, dan data pada kolom nim dan jadwal_id yang berada pada satu kolom bisa sama, jadi memungkinkan untuk 1 nim mengambil banyak jadwal matkul (jadwal_id lebih dari 1)
             $selectedJadwalIds = [];
             if ($currentIrs) {
                 for ($i = 1; $i <= 8; $i++) {
@@ -89,7 +104,7 @@ class MahasiswaController extends Controller
             $timeSlots = $this->createTimeSlots();
             $scheduleMatrix = $this->createScheduleMatrix($timeSlots, $jadwalKuliah);
 
-            return view('mahasiswa.akademisi', compact(
+            return view('mahasiswa.akademikMhs.buatIrs', compact(
                 'scheduleMatrix',
                 'jadwalKuliah',
                 'timeSlots',
@@ -175,7 +190,9 @@ class MahasiswaController extends Controller
                 $irs->{"jadwal_id_$i"} = null;
             }
 
-            // Assign selected jadwals to fields
+            // Assign selected jadwals 
+            // Perubahan buat pada table IRS 1 nim 1 jadwal_id, dan data pada kolom nim dan jadwal_id yang berada pada satu kolom bisa sama, jadi memungkinkan untuk 1 nim mengambil banyak jadwal matkul (jadwal_id lebih dari 1)
+
             foreach ($selectedJadwals as $index => $jadwalId) {
                 $fieldNum = $index + 1;
                 if ($fieldNum <= 8) {

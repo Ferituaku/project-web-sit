@@ -1,15 +1,9 @@
 {{-- akademisi.blade.php --}}
-@extends('mahasiswa.mainMhs')
-@section('title', 'Buat IRS')
-@section('content')
+@extends('mahasiswa.akademikMhs.akademik-base')
+@section('akademik-content')
 
 <div class="container-fluid py-4">
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('mahasiswa.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">Manajemen IRS</li>
-        </ol>
-    </nav>
+
 
     {{-- Alert for messages --}}
     @if(session('success') || session('error'))
@@ -41,7 +35,7 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <select class="form-select" id="semester-filter">
-                                <option value="">Semua Semester</option>
+                                <option value="">Pilih Semester</option>
                                 @for($i = 1; $i <= 8; $i++)
                                     <option value="{{ $i }}" {{ request('semester') == $i ? 'selected' : '' }}>
                                     Semester {{ $i }}
@@ -55,46 +49,32 @@
                         </div>
                     </div>
 
-                    <!-- Selected Courses List -->
-                    <div class="selected-courses mb-3">
-                        <h6>Mata Kuliah Dipilih:</h6>
-                        <div id="selected-courses-list" class="list-group">
-                            @if(isset($currentIrs))
-                            @for($i = 1; $i <= 8; $i++)
-                                @php
-                                $field="jadwal_id_$i" ;
-                                $jadwal=$currentIrs->$field ? $jadwalKuliah->firstWhere('id', $currentIrs->$field) : null;
-                                @endphp
-                                @if($jadwal)
-                                <div class="list-group-item d-flex justify-content-between align-items-center"
-                                    data-jadwal-id="{{ $jadwal->id }}">
-                                    <div>
-                                        <strong>{{ $jadwal->matakuliah->nama_mk }}</strong>
-                                        <br>
-                                        <small>{{ $jadwal->kodemk }} - {{ $jadwal->matakuliah->sks }} SKS</small>
-                                    </div>
-                                    <button class="btn btn-sm btn-danger remove-course">
-                                        <i class="fas fa-times"></i>
-                                    </button>
+                    <div id="available-courses" class="mt-4" style="display: none;">
+                        <h5 class="mb-3">Mata Kuliah Tersedia</h5>
+                        <div class="table-responsive">
+                            <div id="selected-courses-list" class="list-group">
+                                <div id="available-courses-list">
                                 </div>
-                                @endif
-                                @endfor
-                                @endif
+                            </div>
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-primary w-100" id="save-irs">
-                        Simpan IRS
-                    </button>
+
+
                 </div>
             </div>
         </div>
 
         <!-- Right Panel - Schedule -->
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
+        <div class="col-md-8 ">
+
+            <div class="card shadow-sm ">
+                <div class="card-header bg-white d-grid gap-2 d-md-flex justify-content-between">
                     <h5 class="card-title mb-0">Jadwal Kuliah</h5>
+                    <button type="button" class="btn btn-primary me-md-2" data-bs-toggle="modal" data-bs-target="#selectedCoursesModal">
+                        <i class="fas fa-list me-2"></i>Lihat Mata Kuliah Terpilih
+                        <span class="badge bg-white text-primary ms-2" id="selected-courses-count">0</span>
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -148,6 +128,50 @@
     </div>
 </div>
 
+
+<!-- Selected Courses Modal -->
+<div class="modal fade" id="selectedCoursesModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Mata Kuliah Terpilih</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6>Total SKS: <span id="total-sks">0</span>/24</h6>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: 0%;"
+                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="24">
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Kode MK</th>
+                                <th>Mata Kuliah</th>
+                                <th>SKS</th>
+                                <th>Kelas</th>
+                                <th>Jadwal</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="selected-courses-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" id="save-irs">Simpan IRS</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Alert Modal -->
 <div class="modal fade" id="alertModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -164,7 +188,7 @@
 
 @endsection
 
-@section('style')
+@section('page-style')
 <style>
     .schedule-card {
         transition: transform 0.2s ease;
@@ -177,7 +201,7 @@
 </style>
 @endsection
 
-@section('scripts')
+@section('page-scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         let selectedCourses = [];
@@ -195,6 +219,7 @@
             currentTotalSks += sks;
             updateSksCounter();
         });
+
 
         // Handle schedule item click
         document.querySelectorAll('.schedule-item').forEach(item => {

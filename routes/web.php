@@ -31,9 +31,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/mahasiswa/jadwal', [MahasiswaController::class, 'jadwal'])->name('mahasiswa.jadwal');
         Route::get('/mahasiswa/herreg', [MahasiswaController::class, 'herreg'])->name('mahasiswa.herreg');
         Route::get('/mahasiswa/irs', [MahasiswaController::class, 'irs'])->name('mahasiswa.irs');
-        // Route::get('/mahasiswa/buatirs', [MahasiswaController::class, 'buatirs'])->name('mahasiswa.buatirs');
-        Route::get('/mahasiswa/akademisi', [MahasiswaController::class, 'akademisi'])->name('mahasiswa.akademisi');
-        Route::post('/mahasiswa/save-irs', [MahasiswaController::class, 'saveIrs'])->name('mahasiswa.saveIrs');
+        Route::get('/mahasiswa/akademikMhs/akademik-base', [MahasiswaController::class, 'akademik'])->name('mahasiswa.akademikMhs.akademik-base');
+        Route::get('/mahasiswa/akademikMhs/buatIrs', [MahasiswaController::class, 'buatIrs'])->name('mahasiswa.akademikMhs.buatIrs');
+        Route::post('/mahasiswa/akademikMhs/save-irs', [MahasiswaController::class, 'saveIrs'])->name('mahasiswa.akademikMhs.saveIrs');
+        Route::get('/mahasiswa/akademikMhs/khs', [MahasiswaController::class, 'khs'])->name('mahasiswa.akademikMhs.khs');
+        Route::get('/mahasiswa/akademikMhs/transkrip', [MahasiswaController::class, 'transkrip'])->name('mahasiswa.akademikMhs.transkrip');
     });
 
     // Rute untuk akademik
