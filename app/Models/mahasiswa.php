@@ -21,9 +21,9 @@ class Mahasiswa extends Model
         'name',
         'prodi_id',
         'email',
-        'irs_id',
         'semester',
-        'sks',
+        'SKS',
+        'tahun_ajaran',
     ];
 
     // Relation to PembimbingAkd

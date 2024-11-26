@@ -169,7 +169,8 @@ class UsersSeeder extends Seeder
                 'dosen_id' => 12231303,
                 'prodi_id' => 1,
                 'Semester' => 5,
-                'SKS' => 86
+                'SKS' => 86,
+                'tahun_ajaran' => '2024/2025',
             ],
 
 

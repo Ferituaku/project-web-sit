@@ -171,7 +171,22 @@
     </div>
 </div>
 
-
+<!-- Alert Confirm -->
+<div class="modal fade modal-dialog" id="confirmModal" tabindex="-1">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">${title}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <p>${message}</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-danger confirm-button">Hapus</button>
+        </div>
+    </div>
+</div>
 <!-- Alert Modal -->
 <div class="modal fade" id="alertModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -251,6 +266,28 @@
             });
         });
 
+        function extractCourseInfo(scheduleItem) {
+            if (!scheduleItem) return null;
+
+            const cardBody = scheduleItem.querySelector('.card-body');
+            const nameMk = cardBody.querySelector('small:nth-child(1)').textContent.trim();
+            const code = cardBody.querySelector('small:nth-child(2)').textContent.replace('Kode:', '').trim();
+            const group = cardBody.querySelector('small:nth-child(3)').textContent.replace('Kelas:', '').trim();
+            const time = cardBody.querySelector('small:nth-child(4)').textContent.trim();
+
+            // Get day from parent cell
+            const cell = scheduleItem.closest('td');
+            const day = cell.dataset.day;
+
+            return {
+                name: nameMk,
+                code: code,
+                group: group,
+                time: time,
+                day: day
+            };
+        }
+
         // Save IRS
         document.getElementById('save-irs').addEventListener('click', function() {
             if (selectedCourses.length === 0) {
@@ -259,7 +296,7 @@
             }
 
             // Send to server
-            fetch('/mahasiswa/save-irs', {
+            fetch('/mahasiswa/akademikMhs/save-irs', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -274,7 +311,7 @@
                     if (data.success) {
                         showAlert(data.message, 'success');
                         // Optional: Reload page after success
-                        // setTimeout(() => window.location.reload(), 1500);
+                        setTimeout(() => window.location.reload(), 1500);
                     } else {
                         showAlert(data.message, 'error');
                     }
@@ -306,47 +343,80 @@
             }
         }
 
+        function removeCourse(jadwalId, sks, element) {
+            selectedCourses = selectedCourses.filter(course => course.id !== jadwalId);
+            currentTotalSks -= sks;
+            element.classList.replace('border-success', 'border-info');
+
+            updateSksCounter();
+            updateSelectedCoursesList();
+        }
+
         function updateSelectedCoursesList() {
-            const listElement = document.getElementById('selected-courses-list');
-            listElement.innerHTML = '';
+            const tableBody = document.getElementById('selected-courses-table');
+            tableBody.innerHTML = '';
 
             selectedCourses.forEach(course => {
                 const scheduleItem = document.querySelector(`.schedule-item[data-jadwal-id="${course.id}"]`);
-                const courseInfo = {
-                    name: scheduleItem.querySelector('small:nth-child(1)').textContent.trim(),
-                    code: scheduleItem.querySelector('small:nth-child(2)').textContent.trim(),
-                    group: scheduleItem.querySelector('small:nth-child(3)').textContent.trim(),
-                    time: scheduleItem.querySelector('small:nth-child(4)').textContent.trim()
-                };
+                const courseInfo = extractCourseInfo(scheduleItem);
 
-                const div = document.createElement('div');
-                div.className = 'list-group-item';
-                div.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>${courseInfo.name}</strong><br>
-                        <small>${courseInfo.code} - ${courseInfo.group}<br>${courseInfo.time}</small>
-                    </div>
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${courseInfo.code}</td>
+                <td>${courseInfo.name}</td>
+                <td>${course.sks}</td>
+                <td>${courseInfo.group}</td>
+                <td>${courseInfo.day} ${courseInfo.time}</td>
+                <td>
                     <button class="btn btn-sm btn-danger remove-course" data-jadwal-id="${course.id}">
                         <i class="fas fa-times"></i>
                     </button>
-                </div>
+                </td>
             `;
-                listElement.appendChild(div);
+                tableBody.appendChild(row);
             });
 
-            // Add remove course handlers
+            document.getElementById('selected-courses-count').textContent = selectedCourses.length;
+
             document.querySelectorAll('.remove-course').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', async function() {
                     const jadwalId = this.dataset.jadwalId;
                     const scheduleItem = document.querySelector(`.schedule-item[data-jadwal-id="${jadwalId}"]`);
-                    scheduleItem.click(); // Trigger the click event to remove the course
+                    const courseInfo = extractCourseInfo(scheduleItem);
+
+                    // Show confirmation dialog
+                    if (await showConfirmDialog(
+                            'Hapus Mata Kuliah',
+                            `Apakah Anda yakin ingin menghapus mata kuliah ${courseInfo.name} (${courseInfo.code}) dari IRS?`
+                        )) {
+                        scheduleItem.click(); // Remove the course
+                    }
                 });
             });
         }
 
+        function showConfirmDialog(title, message) {
+            const confirmModal = document.getElementById('confirmModal');
+
+
+
+            confirmModal.element.querySelector('.confirm-button').addEventListener('click', () => {
+                confirmModal.hide();
+                resolve(true);
+            });
+
+            confirmModal.element.addEventListener('hidden.bs.modal', () => {
+                resolve(false);
+            });
+
+            document.body.appendChild(confirmModal.element);
+            confirmModal.show();
+
+        }
+
         function showAlert(message, type) {
             const alertModal = document.getElementById('alertModal');
+
             const alertMessage = document.getElementById('alert-message');
             const alertIcon = document.getElementById('alert-icon');
 

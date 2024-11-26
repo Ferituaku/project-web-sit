@@ -17,8 +17,9 @@ return new class extends Migration
             $table->string(column: 'name');
             $table->unsignedInteger('prodi_id');
             $table->string('email')->unique();
-            $table->integer('Semester');
+            $table->integer('semester');
             $table->integer('SKS');
+            $table->string('tahun_ajaran', 10);
             $table->timestamps();
 
 

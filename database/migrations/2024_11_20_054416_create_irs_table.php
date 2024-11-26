@@ -12,15 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('irs', function (Blueprint $table) {
-            $table->id();
+            $table->id()->primary();
             $table->unsignedBigInteger('nim');
-            $table->unsignedBigInteger('jadwal_id')->nullable();
-            $table->string('nilai')->nullable();
+            $table->integer('semester');
+            $table->string('tahun_ajaran', 10);
+            $table->enum('approval', ['0', '1', '2'])->default('0');
+            $table->integer('total_sks')->default(0);
 
             $table->timestamps();
 
             $table->foreign('nim')->references('nim')->on('mahasiswa')->onDelete('cascade');
-            $table->foreign('jadwal_id')->references('id')->on('jadwalKuliah')->onDelete('cascade');
+            // $table->foreign('semester')->references('semester')->on('mahasiswa')->onDelete('cascade');
+            // $table->foreign('total_sks')->references('SKS')->on('mahasiswa')->onDelete('cascade');
+            // $table->foreign('tahun_ajaran')->references('tahun_ajaran')->on('mahasiswa')->onDelete('cascade');
         });
     }
 

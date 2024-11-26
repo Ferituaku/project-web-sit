@@ -121,7 +121,7 @@ class MahasiswaController extends Controller
     {
         $timeSlots = [];
         $startTime = strtotime('07:00');
-        $endTime = strtotime('17:00');
+        $endTime = strtotime('21:00');
 
         while ($startTime <= $endTime) {
             $timeSlots[] = date('H:i', $startTime);

@@ -91,7 +91,7 @@ class DekanController extends Controller
     public function approveJadwal($id)
     {
         try {
-            $jadwal = JadwalKuliah::where('id', $id)->findOrFail(($id));
+            $jadwal = JadwalKuliah::with(['ruangKelas', 'matakuliah', 'pembimbingakd'])->where('id', $id)->findOrFail(($id));
             $jadwal->approval = '1';
             $jadwal->rejection_reason = null;
             $jadwal->save();

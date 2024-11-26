@@ -1,150 +1,154 @@
 @extends('dosen.mainDsn')
-@section('title', 'Verifikasi Dosen')
+@section('title', 'Verifikasi IRS')
 
 @section('content')
-
-<!-- Page Content -->
-<div class="container-fluid py-4" style="margin-top: 70px;">
-    <nav aria-label="breadcrumb">
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">Verifikasi Dosen</li>
+            <li class="breadcrumb-item"><a href="{{ route('dosen.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Verifikasi IRS</li>
         </ol>
     </nav>
-    <div class="row g-4">
-        <!-- User Info Card -->
-        <div class="col-md-4">
-            <div class="card h-100 border-0" style="background: linear-gradient(45deg, #4158D0, #C850C0);">
-                <div class="card-body text-white">
-                    <div class="text-center mb-3">
-                        <img src="{{ asset('img/budosen.jpg') }}" alt="avatar" class="rounded-circle img-fluid" style="width: 100px;">
-                    </div>
-                    <h4 class="text-center">{{ auth()->user()->name }}</h4>
-                    <p class="mb-1"><i class="bi bi-envelope me-2"></i>{{ auth()->user()->email }}</p>
-                    <p class="mb-1"><i class="bi bi-person-badge me-2"></i>NIP: 139945678000</p>
-                    <p class="mb-1"><i class="bi bi-telephone me-2"></i>(021) 765-43533</p>
-                    <p class="mb-0"><i class="bi bi-geo-alt me-2"></i>Pati, Sukolilo</p>
-                </div>
-            </div>
+
+    <!-- Alert Section -->
+    <div id="alert-container"></div>
+
+    <!-- Main Card -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 text-dark">Daftar IRS Mahasiswa untuk Disetujui</h5>
         </div>
 
-        <!-- Quick Stats -->
-        <div class="col-md-8">
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <div class="card stat-card border-0 bg-primary text-white">
-                        <div class="card-body">
-                            <h5 class="card-title">Mahasiswa Bimbingan</h5>
-                            <p class="card-text display-4">42</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card stat-card border-0 bg-success text-white">
-                        <div class="card-body">
-                            <h5 class="card-title">Kelas Aktif</h5>
-                            <p class="card-text display-4">5</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card stat-card border-0 bg-info text-white">
-                        <div class="card-body">
-                            <h5 class="card-title">Penelitian Aktif</h5>
-                            <p class="card-text display-4">3</p>
-                        </div>
+        <div class="card-body">
+            <!-- Search Section -->
+            <div class="row mb-3">
+                <div class="col-md-4 offset-md-8">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Cari ruang kelas..." id="searchInput">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- IRS Status Information Card -->
-        <div class="col-md-6">
-            <div class="card border-0">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">Status IRS Mahasiswa</h5>
-                    <canvas id="irsChart"></canvas>
-                </div>
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>No</th>
+                            <th>NIM</th>
+                            <th>Nama</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <td>1</td>
+                        <td>24060</td>
+                        <td>ferro</td>
+                        <td>
+                            <div class="col text-muted">
+                                <span class="badge bg-warning">Belum Disetujui</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-info me-3" data-toggle="tooltip">
+                                    Lihat Detail
+                                </button>
+                                <button class="btn btn-sm btn-success me-1" onclick="">
+                                    <i class="bi bi-check-circle me-1"></i>Setujui
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="">
+                                    <i class="bi bi-x-circle me-1"></i>Tolak
+                                </button>
+
+                            </div>
+                        </td>
+                        </td>
+                    </tbody>
+                </table>
             </div>
-        </div>
 
-        <!-- Upcoming Schedule -->
-        <div class="col-md-6">
-            <div class="card border-0">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">Jadwal Mendatang</h5>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Algoritma dan Pemrograman
-                            <span class="badge bg-primary rounded-pill">09:00</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Basis Data
-                            <span class="badge bg-primary rounded-pill">13:00</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Jaringan Komputer
-                            <span class="badge bg-primary rounded-pill">15:30</span>
-                        </li>
-                    </ul>
+            <!-- Pagination -->
+            <div class="row align-items-center mt-4">
+                <div class="col-md-6">
+
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script>
-    $(document).ready(function() {
-        $('#linkDoswalVerifikasi').on('click', function(e) {
-            e.preventDefault();
-            let url = $(this).attr('href');
+@endsection
 
-            $.get(url, function(data) {
-                $('#contentArea').html(data);
-            });
-        });
-
-        var ctx = document.getElementById('irsChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Belum', 'Sudah'],
-                datasets: [{
-                    label: 'Status Verifikasi IRS Mahasiswa',
-                    data: [5, 35],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(75, 192, 192, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(75, 192, 192, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    });
-
-    function setActiveSidebarItem() {
-        var currentPage = window.location.href;
-
-        var sidebarLinks = document.querySelectorAll('.sidebar .nav-link')
-
-        sidebarLinks.forEach(function(link) {
-            link.classList.remove('active');
-
-            if (currentPage == includes(link.getAttribute('href'))) {
-                link.classList.add('active');
-            }
-        });
-
+@section('scripts')
+<!-- <script>
+    function showAlert(type, message) {
+        const alertContainer = document.getElementById('alert-container');
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        alertContainer.innerHTML = `
+            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
     }
-</script>
 
+    function approveRoom(koderuang) {
+        fetch(`/dekan/ruangkelas/${koderuang}/approve`, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showAlert('success', data.message);
+                    location.reload();
+                } else {
+                    showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
+                }
+            })
+            .catch(error => {
+                showAlert('error', 'Terjadi kesalahan sistem.');
+            });
+    }
+
+    function rejectRoom(koderuang) {
+        fetch(`/dekan/ruangkelas/${koderuang}/reject`, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showAlert('success', data.message);
+                    location.reload();
+                } else {
+                    showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
+                }
+            })
+            .catch(error => {
+                showAlert('error', 'Terjadi kesalahan sistem.');
+            });
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function(e) {
+        const searchValue = e.target.value.toLowerCase();
+        const tableBody = document.querySelector('tbody');
+        const rows = tableBody.getElementsByTagName('tr');
+
+        for (let row of rows) {
+            const koderuang = row.cells[1].textContent.toLowerCase();
+            row.style.display = koderuang.includes(searchValue) ? '' : 'none';
+        }
+    });
+</script> -->
 @endsection
