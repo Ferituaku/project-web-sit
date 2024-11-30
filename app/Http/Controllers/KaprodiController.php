@@ -34,7 +34,7 @@ class KaprodiController extends Controller
     public function buatjadwal()
     {
         // Get approved classrooms
-        $ruangKelas = RuangKelas::where('approval', true)->get();
+        $ruangKelas = RuangKelas::whereNotNull('program_studi_id')->get();
 
         $program_studi = ProgramStudi::all();
 

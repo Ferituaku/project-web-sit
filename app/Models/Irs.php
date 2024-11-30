@@ -34,8 +34,8 @@ class Irs extends Model
     /**
      * Relationship to the IrsDetail model
      */
-    public function details(): HasMany
+    public function jadwalKuliah()
     {
-        return $this->hasMany(IrsDetail::class, 'irs_id', 'id');
+        return $this->belongsToMany(JadwalKuliah::class, 'irs_jadwal');
     }
 }

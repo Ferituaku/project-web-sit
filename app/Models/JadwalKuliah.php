@@ -35,8 +35,8 @@ class JadwalKuliah extends Model
     {
         return $this->belongsTo(PembimbingAkd::class, 'dosen_id', 'nip');
     }
-    public function Irs(): BelongsTo
+    public function irs()
     {
-        return $this->belongsTo(Irs::class, 'id', 'id');
+        return $this->belongsToMany(Irs::class, 'irs_jadwal');
     }
 }

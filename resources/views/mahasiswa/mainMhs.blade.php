@@ -129,7 +129,6 @@
                 @foreach([
                 ['route' => 'mahasiswa.dashboard', 'icon' => 'speedometer2', 'label' => 'Dashboard'],
                 ['route' => 'mahasiswa.jadwal', 'icon' => 'calendar', 'label' => 'Jadwal'],
-                ['route' => 'mahasiswa.irs', 'icon' => 'bookmark', 'label' => 'IRS'],
                 ['route' => 'mahasiswa.akademikMhs.akademik-base', 'icon' => 'mortarboard', 'label' => 'Akademik'],
                 ['route' => 'mahasiswa.biaya', 'icon' => 'wallet2', 'label' => 'Biaya Kuliah'],
                 ['route' => 'mahasiswa.herreg', 'icon' => 'file-earmark-text', 'label' => 'Her-Registrasi']

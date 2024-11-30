@@ -32,8 +32,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/mahasiswa/herreg', [MahasiswaController::class, 'herreg'])->name('mahasiswa.herreg');
         Route::get('/mahasiswa/irs', [MahasiswaController::class, 'irs'])->name('mahasiswa.irs');
         Route::get('/mahasiswa/akademikMhs/akademik-base', [MahasiswaController::class, 'akademik'])->name('mahasiswa.akademikMhs.akademik-base');
+        Route::get('/mahasiswa/akademikMhs/get-courses', [MahasiswaController::class, 'getCourses'])->name('mahasiswa.akademikMhs.getCourses');
+
         Route::get('/mahasiswa/akademikMhs/buatIrs', [MahasiswaController::class, 'buatIrs'])->name('mahasiswa.akademikMhs.buatIrs');
+
         Route::post('/mahasiswa/akademikMhs/save-irs', [MahasiswaController::class, 'saveIrs'])->name('mahasiswa.akademikMhs.saveIrs');
+        Route::get('/mahasiswa/akademikMhs/hasilirs', [MahasiswaController::class, 'hasilirs'])->name('mahasiswa.akademikMhs.hasilirs');
         Route::get('/mahasiswa/akademikMhs/khs', [MahasiswaController::class, 'khs'])->name('mahasiswa.akademikMhs.khs');
         Route::get('/mahasiswa/akademikMhs/transkrip', [MahasiswaController::class, 'transkrip'])->name('mahasiswa.akademikMhs.transkrip');
     });
@@ -80,7 +84,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dekan/persetujuan', [DekanController::class, 'persetujuanRuang'])->name('dekan.persetujuan');
         Route::get('/dekan/ruangkelas/approval', [DekanController::class, 'approveRuangKelas'])->name('dekan.ruangkelas.approval');
         Route::put('/dekan/ruangkelas/{koderuang}/approve', [DekanController::class, 'approveRoom'])->name('dekan.ruangkelas.approve');
-        Route::put('/dekan/ruangkelas/{koderuang}/reject', [DekanController::class, 'rejectRoom'])->name('dekan.ruangkelas.reject');
+        // Route::put('/dekan/ruangkelas/{koderuang}/reject', [DekanController::class, 'rejectRoom'])->name('dekan.ruangkelas.reject');
         //Persetujuan Jadwal
         Route::get('/dekan/persetujuanJadwal', [DekanController::class, 'persetujuanJadwal'])->name('dekan.persetujuanJadwal');
         // Route::get('/dekan/jadwal/approval', [DekanController::class, 'jadwalApproval'])->name('dekan.jadwal.approval');

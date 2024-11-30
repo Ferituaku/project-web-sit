@@ -21,6 +21,7 @@
     <div class="row">
         <div class="col-md-10 mb-5">
             <a href="{{ route('mahasiswa.akademikMhs.buatIrs') }}" class="btn btn-primary {{ Request::routeIs('mahasiswa.akademik.irs') ? 'active' : '' }}">Buat IRS</a>
+            <a href="{{ route('mahasiswa.akademikMhs.hasilirs') }}" class="btn btn-primary {{ Request::routeIs('mahasiswa.akademik.hasilirs') ? 'active' : '' }}">IRS</a>
             <a href="{{ route('mahasiswa.akademikMhs.khs') }}" class="btn btn-primary {{ Request::routeIs('mahasiswa.akademik.khs') ? 'active' : '' }}">KHS</a>
             <a href="{{ route('mahasiswa.akademikMhs.transkrip') }}" class="btn btn-primary {{ Request::routeIs('mahasiswa.akademik.transkrip') ? 'active' : '' }}">Transkrip</a>
         </div>

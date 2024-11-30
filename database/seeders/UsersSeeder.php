@@ -24,6 +24,18 @@ class UsersSeeder extends Seeder
                 'id' => 1,
                 'nama' => 'Informatika',
             ],
+            [
+                'id' => 2,
+                'nama' => 'Statistika',
+            ],
+            [
+                'id' => 3,
+                'nama' => 'Matematika',
+            ],
+            [
+                'id' => 4,
+                'nama' => 'Biologi',
+            ],
         ];
         foreach ($programStudi as $prodi) {
             ProgramStudi::create($prodi);
@@ -34,32 +46,30 @@ class UsersSeeder extends Seeder
             [
                 'koderuang' => 'A102',
                 'kapasitas' => 40,
-                'approval' => 1,
+                'program_studi_id' => 1,
             ],
             [
                 'koderuang' => 'A202',
                 'kapasitas' => 30,
-                'approval' => 1,
+                'program_studi_id' => 1,
             ],
             [
                 'koderuang' => 'E101',
                 'kapasitas' => 50,
-                'approval' => 1,
+                'program_studi_id' => 1,
             ],
             [
                 'koderuang' => 'B101',
                 'kapasitas' => 30,
-                'approval' => 1,
             ],
             [
                 'koderuang' => 'B102',
                 'kapasitas' => 30,
-                'approval' => 1,
+                'program_studi_id' => 2,
             ],
             [
                 'koderuang' => 'B103',
                 'kapasitas' => 30,
-                'approval' => 1,
             ],
         ];
         foreach ($ruangKelas as $key => $val) {

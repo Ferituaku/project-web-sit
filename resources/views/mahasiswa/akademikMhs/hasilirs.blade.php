@@ -1,15 +1,18 @@
-@extends('mahasiswa.mainMhs')
-@section('title', 'IRS')
+@extends('mahasiswa.akademikMhs.akademik-base')
+@section('akademik-content')
 
-@section('content')
 <!-- Page Content -->
-<div class="container-fluid py-4" style="margin-top: 50px; margin-left:10px">
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('mahasiswa.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">irs</li>
-        </ol>
-    </nav>
+
+<div class="container-fluid py-4">
+
+    {{-- Alert for messages --}}
+    @if(session('success') || session('error'))
+    <div class="alert alert-{{ session('success') ? 'success' : 'danger' }} alert-dismissible fade show" role="alert">
+        {{ session('success') ?? session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
     <div class="row g-4">
         <div class="card-body">
             <div class="table-responsive">
@@ -29,7 +32,7 @@
                     </tbody>
                 </table>
             </div>
-            <a href="#" class="btn btn-primary">Cetak KHS</a>
+            <a href="#" class="btn btn-primary">Cetak IRS</a>
         </div>
     </div>
 </div>

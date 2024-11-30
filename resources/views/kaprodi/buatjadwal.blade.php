@@ -441,12 +441,19 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Ruang Kelas</label>
-                            <select class="form-select" name="ruangkelas_id_${groupLetter}" required>
+                            <select class="form-select @error('ruangkelas_id') is-invalid @enderror" name="ruangkelas_id_${groupLetter}" required>
                                 <option value="">Pilih Ruangan</option>
-                                @foreach($ruangKelas as $ruang)
-                                <option value="{{ $ruang->koderuang }}">{{ $ruang->koderuang }}</option>
-                                @endforeach
+                                
+                                    @foreach($ruangKelas as $ruang)
+                                    @php
+                                    $programStudiNama = $program_studi->firstWhere('id', $ruang->program_studi_id)->nama ?? 'Tidak Ditemukan';
+                                    @endphp
+                                    <option value="{{ $ruang->koderuang }}">{{ $ruang->koderuang }} - {{$programStudiNama }}</option>
+                                    @endforeach
                             </select>
+                            @error('ruangkelas_id')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
                 </div>
