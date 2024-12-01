@@ -37,6 +37,6 @@ class JadwalKuliah extends Model
     }
     public function irs()
     {
-        return $this->belongsToMany(Irs::class, 'irs_jadwal');
+        return $this->belongsToMany(Irs::class, 'irs_jadwal', 'jadwal_id', 'irs_id');
     }
 }

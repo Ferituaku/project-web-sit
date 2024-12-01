@@ -14,7 +14,7 @@
 
     <div class="row">
         <!-- Left Panel - Course Selection -->
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-white">
                     <h5 class="card-title mb-0">Pemilihan Mata Kuliah</h5>
@@ -60,7 +60,7 @@
         </div>
 
         <!-- Right Panel - Schedule -->
-        <div class="col-md-9 ">
+        <div class="col-md-8 ">
 
             <div class="card shadow-sm ">
                 <div class="card-header bg-white d-grid gap-2 d-md-flex justify-content-between">
@@ -660,12 +660,6 @@
                 return;
             }
 
-            const semester = document.getElementById('semester-filter').value;
-            if (!semester) {
-                showAlert('Pilih semester terlebih dahulu', 'warning');
-                return;
-            }
-
             try {
                 const response = await fetch('/mahasiswa/akademikMhs/save-irs', {
                     method: 'POST',
@@ -675,8 +669,6 @@
                     },
                     body: JSON.stringify({
                         jadwals: Array.from(selectedCourses.keys()),
-                        semester: semester,
-                        tahun_ajaran: getTahunAjaran()
                     })
                 });
 
@@ -693,12 +685,24 @@
             }
         });
 
-        function getTahunAjaran() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = now.getMonth() + 1;
-            return `${month >= 9 ? year : year - 1}/${month >= 9 ? year + 1 : year}`;
-        }
+        // Modify semester filter handler to only affect course visibility
+        const semesterFilter = document.getElementById('semester-filter');
+        semesterFilter.addEventListener('change', function() {
+            const selectedSemester = this.value;
+
+            // Hide/show courses based on semester
+            document.querySelectorAll('.schedule-item').forEach(item => {
+                const courseSemester = item.querySelector('small:nth-child(4)').textContent
+                    .match(/SMT\((\d+)\)/)[1];
+
+                if (!selectedSemester || courseSemester === selectedSemester) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
     });
 </script>
 

@@ -19,6 +19,7 @@ class Irs extends Model
         'nim',
         'semester',
         'tahun_ajaran',
+        'total_sks',
         'approval',
         'total_sks',
     ];
@@ -36,6 +37,6 @@ class Irs extends Model
      */
     public function jadwalKuliah()
     {
-        return $this->belongsToMany(JadwalKuliah::class, 'irs_jadwal');
+        return $this->belongsToMany(JadwalKuliah::class, 'irs_jadwal', 'irs_id', 'jadwal_id');
     }
 }

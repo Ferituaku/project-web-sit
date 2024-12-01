@@ -39,9 +39,9 @@ class Mahasiswa extends Model
     // {
     //     return $this->hasOne(Irs::class, 'irs_id', 'id');
     // }
-    public function Irs(): HasOneOrManyThrough
+    public function Irs(): HasOne
     {
-        return $this->hasOneThrough(JadwalKuliah::class, Irs::class);
+        return $this->hasOne(JadwalKuliah::class, Irs::class);
     }
     public function user(): BelongsTo
     {
