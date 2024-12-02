@@ -53,6 +53,7 @@
                             <th>No</th>
                             <th>Kode Ruang</th>
                             <th>Kapasitas</th>
+                            <th>Program Studi</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -63,6 +64,7 @@
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $ruang->koderuang }}</td>
                             <td>{{ $ruang->kapasitas }} orang</td>
+                            <td>{{ $ruang->program_studi_id? $ruang->programStudi->nama : 'Belum diatur' }}</td>
                             <td>
                                 @if($ruang->approval)
                                 <span class="badge bg-success">Disetujui</span>
@@ -89,14 +91,12 @@
             <!-- Pagination -->
             <div class="row align-items-center mt-4">
                 <div class="col-md-6">
-                    {{ $ruangKelas->links() }}
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Add Room Modal -->
 <div class="modal fade" id="addRoomModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -115,6 +115,15 @@
                         <label class="form-label">Kapasitas</label>
                         <input type="number" class="form-control" name="kapasitas" required min="1">
                     </div>
+                    <div class="mb-3">
+                        <label for="program_studi_id" class="form-label">Program Studi</label>
+                        <select class="form-select" id="program_studi_id" name="program_studi_id">
+                            <option value="" selected>Pilih Program Studi</option>
+                            @foreach ($programStudi as $ps)
+                            <option value="{{ $ps->id }}">{{ $ps->nama }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -124,7 +133,6 @@
         </div>
     </div>
 </div>
-
 <!-- Edit Room Modal -->
 <div class="modal fade" id="editRoomModal" tabindex="-1">
     <div class="modal-dialog">
@@ -135,16 +143,21 @@
             </div>
             <div class="modal-body">
                 <form id="editRoomForm">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" name="koderuang" id="edit_koderuang">
+                    <input type="hidden" name="edit_koderuang">
                     <div class="mb-3">
-                        <label class="form-label">Kode Ruang</label>
-                        <input type="text" class="form-control" name="new_koderuang" required>
+                        <label for="new_koderuang" class="form-label">Kode Ruang</label>
+                        <input type="text" id="new_koderuang" name="new_koderuang" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Kapasitas</label>
-                        <input type="number" class="form-control" name="kapasitas" required min="1">
+                        <label for="kapasitas" class="form-label">Kapasitas</label>
+                        <input type="number" id="kapasitas" name="kapasitas" class="form-control" min="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="program_studi_id" class="form-label">Program Studi</label>
+                        <select id="program_studi_id" name="program_studi_id" class="form-select">
+                            <option value="">Pilih Program Studi</option>
+                            <!-- Options will be populated dynamically -->
+                        </select>
                     </div>
                 </form>
             </div>
@@ -170,102 +183,121 @@
             </div>
         `;
     }
-
-    function saveRoom() {
+    async function fetchApi(url, options) {
+        try {
+            const response = await fetch(url, options);
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Fetch Error:', error);
+            throw new Error('Terjadi kesalahan sistem.');
+        }
+    }
+    async function saveRoom() {
         const form = document.getElementById('addRoomForm');
         const formData = new FormData(form);
 
-        fetch('{{ route("akademik.ruangkelas.store") }}', {
+        try {
+            const data = await fetchApi('{{ route("akademik.ruangkelas.store") }}', {
                 method: 'POST',
                 body: formData,
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    showAlert('success', data.message);
-                    $('#addRoomModal').modal('hide');
-                    location.reload();
-                } else {
-                    showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
-                }
-            })
-            .catch(error => {
-                showAlert('error', 'Terjadi kesalahan sistem.');
             });
-    }
 
-
-    function updateRoom() {
-        const form = document.getElementById('editRoomForm');
-        const formData = new FormData(form);
-        const koderuang = form.elements['edit_koderuang'].value;
-        const newKoderuang = form.elements['new_koderuang'].value;
-        const kapasitas = form.elements['kapasitas'].value;
-
-        const payload = new URLSearchParams({
-            '_token': '{{ csrf_token() }}',
-            '_method': 'PUT',
-            'new_koderuang': newKoderuang,
-            'kapasitas': kapasitas
-        });
-
-        fetch(`/akademik/ruangkelas/${koderuang}`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    showAlert('success', data.message);
-                    $('#editRoomModal').modal('hide');
-                    location.reload();
-                } else {
-                    showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showAlert('error', 'Terjadi kesalahan sistem.');
-            });
-    }
-
-    function deleteRoom(koderuang) {
-        if (confirm('Apakah Anda yakin ingin menghapus ruang kelas ini?')) {
-            fetch(`/akademik/ruangkelas/${koderuang}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        showAlert('success', data.message);
-                        location.reload();
-                    } else {
-                        showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showAlert('error', 'Terjadi kesalahan sistem.');
-                });
+            if (data.status === 'success') {
+                showAlert('success', data.message);
+                $('#addRoomModal').modal('hide');
+                location.reload();
+            } else {
+                showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
+            }
+        } catch (error) {
+            showAlert('error', error.message);
         }
     }
 
+
+
+    async function updateRoom() {
+        const form = document.getElementById('editRoomForm');
+        const koderuang = form.elements['edit_koderuang'].value;
+        const formData = new FormData(form);
+
+        try {
+            const data = await fetchApi(`/akademik/ruangkelas/${koderuang}`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-HTTP-Method-Override': 'PUT'
+                }
+            });
+
+            if (data.status === 'success') {
+                showAlert('success', data.message);
+                $('#editRoomModal').modal('hide');
+                location.reload();
+            } else {
+                showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
+            }
+        } catch (error) {
+            showAlert('error', error.message);
+        }
+    }
+
+    async function deleteRoom(koderuang) {
+        if (confirm('Apakah Anda yakin ingin menghapus ruang kelas ini?')) {
+            try {
+                const data = await fetchApi(`/akademik/ruangkelas/${koderuang}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (data.status === 'success') {
+                    showAlert('success', data.message);
+                    location.reload();
+                } else {
+                    showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
+                }
+            } catch (error) {
+                showAlert('error', error.message);
+            }
+        }
+    }
+
+    // function editRoom(koderuang) {
+    //     fetch(`/akademik/ruangkelas/${koderuang}/edit`, {
+    //             headers: {
+    //                 'Accept': 'application/json'
+    //             }
+    //         })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             if (data.status === 'error') {
+    //                 showAlert('error', data.message);
+    //                 return;
+    //             }
+    //             const form = document.getElementById('editRoomForm');
+    //             form.elements['edit_koderuang'].value = data.koderuang;
+    //             form.elements['new_koderuang'].value = data.koderuang;
+    //             form.elements['kapasitas'].value = data.kapasitas;
+    //             $('#editRoomModal').modal('show');
+    //         })
+    //         .catch(error => {
+    //             console.error('Error:', error);
+    //             showAlert('error', 'Terjadi kesalahan saat mengambil data ruang.');
+    //         });
+    // }
     function editRoom(koderuang) {
         fetch(`/akademik/ruangkelas/${koderuang}/edit`, {
                 headers: {
-                    'Accept': 'application/json'
-                }
+                    'Accept': 'application/json',
+                },
             })
             .then(response => response.json())
             .then(data => {
@@ -274,9 +306,19 @@
                     return;
                 }
                 const form = document.getElementById('editRoomForm');
-                form.elements['edit_koderuang'].value = data.koderuang;
-                form.elements['new_koderuang'].value = data.koderuang;
-                form.elements['kapasitas'].value = data.kapasitas;
+                form.elements['edit_koderuang'].value = data.ruangKelas.koderuang;
+                form.elements['new_koderuang'].value = data.ruangKelas.koderuang;
+                form.elements['kapasitas'].value = data.ruangKelas.kapasitas;
+
+                // Populate program studi dropdown
+                const programStudiSelect = form.elements['program_studi_id'];
+                programStudiSelect.innerHTML = `<option value="">Pilih Program Studi</option>`;
+                data.programStudi.forEach(program => {
+                    programStudiSelect.innerHTML += `<option value="${program.id}" ${
+                    program.id === data.ruangKelas.program_studi_id ? 'selected' : ''
+                }>${program.nama}</option>`;
+                });
+
                 $('#editRoomModal').modal('show');
             })
             .catch(error => {
@@ -284,7 +326,6 @@
                 showAlert('error', 'Terjadi kesalahan saat mengambil data ruang.');
             });
     }
-
     // Search functionality
     document.getElementById('searchInput').addEventListener('keyup', function(e) {
         const searchValue = e.target.value.toLowerCase();

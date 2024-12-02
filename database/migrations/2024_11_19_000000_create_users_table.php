@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('nim')->references('nim')->on('mahasiswa')->onDelete('cascade');
-            // $table->foreign('nip')->references('nip')->on('pembimbingakd')->onDelete('cascade');
+            $table->foreign('nip')->references('nip')->on('pembimbingakd')->onDelete('cascade');
         });
 
         Schema::create('sessions', function (Blueprint $table) {

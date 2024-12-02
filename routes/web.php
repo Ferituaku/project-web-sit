@@ -42,18 +42,41 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/mahasiswa/akademikMhs/transkrip', [MahasiswaController::class, 'transkrip'])->name('mahasiswa.akademikMhs.transkrip');
     });
 
-    // Rute untuk akademik
-    Route::group(['middleware' => 'role:akademik'], function () {
-        Route::get('/akademik/dashboard', [akademikControl::class, 'akademik'])->name('akademik.dashboard');
-        Route::get('/akademik/aturkelas', [akademikControl::class, 'aturkelas'])->name('akademik.aturkelas');
 
-        // New routes for RuangKelas CRUD operations
-        Route::post('/akademik/ruangkelas', [akademikControl::class, 'storeRuangKelas'])->name('akademik.ruangkelas.store');
-        Route::get('/akademik/ruangkelas/{koderuang}', [akademikControl::class, 'getRuangKelas'])->name('akademik.ruangkelas.get');
-        Route::get('/akademik/ruangkelas/{koderuang}/edit', [akademikControl::class, 'editRuangKelas'])->name('akademik.ruangkelas.edit');
-        Route::put('/akademik/ruangkelas/{koderuang}', [akademikControl::class, 'updateRuangKelas'])->name('akademik.ruangkelas.update');
-        Route::delete('/akademik/ruangkelas/{koderuang}', [akademikControl::class, 'destroyRuangKelas'])->name('akademik.ruangkelas.destroy');
+    Route::prefix('akademik')->middleware('role:akademik')->name('akademik.')->group(function () {
+
+        // Dashboard untuk akademik
+        Route::get('/dashboard', [akademikControl::class, 'akademik'])->name('dashboard');
+
+        // Pengaturan kelas
+        Route::get('/aturkelas', [akademikControl::class, 'aturkelas'])->name('aturkelas');
+
+        // Grup rute untuk Ruang Kelas
+        Route::prefix('ruangkelas')->name('ruangkelas.')->group(function () {
+
+            // Tampilkan daftar ruang kelas
+            Route::get('/', [akademikControl::class, 'indexRuangKelas'])->name('index');
+
+            // Tambahkan ruang kelas baru
+            Route::post('/', [akademikControl::class, 'storeRuangKelas'])->name('store');
+
+            // Edit ruang kelas (mengembalikan data untuk modal)
+            Route::get('/{koderuang}/edit', [akademikControl::class, 'editRuangKelas'])
+                ->where('koderuang', '[A-Za-z0-9_-]+') // Validasi format koderuang
+                ->name('edit');
+
+            // Update ruang kelas yang sudah ada
+            Route::put('/{koderuang}', [akademikControl::class, 'updateRuangKelas'])
+                ->where('koderuang', '[A-Za-z0-9_-]+') // Validasi format koderuang
+                ->name('update');
+
+            // Hapus ruang kelas
+            Route::delete('/{koderuang}', [akademikControl::class, 'destroyRuangKelas'])
+                ->where('koderuang', '[A-Za-z0-9_-]+') // Validasi format koderuang
+                ->name('destroy');
+        });
     });
+
 
     // Rute untuk dosen
     Route::group(['middleware' => 'role:dosen,kaprodi,dekan'], function () {
@@ -84,7 +107,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dekan/persetujuan', [DekanController::class, 'persetujuanRuang'])->name('dekan.persetujuan');
         Route::get('/dekan/ruangkelas/approval', [DekanController::class, 'approveRuangKelas'])->name('dekan.ruangkelas.approval');
         Route::put('/dekan/ruangkelas/{koderuang}/approve', [DekanController::class, 'approveRoom'])->name('dekan.ruangkelas.approve');
-        // Route::put('/dekan/ruangkelas/{koderuang}/reject', [DekanController::class, 'rejectRoom'])->name('dekan.ruangkelas.reject');
+        Route::put('/dekan/ruangkelas/{koderuang}/reject', [DekanController::class, 'rejectRoom'])->name('dekan.ruangkelas.reject');
         //Persetujuan Jadwal
         Route::get('/dekan/persetujuanJadwal', [DekanController::class, 'persetujuanJadwal'])->name('dekan.persetujuanJadwal');
         // Route::get('/dekan/jadwal/approval', [DekanController::class, 'jadwalApproval'])->name('dekan.jadwal.approval');

@@ -16,90 +16,87 @@
 
     <!-- Main Card -->
     <div class="card shadow-sm">
-        <div class="card-header text-dark py-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Daftar Ruang Kelas untuk Ditetapkan</h5>
-                <div class="d-flex align-items-center">
-                    <div class="input-group input-group-sm" style="width: 250px;">
-                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" class="form-control border-start-0" placeholder="Cari ruang kelas..." id="searchInput">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 text-dark">Daftar Ruang Kelas untuk Disetujui</h5>
+        </div>
+
+        <div class="card-body">
+            <!-- Search Section -->
+            <div class="row mb-3">
+                <div class="col-md-6 offset-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Cari ruang kelas..." id="searchInput">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- Table -->
-        <div class="table-responsive">
-            @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>No</th>
+                            <th>Kode Ruang</th>
+                            <th>Kapasitas</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($ruangKelas as $index => $ruang)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $ruang->koderuang }}</td>
+                            <td>{{ $ruang->kapasitas }} orang</td>
+                            <td>
+                                @if($ruang->approval == 0)
+                                <span class="badge bg-warning">Pending</span>
+                                @elseif($ruang->approval == 1)
+                                <span class="badge bg-success">Disetujui</span>
+                                @elseif($ruang->approval == 2)
+                                <span class="badge bg-danger">Ditolak</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($ruang->approval == 0)
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-success me-1" onclick="approveRoom('{{ $ruang->koderuang }}')">
+                                        <i class="bi bi-check-circle me-1"></i>Setujui
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="rejectRoom('{{ $ruang->koderuang }}')">
+                                        <i class="bi bi-x-circle me-1"></i>Tolak
+                                    </button>
+                                </div>
+                                @elseif($ruang->approval == 1)
+                                <span class="text-muted">Sudah disetujui</span>
+                                @elseif($ruang->approval == 2)
+                                <span class="text-muted">Ditolak</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+
+            <!-- Pagination -->
+            @if($ruangKelas->total() > 0)
+            <div class="card-footer d-flex justify-content-between align-items-center py-3">
+                <div class="text-sm text-muted">
+                    Menampilkan {{ $ruangKelas->firstItem() }} - {{ $ruangKelas->lastItem() }}
+                    dari {{ $ruangKelas->total() }} ruang kelas
+                </div>
+                <div>
+                    {{ $ruangKelas->links('vendor.pagination.bootstrap-5') }}
+                </div>
+            </div>
             @endif
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>No</th>
-                        <th>Kode Ruang</th>
-                        <th>Kapasitas</th>
-                        <th>Status</th>
-                        <th>Program Studi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($ruangKelas as $index => $ruang)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $ruang->koderuang }}</td>
-                        <td>{{ $ruang->kapasitas }} orang</td>
-                        <td>
-                            @if(!$ruang->program_studi_id)
-                            <form action="{{ route('dekan.ruangkelas.approve', $ruang->koderuang) }}" method="POST">
-                                @csrf
-                                @method('PUT')
-
-                                <select name="program_studi_id" class="form-select" required>
-                                    <option value="">-- Pilih Program Studi --</option>
-                                    @foreach($programStudi as $ps)
-                                    <option value="{{ $ps->id }}"
-                                        {{ $ruang->program_studi_id == $ps->id ? 'selected' : '' }}>
-                                        {{ $ps->nama }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                                <button type="submit" class="btn btn-primary mt-2">Setujui</button>
-                            </form>
-                            @else
-                            <span class="badge bg-success">Valid</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($ruang->program_studi_id)
-                            {{-- Cari nama program studi dari koleksi programStudi --}}
-                            @php
-                            $programStudiNama = $programStudi->firstWhere('id', $ruang->program_studi_id)->nama ?? 'Tidak Ditemukan';
-                            @endphp
-                            {{ $programStudiNama }}
-                            @else
-                            <span class="badge bg-warning">Belum Disetujui</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
         </div>
-
-        <!-- Pagination -->
-        @if($ruangKelas->total() > 0)
-        <div class="card-footer d-flex justify-content-between align-items-center py-3">
-            <div class="text-sm text-muted">
-                Menampilkan {{ $ruangKelas->firstItem() }} - {{ $ruangKelas->lastItem() }}
-                dari {{ $ruangKelas->total() }} ruang kelas
-            </div>
-            <div>
-                {{ $ruangKelas->links('vendor.pagination.bootstrap-5') }}
-            </div>
-        </div>
-        @endif
     </div>
-</div>
 </div>
 @endsection
 

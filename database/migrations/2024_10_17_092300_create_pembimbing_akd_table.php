@@ -15,6 +15,10 @@ return new class extends Migration
             $table->unsignedBigInteger('nip')->primary();
             $table->string('name');
             $table->string('email')->unique();
+            $table->boolean('dosen')->default(true);
+            $table->boolean('dekan');
+            $table->boolean(column: 'kaprodi');
+            $table->boolean(column: 'dosen_wali');
             $table->timestamps();
         });
     }

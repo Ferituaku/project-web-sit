@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ProgramStudi;
 use App\Models\RuangKelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,21 +23,24 @@ class akademikControl extends Controller
 
     public function aturkelas()
     {
-        $ruangKelas = RuangKelas::with('jadwalKuliah')->paginate(10);
-        return view('akademik.aturkelas', compact('ruangKelas'));
+        $programStudi = ProgramStudi::all();
+        $ruangKelas = RuangKelas::with('jadwalKuliah', 'programStudi')->paginate(10);
+        return view('akademik.aturkelas', compact('ruangKelas', 'programStudi'));
     }
 
     public function indexRuangKelas()
     {
-        $ruangKelas = RuangKelas::with('jadwalKuliah')->paginate(10);
-        return view('akademik.ruangkelas.index', compact('ruangKelas'));
+        $programStudi = ProgramStudi::all();
+        $ruangKelas = RuangKelas::with('jadwalKuliah', 'programStudi');
+        return view('akademik.ruangkelas.index', compact('ruangKelas', 'programStudi'));
     }
 
     public function storeRuangKelas(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'koderuang' => 'required|unique:ruangkelas,koderuang',
-            'kapasitas' => 'required|integer|min:1'
+            'kapasitas' => 'required|integer|min:1',
+            'program_studi_id' => 'nullable|exists:program_studi,id',
         ]);
 
         if ($validator->fails()) {
@@ -47,7 +51,12 @@ class akademikControl extends Controller
         }
 
         try {
-            RuangKelas::create($request->all());
+            RuangKelas::create([
+                'koderuang' => $request->koderuang,
+                'kapasitas' => $request->kapasitas,
+                'program_studi_id' => $request->program_studi_id,
+                'approval' => '0',
+            ]);
             return response()->json([
                 'status' => 'success',
                 'message' => 'Ruang kelas berhasil ditambahkan'
@@ -63,12 +72,17 @@ class akademikControl extends Controller
     public function editRuangKelas($koderuang)
     {
         try {
-            $ruangKelas = RuangKelas::where('koderuang', $koderuang)->firstOrFail();
-            return response()->json($ruangKelas);
+            $ruangKelas = RuangKelas::with('programStudi')->where('koderuang', $koderuang)->firstOrFail();
+            $programStudi = ProgramStudi::all(); // Mendapatkan semua program studi
+            return response()->json([
+                'status' => 'success',
+                'ruangKelas' => $ruangKelas,
+                'programStudi' => $programStudi,
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Ruang kelas tidak ditemukan'
+                'message' => 'Ruang kelas tidak ditemukan',
             ], 404);
         }
     }
@@ -77,7 +91,8 @@ class akademikControl extends Controller
     {
         $validator = Validator::make($request->all(), [
             'new_koderuang' => 'required|unique:ruangkelas,koderuang,' . $koderuang . ',koderuang',
-            'kapasitas' => 'required|integer|min:1'
+            'kapasitas' => 'required|integer|min:1',
+            'program_studi_id' => 'nullable|exists:program_studi,id',
         ]);
 
         if ($validator->fails()) {
@@ -91,7 +106,8 @@ class akademikControl extends Controller
             $ruangKelas = RuangKelas::where('koderuang', $koderuang)->firstOrFail();
             $ruangKelas->update([
                 'koderuang' => $request->new_koderuang,
-                'kapasitas' => $request->kapasitas
+                'kapasitas' => $request->kapasitas,
+                'program_studi_id' => $request->program_studi_id,
             ]);
 
             return response()->json([

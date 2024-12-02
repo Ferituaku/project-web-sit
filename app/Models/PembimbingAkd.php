@@ -17,18 +17,22 @@ class PembimbingAkd extends Model
     protected $fillable = [
         'nip',
         'name',
-        'email'
+        'email',
+        'dosen',
+        'dekan',
+        'kaprodi',
+        'dosen_wali',
     ];
     public function pembimbingakd(): HasMany
     {
         return $this->hasMany(JadwalKuliah::class, 'dosen_id', 'nip');
     }
-    // public function user(): BelongsTo
-    // {
-    //     return $this->belongsTo(User::class, 'nip', 'nip');
-    // }
-    // public function mahasiswa()
-    // {
-    //     return $this->hasMany(Mahasiswa::class, 'nip', 'nip');
-    // }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'nip', 'nip');
+    }
+    public function mahasiswa()
+    {
+        return $this->hasMany(Mahasiswa::class, 'nip', 'nip');
+    }
 }

@@ -43,6 +43,7 @@ class MahasiswaController extends Controller
     }
     public function hasilirs()
     {
+        
         return view('mahasiswa.akademikMhs.hasilirs');
     }
     public function khs()

@@ -12,6 +12,7 @@ return new class extends Migration
             $table->string('koderuang')->primary();
             $table->integer('kapasitas');
             $table->unsignedInteger('program_studi_id')->nullable();
+            $table->enum('approval', ['0', '1', '2'])->default('0');
             $table->timestamps();
 
             $table->foreign('program_studi_id')->references('id')->on('program_studi');

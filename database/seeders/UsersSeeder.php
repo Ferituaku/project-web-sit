@@ -47,11 +47,13 @@ class UsersSeeder extends Seeder
                 'koderuang' => 'A102',
                 'kapasitas' => 40,
                 'program_studi_id' => 1,
+
             ],
             [
                 'koderuang' => 'A202',
                 'kapasitas' => 30,
                 'program_studi_id' => 1,
+
             ],
             [
                 'koderuang' => 'E101',
@@ -61,15 +63,17 @@ class UsersSeeder extends Seeder
             [
                 'koderuang' => 'B101',
                 'kapasitas' => 30,
+                'program_studi_id' => 1,
             ],
             [
                 'koderuang' => 'B102',
-                'kapasitas' => 30,
+                'kapasitas' => 35,
                 'program_studi_id' => 2,
             ],
             [
                 'koderuang' => 'B103',
                 'kapasitas' => 30,
+                'program_studi_id' => 1,
             ],
         ];
         foreach ($ruangKelas as $key => $val) {
@@ -154,16 +158,64 @@ class UsersSeeder extends Seeder
                 'nip' => 12231301,
                 'name' => 'Joyo Sujoyo S.Kom, M.Kom',
                 'email' => 'joyo@lecturer.com',
+                'dosen' => 1,
+                'dekan' => 0,
+                'kaprodi' => 0,
+                'dosen_wali' => 1,
             ],
             [
                 'nip' => 12231302,
                 'name' => 'Diane S.Kom, M.Kom',
-                'email' => 'Diane@lecturer.com',
+                'email' => 'diane@lecturer.com',
+                'dosen' => 1,
+                'dekan' => 0,
+                'kaprodi' => 0,
+                'dosen_wali' => 0,
             ],
             [
                 'nip' => 12231303,
                 'name' => 'Richard S.Kom, M.Kom',
-                'email' => 'Richard@lecturer.com',
+                'email' => 'richard@lecturer.com',
+                'dosen' => 1,
+                'dekan' => 0,
+                'kaprodi' => 0,
+                'dosen_wali' => 1,
+            ],
+            [
+                'nip' => 12231304,
+                'name' => 'Jhonny S.Kom, M.Kom',
+                'email' => 'jhonny@lecturer.com',
+                'dosen' => 1,
+                'dekan' => 0,
+                'kaprodi' => 0,
+                'dosen_wali' => 1,
+            ],
+            [
+                'nip' => 12231305,
+                'name' => 'Susi Susiastuti S.Kom, M.Kom',
+                'email' => 'susi@lecturer.com',
+                'dosen' => 1,
+                'dekan' => 0,
+                'kaprodi' => 0,
+                'dosen_wali' => 1,
+            ],
+            [
+                'nip' => 12231201,
+                'name' => 'Dr. Antoni S.Kom, M. Si, P.Hd',
+                'email' => 'antoni@lecturer.com',
+                'dosen' => 1,
+                'dekan' => 1,
+                'kaprodi' => 0,
+                'dosen_wali' => 0,
+            ],
+            [
+                'nip' => 12231202,
+                'name' => 'Budi Yono S.Kom, M.T',
+                'email' => 'budi@lecturer.com',
+                'dosen' => 1,
+                'dekan' => 0,
+                'kaprodi' => 1,
+                'dosen_wali' => 0,
             ],
 
         ];
@@ -174,12 +226,22 @@ class UsersSeeder extends Seeder
         $mahasiswa = [
             [
                 'nim' => 240601221001,
-                'name' => 'El Vinsen',
+                'name' => 'Alexander Vinsen',
                 'email' => 'elvinsen@students.com',
                 'dosen_id' => 12231303,
                 'prodi_id' => 1,
                 'Semester' => 5,
                 'SKS' => 86,
+                'tahun_ajaran' => '2024/2025',
+            ],
+            [
+                'nim' => 240601221002,
+                'name' => 'Chintya Kirana',
+                'email' => 'kirana@students.com',
+                'dosen_id' => 12231305,
+                'prodi_id' => 1,
+                'Semester' => 3,
+                'SKS' => 64,
                 'tahun_ajaran' => '2024/2025',
             ],
 
@@ -243,32 +305,39 @@ class UsersSeeder extends Seeder
                 'password' => bcrypt('123')
             ],
             [
-                'name' => 'El Vinsen',
+                'name' => 'Alexander Vinsen',
                 'email' => 'elvinsen@students.com',
                 'role' => 'mahasiswa',
                 'password' => bcrypt('123'),
                 'nim' => 240601221001,
             ],
             [
+                'name' => 'Chintya Kirana',
+                'email' => 'kirana@students.com',
+                'role' => 'mahasiswa',
+                'password' => bcrypt('123'),
+                'nim' => 240601221002,
+            ],
+            [
                 'name' => 'Susi Susiastuti S.Kom, M.Kom',
                 'email' => 'susi@lecturer.com',
                 'role' => 'dosen',
                 'password' => bcrypt('123'),
-                'nip' => 1902201234501,
+                'nip' => 12231305,
             ],
             [
                 'name' => 'Dr. Antoni S.Kom, M. Si, P.Hd',
                 'email' => 'antoni@lecturer.com',
                 'role' => 'dekan',
                 'password' => bcrypt('123'),
-                'nip' => 1902201234502,
+                'nip' => 12231201,
             ],
             [
                 'name' => 'Budi Yono S.Kom, M.T',
                 'email' => 'budi@lecturer.com',
                 'role' => 'kaprodi',
                 'password' => bcrypt('123'),
-                'nip' => 1902201234502,
+                'nip' => 12231202,
             ]
         ];
         foreach ($userData as $key => $val) {

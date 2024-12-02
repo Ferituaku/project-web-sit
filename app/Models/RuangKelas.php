@@ -13,19 +13,17 @@ class RuangKelas extends Model
 
     protected $table = 'ruangkelas';
     protected $primaryKey = 'koderuang';
-    protected $keyType = 'string';
     public $incrementing = false;
 
-    protected $fillable = ['koderuang', 'kapasitas', 'program_studi_id'];
+    protected $fillable = ['koderuang', 'kapasitas', 'program_studi_id', 'approval'];
 
+    public function programStudi(): BelongsTo
+    {
+        return $this->belongsTo(ProgramStudi::class, 'program_studi_id', 'id');
+    }
 
     public function jadwalKuliah(): HasMany
     {
         return $this->hasMany(JadwalKuliah::class, 'ruangkelas_id', 'koderuang');
-    }
-
-    public function prodi(): BelongsTo
-    {
-        return $this->belongsTo(ProgramStudi::class, 'program_studi_id', 'id');
     }
 }

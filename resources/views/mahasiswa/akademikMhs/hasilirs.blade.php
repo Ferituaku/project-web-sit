@@ -15,20 +15,23 @@
 
     <div class="row g-4">
         <div class="card-body">
+            <div class="col mb-2">
+                Status : <span class="">Menunggu Persetujuan</span>
+            </div>
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead>
-                        <th>Nama Mata Kuliah</th>
                         <th>Kode MK</th>
+                        <th>Mata Kuliah</th>
                         <th>SKS</th>
+                        <th>Kelas</th>
+                        <th>Jadwal</th>
                         <th>Semester</th>
                         <th>Dosen Pengampu</th>
                     </thead>
                     <tbody>
-                        <td>
-                            <!-- Your IRS data will be inserted here -->
-
-                        </td>
+                        <!-- Your IRS data will be inserted here -->
+                        
                     </tbody>
                 </table>
             </div>
@@ -37,3 +40,8 @@
     </div>
 </div>
 @endsection
+
+@push('page-scripts')
+<script>
+
+</script>
