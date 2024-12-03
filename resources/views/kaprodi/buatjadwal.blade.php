@@ -209,11 +209,7 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Jumlah Kelas</label>
-                            <select class="form-select" name="group_count" id="groupCount">
-                                <option value="1">1 Kelas</option>
-                                <option value="2">2 Kelas</option>
-                                <option value="3">3 Kelas</option>
-                            </select>
+                            <input type="number" class="form-control" name="group_count" id="groupCount" required min="1">
                         </div>
                     </div>
 
