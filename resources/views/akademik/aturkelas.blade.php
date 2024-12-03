@@ -66,10 +66,12 @@
                             <td>{{ $ruang->kapasitas }} orang</td>
                             <td>{{ $ruang->program_studi_id? $ruang->programStudi->nama : 'Belum diatur' }}</td>
                             <td>
-                                @if($ruang->approval)
+                                @if($ruang->approval == 0)
+                                <span class="badge bg-warning">Pending</span>
+                                @elseif($ruang->approval == 1)
                                 <span class="badge bg-success">Disetujui</span>
-                                @else
-                                <span class="badge bg-warning">Belum Disetujui</span>
+                                @elseif($ruang->approval == 2)
+                                <span class="badge bg-danger">Ditolak</span>
                                 @endif
                             </td>
                             <td>

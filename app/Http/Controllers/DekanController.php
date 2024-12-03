@@ -49,7 +49,7 @@ class DekanController extends Controller
             $ruangKelas = RuangKelas::where('koderuang', $koderuang)->firstOrFail();
 
             // Gunakan kolom 'approval' sesuai dengan migration
-            $ruangKelas->approval = true;
+            $ruangKelas->approval = '1';
             $ruangKelas->save();
 
             return response()->json([
@@ -71,7 +71,7 @@ class DekanController extends Controller
             $ruangKelas = RuangKelas::where('koderuang', $koderuang)->firstOrFail();
 
             // Gunakan kolom 'approval' sesuai dengan migration
-            $ruangKelas->approval = false;
+            $ruangKelas->approval = '2';
             $ruangKelas->save();
 
             return response()->json([

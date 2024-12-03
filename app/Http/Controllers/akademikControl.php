@@ -40,7 +40,7 @@ class akademikControl extends Controller
         $validator = Validator::make($request->all(), [
             'koderuang' => 'required|unique:ruangkelas,koderuang',
             'kapasitas' => 'required|integer|min:1',
-            'program_studi_id' => 'nullable|exists:program_studi,id',
+            'program_studi_id' => 'required|exists:program_studi,id',
         ]);
 
         if ($validator->fails()) {
@@ -92,7 +92,7 @@ class akademikControl extends Controller
         $validator = Validator::make($request->all(), [
             'new_koderuang' => 'required|unique:ruangkelas,koderuang,' . $koderuang . ',koderuang',
             'kapasitas' => 'required|integer|min:1',
-            'program_studi_id' => 'nullable|exists:program_studi,id',
+            'program_studi_id' => 'required|exists:program_studi,id',
         ]);
 
         if ($validator->fails()) {

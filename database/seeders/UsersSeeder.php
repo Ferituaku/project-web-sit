@@ -8,6 +8,7 @@ use App\Models\Matakuliah;
 use App\Models\PembimbingAkd;
 use App\Models\ProgramStudi;
 use App\Models\RuangKelas;
+use App\Models\Kaprodi;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -46,13 +47,13 @@ class UsersSeeder extends Seeder
             [
                 'koderuang' => 'A102',
                 'kapasitas' => 40,
-                'program_studi_id' => 1,
+                'program_studi_id' => 3,
 
             ],
             [
                 'koderuang' => 'A202',
                 'kapasitas' => 30,
-                'program_studi_id' => 1,
+                'program_studi_id' => 3,
 
             ],
             [
@@ -61,9 +62,19 @@ class UsersSeeder extends Seeder
                 'program_studi_id' => 1,
             ],
             [
+                'koderuang' => 'E102',
+                'kapasitas' => 50,
+                'program_studi_id' => 1,
+            ],
+            [
+                'koderuang' => 'E103',
+                'kapasitas' => 50,
+                'program_studi_id' => 1,
+            ],
+            [
                 'koderuang' => 'B101',
                 'kapasitas' => 30,
-                'program_studi_id' => 1,
+                'program_studi_id' => 2,
             ],
             [
                 'koderuang' => 'B102',
@@ -73,17 +84,16 @@ class UsersSeeder extends Seeder
             [
                 'koderuang' => 'B103',
                 'kapasitas' => 30,
-                'program_studi_id' => 1,
+                'program_studi_id' => 2,
             ],
         ];
-        foreach ($ruangKelas as $key => $val) {
-            RuangKelas::create($val);
+        foreach ($ruangKelas as $ruang) {
+            RuangKelas::create($ruang);
         }
 
 
         $matakuliah = [
             [
-
                 'kodemk' => 1101,
                 'prodi_id' => 1,
                 'nama_mk' => 'Algoritma Pemrograman',
@@ -91,7 +101,6 @@ class UsersSeeder extends Seeder
                 'semester' => 2,
             ],
             [
-
                 'kodemk' => 1102,
                 'prodi_id' => 1,
                 'nama_mk' => 'Basis Data',
@@ -99,7 +108,6 @@ class UsersSeeder extends Seeder
                 'semester' => 3,
             ],
             [
-
                 'kodemk' => 1103,
                 'prodi_id' => 1,
                 'nama_mk' => 'Pengembangan Berbasis Platform',
@@ -107,7 +115,6 @@ class UsersSeeder extends Seeder
                 'semester' => 5,
             ],
             [
-
                 'kodemk' => 1104,
                 'prodi_id' => 1,
                 'nama_mk' => 'Struktur Data',
@@ -115,7 +122,6 @@ class UsersSeeder extends Seeder
                 'semester' => 2,
             ],
             [
-
                 'kodemk' => 1105,
                 'prodi_id' => 1,
                 'nama_mk' => 'Sistem Operasi',
@@ -123,7 +129,6 @@ class UsersSeeder extends Seeder
                 'semester' => 3,
             ],
             [
-
                 'kodemk' => 1106,
                 'prodi_id' => 1,
                 'nama_mk' => 'Jaringan Komputer',
@@ -131,7 +136,6 @@ class UsersSeeder extends Seeder
                 'semester' => 4,
             ],
             [
-
                 'kodemk' => 1107,
                 'prodi_id' => 1,
                 'nama_mk' => 'Sistem Cerdas',
@@ -139,14 +143,94 @@ class UsersSeeder extends Seeder
                 'semester' => 4,
             ],
             [
-
                 'kodemk' => 1108,
                 'prodi_id' => 1,
                 'nama_mk' => 'Kewirausahaan',
                 'sks' => 2,
                 'semester' => 6,
-            ]
+            ],
+            [
+                'kodemk' => 1109,
+                'prodi_id' => 1,
+                'nama_mk' => 'Pemrograman Berbasis Web',
+                'sks' => 3,
+                'semester' => 4,
+            ],
+            [
+                'kodemk' => 1110,
+                'prodi_id' => 1,
+                'nama_mk' => 'Manajemen Proyek Perangkat Lunak',
+                'sks' => 2,
+                'semester' => 6,
+            ],
+            // Tambahan untuk Statistika
+            [
+                'kodemk' => 2101,
+                'prodi_id' => 2,
+                'nama_mk' => 'Statistika Deskriptif',
+                'sks' => 3,
+                'semester' => 2,
+            ],
+            [
+                'kodemk' => 2102,
+                'prodi_id' => 2,
+                'nama_mk' => 'Analisis Regresi',
+                'sks' => 3,
+                'semester' => 3,
+            ],
+            [
+                'kodemk' => 2103,
+                'prodi_id' => 2,
+                'nama_mk' => 'Probabilitas dan Statistik',
+                'sks' => 4,
+                'semester' => 4,
+            ],
+            // Tambahan untuk Matematika
+            [
+                'kodemk' => 3101,
+                'prodi_id' => 3,
+                'nama_mk' => 'Aljabar Linear',
+                'sks' => 3,
+                'semester' => 2,
+            ],
+            [
+                'kodemk' => 3102,
+                'prodi_id' => 3,
+                'nama_mk' => 'Matematika Diskrit',
+                'sks' => 3,
+                'semester' => 3,
+            ],
+            [
+                'kodemk' => 3103,
+                'prodi_id' => 3,
+                'nama_mk' => 'Analisis Real',
+                'sks' => 4,
+                'semester' => 5,
+            ],
+            // Tambahan untuk Biologi
+            [
+                'kodemk' => 4101,
+                'prodi_id' => 4,
+                'nama_mk' => 'Biologi Umum',
+                'sks' => 3,
+                'semester' => 1,
+            ],
+            [
+                'kodemk' => 4102,
+                'prodi_id' => 4,
+                'nama_mk' => 'Ekologi',
+                'sks' => 3,
+                'semester' => 3,
+            ],
+            [
+                'kodemk' => 4103,
+                'prodi_id' => 4,
+                'nama_mk' => 'Bioteknologi',
+                'sks' => 4,
+                'semester' => 6,
+            ],
         ];
+        
 
         foreach ($matakuliah as $mk) {
             Matakuliah::create($mk);
@@ -254,7 +338,7 @@ class UsersSeeder extends Seeder
         $jadwalKuliah = [
             [
                 'prodi_id' => 1,
-                'ruangkelas_id' => 'A102',
+                'ruangkelas_id' => 'E103',
                 'kodemk' => 1104,
                 'dosen_id' => 12231301,
                 'plot_semester' => 5,
@@ -267,7 +351,7 @@ class UsersSeeder extends Seeder
             ],
             [
                 'prodi_id' => 1,
-                'ruangkelas_id' => 'A202',
+                'ruangkelas_id' => 'E102',
                 'kodemk' => 1102,
                 'dosen_id' => 12231303,
                 'plot_semester' => 5,
@@ -291,10 +375,34 @@ class UsersSeeder extends Seeder
                 'approval' => '1',
                 'rejection_reason' => null,
             ],
+            [
+                'prodi_id' => 2,
+                'ruangkelas_id' => 'B101',
+                'kodemk' => 2101,
+                'dosen_id' => 12231301,
+                'plot_semester' => 2,
+                'class_group' => 'A',
+                'hari' => 'Rabu',
+                'jam_mulai' => '07:00:00',
+                'jam_selesai' => '09:30:00',
+                'approval' => '1',
+                'rejection_reason' => null,
+            ],
 
         ];
         foreach ($jadwalKuliah as $jadwal) {
             JadwalKuliah::create($jadwal);
+        }
+
+        $kaprodi = [
+            [
+                'nip' => '12231202', 
+                'prodi_id' => 1, 
+            ],
+        ];
+ 
+        foreach ($kaprodi as $k) {
+            Kaprodi::create($k);
         }
 
         $userData = [

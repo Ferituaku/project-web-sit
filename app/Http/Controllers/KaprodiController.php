@@ -33,65 +33,37 @@ class KaprodiController extends Controller
 
     public function buatjadwal()
     {
-        // Get approved classrooms
-        $ruangKelas = RuangKelas::whereNotNull('program_studi_id')->get();
+        // Ambil prodi_id kaprodi yang login
+        $prodiId = DB::table('kaprodi')->where('nip', Auth::user()->nip)->value('prodi_id');
+        
+        // Filter data sesuai prodi_id
+        $program_studi = ProgramStudi::all(); 
+        $ruangKelas = RuangKelas::where('program_studi_id', $prodiId)->get();
+        $matakuliah = Matakuliah::where('prodi_id', $prodiId)->get();
+        $dosen = PembimbingAkd::all(); // Tidak perlu filter
 
-        $program_studi = ProgramStudi::all();
-
-        // Get all courses
-        $matakuliah = Matakuliah::all();
-
-        // Get users with specific roles
-        $dosen = PembimbingAkd::all();
-
-        // Get all schedules with their relationships
         $jadwalKuliah = JadwalKuliah::with(['ruangKelas', 'mataKuliah', 'pembimbingakd'])
+            ->where('prodi_id', $prodiId)
             ->orderBy('hari')
             ->orderBy('jam_mulai')
             ->get();
 
-        // Generate time slots from 07:00 to 20:00
+        // Generate timeslots seperti biasa
         $timeSlots = [];
         $mulai = Carbon::createFromTime(7, 0);
         $selesai = Carbon::createFromTime(20, 0);
-
         while ($mulai <= $selesai) {
             $timeSlots[] = $mulai->format('H:i');
             $mulai->addMinutes(30);
         }
 
-        // Initialize schedule matrix for each day
-        $jadwalMatrix = [
-            'Senin' => [],
-            'Selasa' => [],
-            'Rabu' => [],
-            'Kamis' => [],
-            'Jumat' => [],
-            'Sabtu' => []
-        ];
-
-        // Populate matrix with existing schedules
-        foreach ($jadwalKuliah as $jadwal) {
-            $jadwalMatrix[$jadwal->hari][] = $jadwal;
-        }
-
-        // Get the maximum number of groups for any course
-        $maxGroupsResult = JadwalKuliah::select('kodemk', DB::raw('COUNT(DISTINCT class_group) as group_count'))
-            ->groupBy('kodemk')
-            ->orderBy('group_count', 'desc')
-            ->first();
-
-        $maxGroups = $maxGroupsResult ? $maxGroupsResult->group_count : 3;
-
         return view('kaprodi.buatjadwal', compact(
             'ruangKelas',
-            'program_studi',
-            'matakuliah',
+            'matakuliah', 
             'dosen',
             'timeSlots',
-            'jadwalMatrix',
             'jadwalKuliah',
-            'maxGroups'
+            'program_studi'
         ));
     }
 

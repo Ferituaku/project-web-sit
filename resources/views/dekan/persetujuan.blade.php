@@ -41,6 +41,7 @@
                             <th>No</th>
                             <th>Kode Ruang</th>
                             <th>Kapasitas</th>
+                            <th>Program Studi</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -51,6 +52,12 @@
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $ruang->koderuang }}</td>
                             <td>{{ $ruang->kapasitas }} orang</td>
+                            <td>
+                                @php
+                                $programStudiNama = $programStudi->firstWhere('id', $ruang->program_studi_id)->nama;
+                                @endphp
+                                {{ $programStudiNama }}
+                            </td>
                             <td>
                                 @if($ruang->approval == 0)
                                 <span class="badge bg-warning">Pending</span>
