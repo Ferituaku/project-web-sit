@@ -176,7 +176,7 @@
                                 name="kodemk" id="kodemk" required>
                                 <option value="">Pilih Mata Kuliah</option>
                                 @foreach($matakuliah as $mk)
-                                <option value="{{ $mk->kodemk }}" data-sks="{{ $mk->sks }}">
+                                <option value="{{ $mk->kodemk }}" data-sks="{{ $mk->sks }}" data-semester="{{ $mk->semester }}">
                                     {{ $mk->kodemk }} - {{ $mk->nama_mk }}
                                 </option>
                                 @endforeach
@@ -200,12 +200,7 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Plot Semester</label>
-                            <select class="form-select" name="plot_semester" required>
-                                <option value="">Pilih Semester</option>
-                                @for($i = 1; $i <= 8; $i++)
-                                    <option value="{{ $i }}">Semester {{ $i }}</option>
-                                    @endfor
-                            </select>
+                            <input type="number" class="form-control" id="plot_semester" name="plot_semester" readonly>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Jumlah Kelas</label>
@@ -259,7 +254,7 @@
                             <label class="form-label">Mata Kuliah</label>
                             <select class="form-select" name="kodemk" id="editKodemk" required>
                                 @foreach($matakuliah as $mk)
-                                <option value="{{ $mk->kodemk }}" data-sks="{{ $mk->sks }}">
+                                <option value="{{ $mk->kodemk }}" data-sks="{{ $mk->sks }}" data-semester="{{ $mk->semester }}">
                                     {{ $mk->kodemk }} - {{ $mk->nama_mk }}
                                 </option>
                                 @endforeach
@@ -406,7 +401,7 @@
         function createClassGroupSection(groupNumber) {
             const groupLetter = String.fromCharCode(65 + groupNumber - 1); // Convert 1 to A, 2 to B, etc.
             return `
-                <div class="class-group-section">
+                <div class="class-group-section mb-3">
                     <h6 class="mb-3">Kelas ${groupLetter}</h6>
                     <div class="row">
                         <div class="col-md-4">
@@ -463,11 +458,15 @@
         // isi otomatis sks sesuai database MK
         const kodeMkSelect = document.getElementById('kodemk');
         const sksInput = document.getElementById('sks');
+        const plotSemesterInput = document.getElementById('plot_semester');
 
         kodeMkSelect.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             const sks = selectedOption.getAttribute('data-sks');
+            const semester = selectedOption.getAttribute('data-semester');
+
             sksInput.value = sks || '';
+            plotSemesterInput.value = semester || '';
         });
 
         // fungsi Search 
