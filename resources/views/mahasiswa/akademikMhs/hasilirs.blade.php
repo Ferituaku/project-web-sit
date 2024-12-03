@@ -31,7 +31,7 @@
                     </thead>
                     <tbody>
                         <!-- Your IRS data will be inserted here -->
-                        
+
                     </tbody>
                 </table>
             </div>

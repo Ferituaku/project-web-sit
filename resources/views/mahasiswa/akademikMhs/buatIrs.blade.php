@@ -49,16 +49,19 @@
                     </div>
 
                     <!-- Available Courses List -->
-                    <div id="available-courses" class="mt-4" style="display: none;">
+                    <div id="available-courses" class="mt-4">
                         <h5 class="mb-3">Mata Kuliah Tersedia</h5>
                         <div id="available-courses-list" class="list-group">
-                            <!-- Courses will be populated here -->
+                            <div class="list-group-item course-item">
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <!-- Right Panel - Schedule -->
         <div class="col-md-8 ">
 
@@ -207,226 +210,7 @@
 @endsection
 
 @section('page-scripts')
-<!-- ini lama tapi bisa nambah sks -->
-<!--<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let selectedCourses = [];
-        const MAX_SKS = 24;
-        let currentTotalSks = 0;
 
-        // Initialize from existing selections if any
-        document.querySelectorAll('.schedule-item.border-success').forEach(item => {
-            const jadwalId = item.dataset.jadwalId;
-            const sks = parseInt(item.dataset.sks);
-            selectedCourses.push({
-                id: jadwalId,
-                sks: sks
-            });
-            currentTotalSks += sks;
-            updateSksCounter();
-        });
-
-
-        // Handle schedule item click
-        document.querySelectorAll('.schedule-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const jadwalId = this.dataset.jadwalId;
-                const sks = parseInt(this.dataset.sks);
-
-                if (this.classList.contains('border-success')) {
-                    // Remove course
-                    selectedCourses = selectedCourses.filter(course => course.id !== jadwalId);
-                    currentTotalSks -= sks;
-                    this.classList.replace('border-success', 'border-info');
-                } else {
-                    // Add course
-                    if (currentTotalSks + sks > MAX_SKS) {
-                        showAlert('Total SKS melebihi batas maksimum 24 SKS', 'warning');
-                        return;
-                    }
-                    selectedCourses.push({
-                        id: jadwalId,
-                        sks: sks
-                    });
-                    currentTotalSks += sks;
-                    this.classList.replace('border-info', 'border-success');
-                }
-
-                updateSksCounter();
-                updateSelectedCoursesList();
-            });
-        });
-
-        function extractCourseInfo(scheduleItem) {
-            if (!scheduleItem) return null;
-
-            const cardBody = scheduleItem.querySelector('.card-body');
-            const nameMk = cardBody.querySelector('small:nth-child(1)').textContent.trim();
-            const code = cardBody.querySelector('small:nth-child(2)').textContent.replace('Kode:', '').trim();
-            const group = cardBody.querySelector('small:nth-child(3)').textContent.replace('Kelas:', '').trim();
-            const time = cardBody.querySelector('small:nth-child(4)').textContent.trim();
-
-            // Get day from parent cell
-            const cell = scheduleItem.closest('td');
-            const day = cell.dataset.day;
-
-            return {
-                name: nameMk,
-                code: code,
-                group: group,
-                time: time,
-                day: day
-            };
-        }
-
-        // Save IRS
-        document.getElementById('save-irs').addEventListener('click', function() {
-            if (selectedCourses.length === 0) {
-                showAlert('Pilih minimal satu mata kuliah', 'warning');
-                return;
-            }
-
-            // Send to server
-            fetch('/mahasiswa/akademikMhs/save-irs', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        jadwals: selectedCourses.map(course => course.id)
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showAlert(data.message, 'success');
-                        // Optional: Reload page after success
-                        setTimeout(() => window.location.reload(), 1500);
-                    } else {
-                        showAlert(data.message, 'error');
-                    }
-                })
-                .catch(error => {
-                    showAlert('Terjadi kesalahan saat menyimpan IRS', 'error');
-                    console.error('Error:', error);
-                });
-        });
-
-        function updateSksCounter() {
-            const totalSksElement = document.getElementById('total-sks');
-            const progressBar = document.querySelector('.progress-bar');
-
-            totalSksElement.textContent = currentTotalSks;
-            const progressPercentage = (currentTotalSks / MAX_SKS) * 100;
-
-            progressBar.style.width = `${progressPercentage}%`;
-            progressBar.setAttribute('aria-valuenow', currentTotalSks);
-
-            // Update progress bar color
-            progressBar.className = 'progress-bar';
-            if (progressPercentage > 100) {
-                progressBar.classList.add('bg-danger');
-            } else if (progressPercentage >= 75) {
-                progressBar.classList.add('bg-warning');
-            } else {
-                progressBar.classList.add('bg-success');
-            }
-        }
-
-        function removeCourse(jadwalId, sks, element) {
-            selectedCourses = selectedCourses.filter(course => course.id !== jadwalId);
-            currentTotalSks -= sks;
-            element.classList.replace('border-success', 'border-info');
-
-            updateSksCounter();
-            updateSelectedCoursesList();
-        }
-
-        function updateSelectedCoursesList() {
-            const tableBody = document.getElementById('selected-courses-table');
-            tableBody.innerHTML = '';
-
-            selectedCourses.forEach(course => {
-                const scheduleItem = document.querySelector(`.schedule-item[data-jadwal-id="${course.id}"]`);
-                const courseInfo = extractCourseInfo(scheduleItem);
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                <td>${courseInfo.code}</td>
-                <td>${courseInfo.name}</td>
-                <td>${course.sks}</td>
-                <td>${courseInfo.group}</td>
-                <td>${courseInfo.day} ${courseInfo.time}</td>
-                <td>
-                    <button class="btn btn-sm btn-danger remove-course" data-jadwal-id="${course.id}">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </td>
-            `;
-                tableBody.appendChild(row);
-            });
-
-            document.getElementById('selected-courses-count').textContent = selectedCourses.length;
-
-            document.querySelectorAll('.remove-course').forEach(button => {
-                button.addEventListener('click', async function() {
-                    const jadwalId = this.dataset.jadwalId;
-                    const scheduleItem = document.querySelector(`.schedule-item[data-jadwal-id="${jadwalId}"]`);
-                    const courseInfo = extractCourseInfo(scheduleItem);
-
-                    // Show confirmation dialog
-                    if (await showConfirmDialog(
-                            'Hapus Mata Kuliah',
-                            `Apakah Anda yakin ingin menghapus mata kuliah ${courseInfo.name} (${courseInfo.code}) dari IRS?`
-                        )) {
-                        scheduleItem.click(); // Remove the course
-                    }
-                });
-            });
-        }
-
-        function showConfirmDialog(title, message) {
-            const confirmModal = document.getElementById('confirmModal');
-
-
-
-            confirmModal.element.querySelector('.confirm-button').addEventListener('click', () => {
-                confirmModal.hide();
-                resolve(true);
-            });
-
-            confirmModal.element.addEventListener('hidden.bs.modal', () => {
-                resolve(false);
-            });
-
-            document.body.appendChild(confirmModal.element);
-            confirmModal.show();
-
-        }
-
-        function showAlert(message, type) {
-            const alertModal = document.getElementById('alertModal');
-
-            const alertMessage = document.getElementById('alert-message');
-            const alertIcon = document.getElementById('alert-icon');
-
-            alertMessage.textContent = message;
-
-            // Update icon and colors based on type
-            alertIcon.className = 'fas fa-3x mb-3 ';
-            if (type === 'success') {
-                alertIcon.classList.add('fa-check-circle', 'text-success');
-            } else if (type === 'warning') {
-                alertIcon.classList.add('fa-exclamation-triangle', 'text-warning');
-            } else {
-                alertIcon.classList.add('fa-times-circle', 'text-danger');
-            }
-
-            new bootstrap.Modal(alertModal).show();
-        }
-    });
-</script> -->
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -702,6 +486,69 @@
                 }
             });
         });
+
+        // Fetch and display all available courses
+        async function fetchAndDisplayCourses() {
+            try {
+                const response = await fetch('/mahasiswa/akademikMhs/get-courses');
+                const courses = await response.json();
+                displayAvailableCourses(courses);
+            } catch (error) {
+                console.error('Error fetching courses:', error);
+                showAlert('Gagal memuat mata kuliah', 'error');
+            }
+        }
+
+        function displayAvailableCourses(courses) {
+            const availableCoursesList = document.getElementById('available-courses-list');
+            availableCoursesList.innerHTML = '';
+
+            courses.forEach((course) => {
+                const courseItem = createCourseItem(course);
+                availableCoursesList.appendChild(courseItem);
+            });
+
+            toggleAvailableCourses(true); // Show available courses by default
+        }
+
+        function createCourseItem(course) {
+            const item = document.createElement('div');
+            item.classList.add('list-group-item', 'course-item');
+            item.dataset.jadwalId = course.id;
+            item.dataset.sks = course.sks;
+            item.dataset.kode = course.kodemk;
+            item.dataset.nama = course.nama_mk;
+            item.dataset.hari = course.hari;
+            item.dataset.jamMulai = course.jam_mulai;
+            item.dataset.jamSelesai = course.jam_selesai;
+            // Populate course details
+            item.innerHTML = `
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <button class="btn btn-info">Show</button>
+        </div>
+      <div>
+        <h6 class="mb-1">${course.nama_mk}</h6>
+        <small>Kode: ${course.kodemk}</small>
+        <small class="d-block">Semester ${course.plot_semester}</small>
+        <small class="d-block">${course.hari}, ${course.jam_mulai} - ${course.jam_selesai}</small>
+      </div>
+      <span class="badge bg-primary rounded-pill">${course.sks} SKS</span>
+    </div>
+  `;
+
+            item.addEventListener('click', () => handleScheduleItemClick(item));
+            return item;
+        }
+
+        function toggleAvailableCourses(show) {
+            const availableCoursesContainer = document.getElementById('available-courses');
+            availableCoursesContainer.style.display = show ? 'block' : 'none';
+
+            const toggleButton = document.getElementById('toggle-available-courses');
+            toggleButton.textContent = show ? 'Sembunyikan Mata Kuliah' : 'Tampilkan Mata Kuliah';
+        }
+
 
     });
 </script>

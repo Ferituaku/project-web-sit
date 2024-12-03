@@ -43,7 +43,7 @@ class MahasiswaController extends Controller
     }
     public function hasilirs()
     {
-        
+
         return view('mahasiswa.akademikMhs.hasilirs');
     }
     public function khs()
@@ -61,7 +61,7 @@ class MahasiswaController extends Controller
         try {
             $mahasiswa = Auth::user();
             $semester = $request->input('semester');
-
+            $matakuliah = Matakuliah::all();
             // Get current IRS if exists
             $currentIrs = Irs::where('nim', $mahasiswa->nim)->first();
 

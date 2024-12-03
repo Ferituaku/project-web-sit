@@ -9,6 +9,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('irs', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('nim');
             $table->integer('semester');
             $table->string('tahun_ajaran', 10);
@@ -23,15 +24,13 @@ return new class extends Migration
         // Tabel pivot untuk relasi many-to-many antara IRS dan Jadwal Kuliah
         Schema::create('irs_jadwal', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('nim');
+            $table->unsignedBigInteger('irs_id');
             $table->unsignedBigInteger('jadwal_id');
             $table->timestamps();
 
-            $table->foreign('nim')->references('nim')->on('irs')->onDelete('cascade');
+            $table->foreign('irs_id')->references('id')->on('irs')->onDelete('cascade');
             $table->foreign('jadwal_id')->references('id')->on('jadwalKuliah')->onDelete('cascade');
 
-            // Memastikan tidak ada duplikasi jadwal dalam satu IRS
-            $table->unique(['nim', 'jadwal_id']);
         });
     }
 
