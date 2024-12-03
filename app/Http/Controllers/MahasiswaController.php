@@ -43,8 +43,33 @@ class MahasiswaController extends Controller
     }
     public function hasilirs()
     {
+        try {
+            $mahasiswa = Auth::user();
 
-        return view('mahasiswa.akademikMhs.hasilirs');
+            // Get all IRS records for the student with eager loading
+            $irsRecords = Irs::where('nim', $mahasiswa->nim)
+                ->with(['jadwalKuliah.matakuliah', 'jadwalKuliah.pembimbingakd'])
+                ->orderBy('tahun_ajaran', 'desc')
+                ->orderBy('semester', 'desc')
+                ->get()
+                ->groupBy(function ($item) use ($mahasiswa) {
+                    return sprintf(
+                        'SMT %d - %s - %s',
+                        $mahasiswa->semester,
+                        $item->semester % 2 == 1 ? 'Ganjil' : 'Genap',
+                        $item->tahun_ajaran
+                    );
+                });
+
+            // Debug information
+            \Log::info('Current User:', ['mahasiswa' => $mahasiswa->toArray()]);
+            \Log::info('IRS Records:', ['records' => $irsRecords->toArray()]);
+
+            return view('mahasiswa.akademikMhs.hasilirs', compact('irsRecords', 'mahasiswa'));
+        } catch (\Exception $e) {
+            \Log::error('Error in hasilirs:', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
     public function khs()
     {
@@ -61,7 +86,10 @@ class MahasiswaController extends Controller
         try {
             $mahasiswa = Auth::user();
             $semester = $request->input('semester');
-            $matakuliah = Matakuliah::all();
+            $jadwalKuliah = JadwalKuliah::with(['matakuliah', 'ruangKelas'])
+                ->orderBy('hari')
+                ->orderBy('jam_mulai')
+                ->get();
             // Get current IRS if exists
             $currentIrs = Irs::where('nim', $mahasiswa->nim)->first();
 
@@ -146,152 +174,34 @@ class MahasiswaController extends Controller
 
         return $scheduleMatrix;
     }
+    public function cetakIrs($tahunAjaran, $semester)
+    {
+        try {
+            $mahasiswa = Auth::user();
 
-    // public function saveIrs(Request $request)
-    // {
-    //     try {
-    //         DB::beginTransaction();
+            $irs = Irs::where('nim', $mahasiswa->nim)
+                ->where('tahun_ajaran', $tahunAjaran)
+                ->where('semester', $semester)
+                ->with(['jadwalKuliah.matakuliah', 'jadwalKuliah.pembimbingakd'])
+                ->first();
 
-    //         $mahasiswa = Auth::user();
-    //         $selectedJadwals = $request->input('jadwals', []);
-    //         $semester = $request->input('semester');
-    //         $tahunAjaran = $request->input('tahun_ajaran');
+            if (!$irs) {
+                return back()->with('error', 'Data IRS tidak ditemukan');
+            }
 
-    //         if (empty($semester) || empty($tahunAjaran)) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Semester dan tahun ajaran harus diisi'
-    //             ], 400);
-    //         }
+            $data = [
+                'irs' => $irs,
+                'mahasiswa' => $mahasiswa,
+                'semester_text' => $semester % 2 == 1 ? 'Ganjil' : 'Genap'
+            ];
 
-    //         // Validate total SKS
-    //         $totalSks = JadwalKuliah::whereIn('id', $selectedJadwals)
-    //             ->join('matakuliah', 'jadwalKuliah.kodemk', '=', 'matakuliah.kodemk')
-    //             ->sum('matakuliah.sks');
+            $pdf = PDF::loadView('mahasiswa.akademikMhs.cetak-irs', $data);
+            return $pdf->stream('IRS-' . $mahasiswa->nim . '-' . $tahunAjaran . '-' . $semester . '.pdf');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal mencetak IRS: ' . $e->getMessage());
+        }
+    }
 
-    //         if ($totalSks > 24) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Total SKS melebihi batas maksimum (24 SKS)'
-    //             ], 400);
-    //         }
-
-    //         // Check for schedule conflicts
-    //         if ($this->hasScheduleConflict($selectedJadwals)) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Terdapat jadwal yang bertabrakan'
-    //             ], 400);
-    //         }
-
-    //         $irs = Irs::updateOrCreate(
-    //             [
-    //                 'nim' => $mahasiswa->nim,
-    //                 'semester' => $semester,
-    //                 'tahun_ajaran' => $tahunAjaran
-    //             ],
-    //             [
-    //                 'total_sks' => $totalSks,
-    //                 'approval' => '0' // Reset approval status on update
-    //             ]
-    //         );
-    //         // Update total SKS
-    //         $irs->total_sks = $totalSks;
-
-
-    //         // Sync jadwal kuliah
-    //         $irs->jadwalKuliah()->sync($selectedJadwals);
-
-    //         DB::commit();
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'IRS berhasil disimpan'
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
-
-    // public function saveIrs(Request $request)
-    // {
-    //     try {
-    //         DB::beginTransaction();
-
-    //         $mahasiswa = Auth::user();
-    //         $selectedJadwals = $request->input('jadwals', []);
-
-    //         // $semester = $mahasiswa->semester;
-    //         // $tahunAjaran = $mahasiswa->tahun_ajaran;
-
-    //         // Validate input
-    //         $this->validateIrsInput($selectedJadwals);
-
-    //         // Calculate total SKS
-    //         $totalSks = $this->calculateTotalSks($selectedJadwals);
-
-    //         // Validate SKS limit
-    //         if ($totalSks > 24) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Total SKS melebihi batas maksimum (24 SKS)'
-    //             ], 400);
-    //         }
-
-    //         // Check for schedule conflicts
-    //         if ($this->hasScheduleConflict($selectedJadwals)) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Terdapat jadwal yang bertabrakan'
-    //             ], 400);
-    //         }
-    //         // Create new IRS record
-    //         $irs = new Irs();
-    //         $irs->nim = $mahasiswa->nim;
-    //         $irs->semester = $mahasiswa->semester;
-    //         $irs->tahun_ajaran = $mahasiswa->tahun_ajaran;
-    //         $irs->total_sks = $totalSks;
-    //         $irs->approval = '0'; // Default to pending approval
-    //         $irs->save();
-
-    //         $pivotData = array_map(function ($jadwalId) {
-    //             return [
-    //                 'jadwal_id' => $jadwalId,
-    //                 'created_at' => now(),
-    //                 'updated_at' => now()
-    //             ];
-    //         }, $selectedJadwals);
-
-    //         // Insert into irs_jadwal pivot table
-    //         foreach ($pivotData as $data) {
-    //             DB::table('irs_jadwal')->insert([
-    //                 'irs_id' => $irs->id,
-    //                 'jadwal_id' => $data['jadwal_id'],
-    //                 'created_at' => $data['created_at'],
-    //                 'updated_at' => $data['updated_at']
-    //             ]);
-    //         }
-
-    //         DB::commit();
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'IRS berhasil disimpan dan menunggu persetujuan dosen wali'
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         Log::error('Error saving IRS: ' . $e->getMessage());
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Terjadi kesalahan saat menyimpan IRS: ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
 
     public function saveIrs(Request $request)
     {

@@ -52,11 +52,24 @@
                     <div id="available-courses" class="mt-4">
                         <h5 class="mb-3">Mata Kuliah Tersedia</h5>
                         <div id="available-courses-list" class="list-group">
-                            <div class="list-group-item course-item">
+                            @foreach($jadwalKuliah as $jadwal)
+                            <div class="list-group-item course-item" data-jadwal-id="{{ $jadwal->id }}">
                                 <div class="d-flex justify-content-between align-items-center">
-
+                                    <button class="btn btn-info btn-sm toggle-schedule"
+                                        data-jadwal-id="{{ $jadwal->id }}"
+                                        data-visible="false">
+                                        <i class="bi bi-eye" style="font-size: 1.2rem;"></i>
+                                    </button>
+                                    <div class="ms-3">
+                                        <h6 class="mb-1">{{ $jadwal->matakuliah->nama_mk }}</h6>
+                                        <small>Kode: {{ $jadwal->kodemk }}</small>
+                                        <small class="d-block">Semester {{ $jadwal->plot_semester }}</small>
+                                        <small class="d-block">{{ $jadwal->hari }}, {{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</small>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">{{ $jadwal->matakuliah->sks }} SKS</span>
                                 </div>
                             </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -206,11 +219,32 @@
         transform: scale(1.02);
         z-index: 1;
     }
+
+    .course-item {
+        transition: all 0.3s ease;
+    }
+
+    .course-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .toggle-schedule {
+        min-width: 60px;
+    }
+
+    .schedule-item {
+        transition: all 0.3s ease;
+        display: none;
+        /* Hidden by default */
+    }
+
+    .schedule-item.visible {
+        display: block;
+    }
 </style>
 @endsection
 
 @section('page-scripts')
-
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -470,86 +504,82 @@
         });
 
         // Modify semester filter handler to only affect course visibility
-        const semesterFilter = document.getElementById('semester-filter');
-        semesterFilter.addEventListener('change', function() {
-            const selectedSemester = this.value;
+        // const semesterFilter = document.getElementById('semester-filter');
+        // semesterFilter.addEventListener('change', function() {
+        //     const selectedSemester = this.value;
 
-            // Hide/show courses based on semester
-            document.querySelectorAll('.schedule-item').forEach(item => {
-                const courseSemester = item.querySelector('small:nth-child(4)').textContent
-                    .match(/SMT\((\d+)\)/)[1];
+        //     // Hide/show courses based on semester
+        //     document.querySelectorAll('.schedule-item').forEach(item => {
+        //         const courseSemester = item.querySelector('small:nth-child(4)').textContent
+        //             .match(/SMT\((\d+)\)/)[1];
 
-                if (!selectedSemester || courseSemester === selectedSemester) {
-                    item.style.display = 'block';
+        //         if (!selectedSemester || courseSemester === selectedSemester) {
+        //             item.style.display = 'block';
+        //         } else {
+        //             item.style.display = 'none';
+        //         }
+        //     });
+        // });
+
+        // Fetch and display all available courses
+
+
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inisialisasi toggle buttons
+        const toggleButtons = document.querySelectorAll('.toggle-schedule');
+
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const jadwalId = this.dataset.jadwalId;
+                const isVisible = this.dataset.visible === 'true';
+
+                // Toggle visibility state
+                this.dataset.visible = (!isVisible).toString();
+
+                // Toggle icon
+                const icon = this.querySelector('i');
+                if (isVisible) {
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
                 } else {
-                    item.style.display = 'none';
+
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
                 }
+                // Toggle visibility di schedule matrix
+                const scheduleItems = document.querySelectorAll(`.schedule-item[data-jadwal-id="${jadwalId}"]`);
+                scheduleItems.forEach(item => {
+                    if (isVisible) {
+                        item.style.display = 'none';
+                    } else {
+                        item.style.display = 'block';
+                    }
+                });
             });
         });
 
-        // Fetch and display all available courses
-        async function fetchAndDisplayCourses() {
-            try {
-                const response = await fetch('/mahasiswa/akademikMhs/get-courses');
-                const courses = await response.json();
-                displayAvailableCourses(courses);
-            } catch (error) {
-                console.error('Error fetching courses:', error);
-                showAlert('Gagal memuat mata kuliah', 'error');
-            }
-        }
+        // Filter functionality
+        const semesterFilter = document.getElementById('semester-filter');
+        const searchInput = document.getElementById('search-course');
 
-        function displayAvailableCourses(courses) {
-            const availableCoursesList = document.getElementById('available-courses-list');
-            availableCoursesList.innerHTML = '';
+        function filterCourses() {
+            const semester = semesterFilter.value;
+            const searchTerm = searchInput.value.toLowerCase();
 
-            courses.forEach((course) => {
-                const courseItem = createCourseItem(course);
-                availableCoursesList.appendChild(courseItem);
+            document.querySelectorAll('.course-item').forEach(item => {
+                const courseInfo = item.querySelector('h6').textContent.toLowerCase();
+                const courseSemester = item.querySelector('small:nth-child(3)').textContent.match(/\d+/)[0];
+
+                const matchesSemester = !semester || courseSemester === semester;
+                const matchesSearch = !searchTerm || courseInfo.includes(searchTerm);
+
+                item.style.display = matchesSemester && matchesSearch ? 'block' : 'none';
             });
-
-            toggleAvailableCourses(true); // Show available courses by default
         }
 
-        function createCourseItem(course) {
-            const item = document.createElement('div');
-            item.classList.add('list-group-item', 'course-item');
-            item.dataset.jadwalId = course.id;
-            item.dataset.sks = course.sks;
-            item.dataset.kode = course.kodemk;
-            item.dataset.nama = course.nama_mk;
-            item.dataset.hari = course.hari;
-            item.dataset.jamMulai = course.jam_mulai;
-            item.dataset.jamSelesai = course.jam_selesai;
-            // Populate course details
-            item.innerHTML = `
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <button class="btn btn-info">Show</button>
-        </div>
-      <div>
-        <h6 class="mb-1">${course.nama_mk}</h6>
-        <small>Kode: ${course.kodemk}</small>
-        <small class="d-block">Semester ${course.plot_semester}</small>
-        <small class="d-block">${course.hari}, ${course.jam_mulai} - ${course.jam_selesai}</small>
-      </div>
-      <span class="badge bg-primary rounded-pill">${course.sks} SKS</span>
-    </div>
-  `;
-
-            item.addEventListener('click', () => handleScheduleItemClick(item));
-            return item;
-        }
-
-        function toggleAvailableCourses(show) {
-            const availableCoursesContainer = document.getElementById('available-courses');
-            availableCoursesContainer.style.display = show ? 'block' : 'none';
-
-            const toggleButton = document.getElementById('toggle-available-courses');
-            toggleButton.textContent = show ? 'Sembunyikan Mata Kuliah' : 'Tampilkan Mata Kuliah';
-        }
-
-
+        semesterFilter.addEventListener('change', filterCourses);
+        searchInput.addEventListener('input', filterCourses);
     });
 </script>
 

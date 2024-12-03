@@ -528,10 +528,7 @@
         // Delete confirmation
         window.confirmDelete = function(id) {
             if (confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) {
-                window.location.href = ` / kaprodi / jadwal / delete / $ {
-                        id
-                    }
-                    `;
+                window.location.href = `/kaprodi/jadwal/delete/${id}`;
             }
         };
     });

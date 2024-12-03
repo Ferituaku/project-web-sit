@@ -26,22 +26,34 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Rute untuk mahasiswa
     Route::group(['middleware' => 'role:mahasiswa'], function () {
+        // Dashboard & General Routes
         Route::get('/mahasiswa/dashboard', [MahasiswaController::class, 'mahasiswa'])->name('mahasiswa.dashboard');
         Route::get('/mahasiswa/biaya', [MahasiswaController::class, 'biaya'])->name('mahasiswa.biaya');
         Route::get('/mahasiswa/jadwal', [MahasiswaController::class, 'jadwal'])->name('mahasiswa.jadwal');
         Route::get('/mahasiswa/herreg', [MahasiswaController::class, 'herreg'])->name('mahasiswa.herreg');
         Route::get('/mahasiswa/irs', [MahasiswaController::class, 'irs'])->name('mahasiswa.irs');
-        Route::get('/mahasiswa/akademikMhs/akademik-base', [MahasiswaController::class, 'akademik'])->name('mahasiswa.akademikMhs.akademik-base');
-        Route::get('/mahasiswa/akademikMhs/get-courses', [MahasiswaController::class, 'getCourses'])->name('mahasiswa.akademikMhs.getCourses');
 
-        Route::get('/mahasiswa/akademikMhs/buatIrs', [MahasiswaController::class, 'buatIrs'])->name('mahasiswa.akademikMhs.buatIrs');
+        // Akademik Routes
+        Route::prefix('mahasiswa/akademikMhs')->name('mahasiswa.akademikMhs.')->group(function () {
+            // Base Routes
+            Route::get('/akademik-base', [MahasiswaController::class, 'akademik'])->name('akademik-base');
+            Route::get('/get-courses', [MahasiswaController::class, 'getCourses'])->name('getCourses');
 
-        Route::post('/mahasiswa/akademikMhs/save-irs', [MahasiswaController::class, 'saveIrs'])->name('mahasiswa.akademikMhs.saveIrs');
-        Route::get('/mahasiswa/akademikMhs/hasilirs', [MahasiswaController::class, 'hasilirs'])->name('mahasiswa.akademikMhs.hasilirs');
-        Route::get('/mahasiswa/akademikMhs/khs', [MahasiswaController::class, 'khs'])->name('mahasiswa.akademikMhs.khs');
-        Route::get('/mahasiswa/akademikMhs/transkrip', [MahasiswaController::class, 'transkrip'])->name('mahasiswa.akademikMhs.transkrip');
+            // IRS Routes
+            Route::get('/buatIrs', [MahasiswaController::class, 'buatIrs'])->name('buatIrs');
+            Route::post('/save-irs', [MahasiswaController::class, 'saveIrs'])->name('saveIrs');
+            Route::get('/hasilirs', [MahasiswaController::class, 'hasilirs'])->name('hasilirs');
+            Route::get('/cetak-irs/{tahunAjaran}/{semester}', [MahasiswaController::class, 'cetakIrs'])
+                ->name('cetak-irs')
+                ->where([
+                    'tahunAjaran' => '[0-9]{4}/[0-9]{4}',
+                    'semester' => '[0-9]+'
+                ]);
+            // KHS & Transkrip Routes
+            Route::get('/khs', [MahasiswaController::class, 'khs'])->name('khs');
+            Route::get('/transkrip', [MahasiswaController::class, 'transkrip'])->name('transkrip');
+        });
     });
-
 
     Route::prefix('akademik')->middleware('role:akademik')->name('akademik.')->group(function () {
 
