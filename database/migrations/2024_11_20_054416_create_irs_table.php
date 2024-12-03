@@ -31,6 +31,11 @@ return new class extends Migration
             $table->foreign('irs_id')->references('id')->on('irs')->onDelete('cascade');
             $table->foreign('jadwal_id')->references('id')->on('jadwalKuliah')->onDelete('cascade');
 
+<<<<<<< HEAD
+=======
+            // Memastikan tidak ada duplikasi jadwal dalam satu IRS
+            $table->unique(['irs_id', 'jadwal_id']);
+>>>>>>> 78cdf1b (solusi auto fill semester dan irs table)
         });
     }
 
