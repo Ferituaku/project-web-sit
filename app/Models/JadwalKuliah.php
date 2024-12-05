@@ -21,7 +21,6 @@ class JadwalKuliah extends Model
         'jam_mulai',
         'jam_selesai',
         'approval',
-        'rejection_reason'
     ];
     public function ruangKelas(): BelongsTo
     {

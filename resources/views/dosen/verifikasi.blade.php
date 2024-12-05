@@ -17,15 +17,15 @@
     <!-- Main Card -->
     <div class="card shadow-sm">
         <div class="card-header bg-white py-3">
-            <h5 class="mb-0 text-dark">Daftar IRS Mahasiswa untuk Disetujui</h5>
+            <h5 class="mb-0 text-dark">Daftar IRS Mahasiswa untuk Diverifikasi</h5>
         </div>
 
         <div class="card-body">
             <!-- Search Section -->
             <div class="row mb-3">
-                <div class="col-md-4 offset-md-8">
+                <div class="col-md-6 offset-md-6">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Cari ruang kelas..." id="searchInput">
+                        <input type="text" class="form-control" placeholder="Cari mahasiswa..." id="searchInput">
                         <button class="btn btn-outline-secondary" type="button">
                             <i class="bi bi-search"></i>
                         </button>
@@ -41,42 +41,107 @@
                             <th>No</th>
                             <th>NIM</th>
                             <th>Nama</th>
+                            <th>Semester</th>
+                            <th>Total SKS</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <td>1</td>
-                        <td>24060</td>
-                        <td>ferro</td>
-                        <td>
-                            <div class="col text-muted">
-                                <span class="badge bg-warning">Belum Disetujui</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-info me-3" data-toggle="tooltip">
-                                    Lihat Detail
-                                </button>
-                                <button class="btn btn-sm btn-success me-1" onclick="">
-                                    <i class="bi bi-check-circle me-1"></i>Setujui
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="">
-                                    <i class="bi bi-x-circle me-1"></i>Tolak
-                                </button>
-
-                            </div>
-                        </td>
-                        </td>
+                        @foreach($irs as $index => $item)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $item->mahasiswa->nim }}</td>
+                            <td>{{ $item->mahasiswa->name }}</td>
+                            <td>{{ $item->semester }}</td>
+                            <td>{{ $item->total_sks }} SKS</td>
+                            <td>
+                                @if($item->approval == 0)
+                                <span class="badge bg-warning">Pending</span>
+                                @elseif($item->approval == 1)
+                                <span class="badge bg-success">Disetujui</span>
+                                @elseif($item->approval == 2)
+                                <span class="badge bg-danger">Ditolak</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($item->approval == 0)
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-info me-1" 
+                                            onclick="showIRSDetail('{{ $item->id }}')" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#irsDetailModal">
+                                        <i class="bi bi-eye me-1"></i>Detail
+                                    </button>
+                                    <button class="btn btn-sm btn-success me-1" onclick="approveIRS('{{ $item->id }}')">
+                                        <i class="bi bi-check-circle me-1"></i>Setujui
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="rejectIRS('{{ $item->id }}')">
+                                        <i class="bi bi-x-circle me-1"></i>Tolak
+                                    </button>
+                                </div>
+                                @elseif($item->approval == 1)
+                                <span class="text-muted">Sudah disetujui</span>
+                                @elseif($item->approval == 2)
+                                <span class="text-muted">Ditolak</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
 
             <!-- Pagination -->
-            <div class="row align-items-center mt-4">
-                <div class="col-md-6">
+            @if($irs->total() > 0)
+            <div class="card-footer d-flex justify-content-between align-items-center py-3">
+                <div class="text-sm text-muted">
+                    Menampilkan {{ $irs->firstItem() }} - {{ $irs->lastItem() }}
+                    dari {{ $irs->total() }} IRS
+                </div>
+                <div>
+                    {{ $irs->links('vendor.pagination.bootstrap-5') }}
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+</div>
 
+<!-- IRS Detail Modal -->
+<div class="modal fade" id="irsDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail IRS</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="irsDetailContent">
+                    <div class="mb-3">
+                        <h6>Total SKS: <span id="total-sks">0</span>/24</h6>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%;"
+                                aria-valuenow="0" aria-valuemin="0" aria-valuemax="24">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Kode MK</th>
+                                    <th>Mata Kuliah</th>
+                                    <th>SKS</th>
+                                    <th>Kelas</th>
+                                    <th>Jadwal</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="selected-courses-table">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -85,7 +150,7 @@
 @endsection
 
 @section('scripts')
-<!-- <script>
+<script>
     function showAlert(type, message) {
         const alertContainer = document.getElementById('alert-container');
         const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
@@ -97,58 +162,48 @@
         `;
     }
 
-    function approveRoom(koderuang) {
-        fetch(`/dekan/ruangkelas/${koderuang}/approve`, {
-                method: 'PUT',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    showAlert('success', data.message);
-                    location.reload();
-                } else {
-                    showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
-                }
-            })
-            .catch(error => {
-                showAlert('error', 'Terjadi kesalahan sistem.');
-            });
+    function approveIRS(id) {
+        fetch(`/dosen/irs/${id}/approve`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showAlert('success', 'IRS berhasil disetujui');
+                location.reload();
+            } else {
+                showAlert('error', data.message || 'Terjadi kesalahan saat menyetujui IRS');
+            }
+        })
+        .catch(error => {
+            showAlert('error', 'Terjadi kesalahan sistem');
+        });
     }
 
-    function rejectRoom(koderuang) {
-        fetch(`/dekan/ruangkelas/${koderuang}/reject`, {
-                method: 'PUT',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    showAlert('success', data.message);
-                    location.reload();
-                } else {
-                    showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
-                }
-            })
-            .catch(error => {
-                showAlert('error', 'Terjadi kesalahan sistem.');
-            });
+    function rejectIRS(id) {
+        fetch(`/dosen/irs/${id}/reject`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showAlert('success', 'IRS berhasil ditolak');
+                location.reload();
+            } else {
+                showAlert('error', data.message || 'Terjadi kesalahan saat menolak IRS');
+            }
+        })
+        .catch(error => {
+            showAlert('error', 'Terjadi kesalahan sistem');
+        });
     }
-
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('keyup', function(e) {
-        const searchValue = e.target.value.toLowerCase();
-        const tableBody = document.querySelector('tbody');
-        const rows = tableBody.getElementsByTagName('tr');
-
-        for (let row of rows) {
-            const koderuang = row.cells[1].textContent.toLowerCase();
-            row.style.display = koderuang.includes(searchValue) ? '' : 'none';
-        }
-    });
-</script> -->
+</script>
 @endsection

@@ -107,14 +107,7 @@
                                 @elseif($jadwal->approval == '1')
                                 <span class="badge bg-success">Disetujui</span>
                                 @else
-                                <button class="badge bg-danger border-0 d-inline-flex align-items-center"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#rejectionReasonModal"
-                                    onclick="showRejectionReason(this)"
-                                    data-reason="{{ $jadwal->rejection_reason }}">
-                                    Ditolak
-                                    <i class=" bi bi-info-circle ms-1"></i>
-                                </button>
+                                <span class="badge bg-danger">Ditolak</span>
                                 @endif
                             </td>
                             <td>
@@ -169,7 +162,7 @@
 
                     <!-- Basic Information -->
                     <div class="row mb-3">
-                        <input type="hidden" name="prodi_id" value="{{ DB::table('kaprodi')->where('nip', Auth::user()->nip)->value('prodi_id') }}">
+                        <input type="hidden" name="prodi_id" value="{{ DB::table('pembimbingakd')->where('nip', Auth::user()->nip)->value('prodi_id') }}">
                         <div class="col-md-6">
                             <label class="form-label">Mata Kuliah</label>
                             <select class="form-select @error('kodemk') is-invalid @enderror"
@@ -308,32 +301,6 @@
         </div>
     </div>
 </div>
-
-
-<!-- Rejection reason viewer -->
-<div class="modal fade" id="rejectionReasonModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">
-                    <i class="bi bi-exclamation-circle me-2"></i>
-                    Alasan Penolakan
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-
-                <div>
-                    <label class="form-label fw-bold">Alasan Penolakan:</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 @endsection
 

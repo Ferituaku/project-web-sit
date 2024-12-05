@@ -91,10 +91,10 @@
                             <td>
                                 @if($jadwal->approval == '0')
                                 <div class="btn-group">
-                                    <button class="btn btn-sm btn-success me-1" onclick="approveJadwal({{$jadwal->jadwalId}})">
+                                    <button class="btn btn-sm btn-success me-1" onclick="approveJadwal({{$jadwal->id}})">
                                         <i class="bi bi-check-circle me-1"></i>Setujui
                                     </button>
-                                    <button class="btn btn-sm btn-danger" onclick="showRejectModalJadwal({{$jadwal->jadwalId}})">
+                                    <button class="btn btn-sm btn-danger" onclick="rejectJadwal({{$jadwal->id}})">
                                         <i class="bi bi-x-circle me-1"></i>Tolak
                                     </button>
                                 </div>
@@ -115,162 +115,86 @@
         </div>
     </div>
 </div>
-
-<!-- Rejection Modal -->
-<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="rejectModalLabel">Alasan Penolakan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="rejectForm">
-                    <input type="hidden" id="jadwal_id" name="jadwal_id">
-                    <div class="mb-3">
-                        <label for="rejection_reason" class="form-label">Alasan Penolakan</label>
-                        <textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="3" required></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-danger" onclick="submitRejection()">Kirim</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 @endsection
 
-@push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        function showRejectModalJadwal(jadwalId) {
-            // Set jadwal_id ke input hidden
-            document.getElementById('jadwal_id').value = jadwalId;
-            document.getElementById('rejection_reason').value = '';
-            const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
-            modal.show();
-        }
-
-        function approveJadwal(jadwalId) {
-            if (!confirm('Apakah Anda yakin ingin menyetujui jadwal ini?')) return;
-
-            fetch(`/dekan/jadwal/${jadwalId}/approve`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'sukses') {
-                        showAlert('sukses', data.message);
-                        setTimeout(() => location.reload(), 1500);
-                    } else {
-                        showALert('error', data.message);
-                    }
-                })
-                .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
-        }
-
-        function submitRejection() {
-            const jadwalId = document.getElementById('jadwal_id').value;
-            const reason = document.getElementById('rejection_reason').value.trim();
-
-            if (!reason.trim()) {
-                alert('Harap isi alasan penolakan');
-                return;
-            }
-
-
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            fetch(`/dekan/jadwal/${jadwalId}/reject`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        rejection_reason: reason
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
-                        showAlert('success', data.message);
-                        setTimeout(() => location.reload(), 1500);
-                    } else {
-                        showAlert('error', data.message || 'Terjadi kesalahan');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showAlert('error', 'Terjadi kesalahan saat memproses permintaan');
-                });
-        }
-
-
-
-        function showAlert(type, message) {
-            const alertContainer = document.getElementById('alert-container');
-            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-
-            alertContainer.innerHTML = `
+function showAlert(type, message) {
+    const alertContainer = document.getElementById('alert-container');
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    alertContainer.innerHTML = `
         <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
             ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
+}
 
-            setTimeout(() => {
-                const alert = alertContainer.querySelector('.alert');
-                if (alert) {
-                    alert.remove();
-                }
-            }, 3000);
+function approveJadwal(jadwalId) {
+    fetch(`/dekan/jadwal/${jadwalId}/approve`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json'
         }
-
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-
-        let isAscending = true;
-
-        // Fungsi untuk mengurutkan tabel berdasarkan kolom semester
-        function sortTableBySemester() {
-            const tbody = document.querySelector('tbody');
-            const rows = Array.from(tbody.querySelectorAll('tr'));
-
-            rows.sort((a, b) => {
-                const semesterA = parseInt(a.querySelector('td:nth-child(5)').textContent);
-                const semesterB = parseInt(b.querySelector('td:nth-child(5)').textContent);
-                return isAscending ? semesterA - semesterB : semesterB - semesterA;
-            });
-
-            // Bersihkan isi tabel dan tambahkan baris yang sudah diurutkan
-            tbody.innerHTML = '';
-            rows.forEach(row => tbody.appendChild(row));
-
-            // Perbarui ikon panah berdasarkan urutan
-            document.getElementById('sortIcon').className = isAscending ? 'bi btn-outline-light  bi-sort-down' : 'bi btn-outline-light bi-sort-up';
-
-            // Ubah arah urutan untuk klik berikutnya
-            isAscending = !isAscending;
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'sukses') {
+            showAlert('success', data.message);
+            location.reload();
+        } else {
+            showAlert('error', data.message);
         }
+    })
+    .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
+}
 
-        // Event listener untuk tombol sort
-        document.getElementById('sortSemester').addEventListener('click', sortTableBySemester);
+function rejectJadwal(jadwalId) {
+    fetch(`/dekan/jadwal/${jadwalId}/reject`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            showAlert('success', data.message);
+            location.reload();
+        } else {
+            showAlert('error', data.message);
+        }
+    })
+    .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
+}
 
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
+// Event listener untuk sorting dan tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    let isAscending = true;
+
+    function sortTableBySemester() {
+        const tbody = document.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+        rows.sort((a, b) => {
+            const semesterA = parseInt(a.querySelector('td:nth-child(6)').textContent);
+            const semesterB = parseInt(b.querySelector('td:nth-child(6)').textContent);
+            return isAscending ? semesterA - semesterB : semesterB - semesterA;
         });
+
+        tbody.innerHTML = '';
+        rows.forEach(row => tbody.appendChild(row));
+
+        document.getElementById('sortIcon').className = isAscending ? 'bi btn-outline-light bi-sort-down' : 'bi btn-outline-light bi-sort-up';
+        isAscending = !isAscending;
+    }
+
+    document.getElementById('sortSemester').addEventListener('click', sortTableBySemester);
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
     });
+});
 </script>
-@endpush

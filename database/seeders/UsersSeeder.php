@@ -8,7 +8,6 @@ use App\Models\Matakuliah;
 use App\Models\PembimbingAkd;
 use App\Models\ProgramStudi;
 use App\Models\RuangKelas;
-use App\Models\Kaprodi;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -246,6 +245,7 @@ class UsersSeeder extends Seeder
                 'dekan' => 0,
                 'kaprodi' => 0,
                 'dosen_wali' => 1,
+                'prodi_id' => 1,
             ],
             [
                 'nip' => 12231302,
@@ -255,6 +255,7 @@ class UsersSeeder extends Seeder
                 'dekan' => 0,
                 'kaprodi' => 0,
                 'dosen_wali' => 0,
+                'prodi_id' => 1,
             ],
             [
                 'nip' => 12231303,
@@ -264,6 +265,7 @@ class UsersSeeder extends Seeder
                 'dekan' => 0,
                 'kaprodi' => 0,
                 'dosen_wali' => 1,
+                'prodi_id' => 1,
             ],
             [
                 'nip' => 12231304,
@@ -273,6 +275,7 @@ class UsersSeeder extends Seeder
                 'dekan' => 0,
                 'kaprodi' => 0,
                 'dosen_wali' => 1,
+                'prodi_id' => 1,
             ],
             [
                 'nip' => 12231305,
@@ -282,6 +285,7 @@ class UsersSeeder extends Seeder
                 'dekan' => 0,
                 'kaprodi' => 0,
                 'dosen_wali' => 1,
+                'prodi_id' => 1,
             ],
             [
                 'nip' => 12231201,
@@ -291,6 +295,7 @@ class UsersSeeder extends Seeder
                 'dekan' => 1,
                 'kaprodi' => 0,
                 'dosen_wali' => 0,
+                'prodi_id' => 1,
             ],
             [
                 'nip' => 12231202,
@@ -300,6 +305,7 @@ class UsersSeeder extends Seeder
                 'dekan' => 0,
                 'kaprodi' => 1,
                 'dosen_wali' => 0,
+                'prodi_id' => 1,
             ],
 
         ];
@@ -347,7 +353,6 @@ class UsersSeeder extends Seeder
                 'jam_mulai' => '07:00:00',
                 'jam_selesai' => '09:30:00',
                 'approval' => '1',
-                'rejection_reason' => null,
             ],
             [
                 'prodi_id' => 1,
@@ -360,7 +365,6 @@ class UsersSeeder extends Seeder
                 'jam_mulai' => '07:00:00',
                 'jam_selesai' => '09:30:00',
                 'approval' => '1',
-                'rejection_reason' => null,
             ],
             [
                 'prodi_id' => 1,
@@ -373,7 +377,6 @@ class UsersSeeder extends Seeder
                 'jam_mulai' => '07:00:00',
                 'jam_selesai' => '09:30:00',
                 'approval' => '1',
-                'rejection_reason' => null,
             ],
             [
                 'prodi_id' => 2,
@@ -386,7 +389,6 @@ class UsersSeeder extends Seeder
                 'jam_mulai' => '07:00:00',
                 'jam_selesai' => '09:30:00',
                 'approval' => '1',
-                'rejection_reason' => null,
             ],
 
         ];
@@ -394,16 +396,6 @@ class UsersSeeder extends Seeder
             JadwalKuliah::create($jadwal);
         }
 
-        $kaprodi = [
-            [
-                'nip' => '12231202', 
-                'prodi_id' => 1, 
-            ],
-        ];
- 
-        foreach ($kaprodi as $k) {
-            Kaprodi::create($k);
-        }
 
         $userData = [
             [

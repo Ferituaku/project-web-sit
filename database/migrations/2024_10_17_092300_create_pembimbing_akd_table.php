@@ -19,6 +19,8 @@ return new class extends Migration
             $table->boolean('dekan');
             $table->boolean(column: 'kaprodi');
             $table->boolean(column: 'dosen_wali');
+            $table->integer('prodi_id')->unsigned();
+            $table->foreign('prodi_id')->references('id')->on('program_studi');
             $table->timestamps();
         });
     }

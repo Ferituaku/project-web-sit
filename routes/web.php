@@ -1,14 +1,12 @@
 <?php
 
 use App\Http\Controllers\akademikControl;
-use App\Http\Controllers\AkademikController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\KaprodiController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\DekanController;
 use App\Http\Controllers\AuthManager;
 use App\Http\Controllers\PilihMenu;
-use App\Providers\AppServiceProvider;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -96,6 +94,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dosen/verifikasi', [DosenController::class, 'verifikasi'])->name('dosen.verifikasi');
         Route::get('/dosen/lihatjadwal', [DosenController::class, 'lihatjadwal'])->name('dosen.lihatjadwal');
         Route::get('/dosen/konsultasi', [DosenController::class, 'konsultasi'])->name('dosen.konsultasi');
+        Route::get('/dosen/irs/{id}/detail', [DosenController::class, 'showIrsDetail'])->name('dosen.irs.detail');
+        Route::put('/dosen/irs/{id}/approve', [DosenController::class, 'approveIrs'])->name('dosen.irs.approve');
+        Route::put('/dosen/irs/{id}/reject', [DosenController::class, 'rejectIrs'])->name('dosen.irs.reject');
     });
 
     // Rute untuk kaprodi

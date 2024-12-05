@@ -20,7 +20,6 @@ return new class extends Migration
             $table->time('jam_mulai');
             $table->time('jam_selesai');
             $table->enum('approval', ['0', '1', '2'])->default('0');
-            $table->text('rejection_reason')->nullable();
             $table->timestamps();
 
             $table->foreign('prodi_id')->references('id')->on('program_studi')->onDelete('cascade');

@@ -34,7 +34,7 @@ class KaprodiController extends Controller
     public function buatjadwal()
     {
         // Ambil prodi_id kaprodi yang login
-        $prodiId = DB::table('kaprodi')->where('nip', Auth::user()->nip)->value('prodi_id');
+        $prodiId = DB::table('pembimbingakd')->where('nip', Auth::user()->nip)->value('prodi_id');
         
         // Filter data sesuai prodi_id
         $program_studi = ProgramStudi::all(); 

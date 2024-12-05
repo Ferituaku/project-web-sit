@@ -103,26 +103,21 @@ class DekanController extends Controller
 
             return response()->json([
                 'status' => 'sukses',
-                'pessan' => 'Jadwal Berhasil disetujui',
+                'message' => 'Jadwal Berhasil disetujui',
                 'reload' => true
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'pesan' => 'Gagal menyetujui jadwal: ' . $e->getMessage()
+                'message' => 'Gagal menyetujui jadwal: ' . $e->getMessage()
             ], 500);
         }
     }
-    public function rejectJadwal(Request $request, $id)
+    public function rejectJadwal($id)
     {
         try {
-            $request->validate([
-                'rejection_reason' => 'required|string|max:255'
-            ]);
-
             $jadwal = JadwalKuliah::findOrFail($id);
             $jadwal->approval = '2';
-            $jadwal->rejection_reason = $request->rejection_reason;
             $jadwal->save();
 
             return response()->json([
@@ -130,11 +125,6 @@ class DekanController extends Controller
                 'message' => 'Jadwal kuliah berhasil ditolak',
                 'reload' => true
             ]);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->validator->errors()->first()
-            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
