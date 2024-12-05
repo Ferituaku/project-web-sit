@@ -118,83 +118,135 @@
 @endsection
 
 <script>
-function showAlert(type, message) {
-    const alertContainer = document.getElementById('alert-container');
-    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-    alertContainer.innerHTML = `
+    function showAlert(type, message) {
+        const alertContainer = document.getElementById('alert-container');
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        alertContainer.innerHTML = `
         <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
-}
-
-function approveJadwal(jadwalId) {
-    fetch(`/dekan/jadwal/${jadwalId}/approve`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'sukses') {
-            showAlert('success', data.message);
-            location.reload();
-        } else {
-            showAlert('error', data.message);
-        }
-    })
-    .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
-}
-
-function rejectJadwal(jadwalId) {
-    fetch(`/dekan/jadwal/${jadwalId}/reject`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            showAlert('success', data.message);
-            location.reload();
-        } else {
-            showAlert('error', data.message);
-        }
-    })
-    .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
-}
-
-// Event listener untuk sorting dan tooltips
-document.addEventListener('DOMContentLoaded', function() {
-    let isAscending = true;
-
-    function sortTableBySemester() {
-        const tbody = document.querySelector('tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-
-        rows.sort((a, b) => {
-            const semesterA = parseInt(a.querySelector('td:nth-child(6)').textContent);
-            const semesterB = parseInt(b.querySelector('td:nth-child(6)').textContent);
-            return isAscending ? semesterA - semesterB : semesterB - semesterA;
-        });
-
-        tbody.innerHTML = '';
-        rows.forEach(row => tbody.appendChild(row));
-
-        document.getElementById('sortIcon').className = isAscending ? 'bi btn-outline-light bi-sort-down' : 'bi btn-outline-light bi-sort-up';
-        isAscending = !isAscending;
     }
 
-    document.getElementById('sortSemester').addEventListener('click', sortTableBySemester);
+    function approveJadwal(jadwalId) {
+        fetch(`/dekan/jadwal/${jadwalId}/approve`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'sukses') {
+                    showAlert('success', data.message);
+                    location.reload();
+                } else {
+                    showAlert('error', data.message);
+                }
+            })
+            .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
+    }
 
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
+    function rejectJadwal(jadwalId) {
+        fetch(`/dekan/jadwal/${jadwalId}/reject`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showAlert('success', data.message);
+                    location.reload();
+                } else {
+                    showAlert('error', data.message);
+                }
+            })
+            .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
+    }
+
+    // Event listener untuk sorting dan tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+
+        function showAlert(type, message) {
+            const alertContainer = document.getElementById('alert-container');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            alertContainer.innerHTML = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+        }
+
+        function approveJadwal(jadwalId) {
+            fetch(`/dekan/jadwal/${jadwalId}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'sukses') {
+                        showAlert('success', data.message);
+                        location.reload();
+                    } else {
+                        showAlert('error', data.message);
+                    }
+                })
+                .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
+        }
+
+        function rejectJadwal(jadwalId) {
+            fetch(`/dekan/jadwal/${jadwalId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showAlert('success', data.message);
+                        location.reload();
+                    } else {
+                        showAlert('error', data.message);
+                    }
+                })
+                .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
+        }
+
+        let isAscending = true;
+
+        function sortTableBySemester() {
+            const tbody = document.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            rows.sort((a, b) => {
+                const semesterA = parseInt(a.querySelector('td:nth-child(6)').textContent);
+                const semesterB = parseInt(b.querySelector('td:nth-child(6)').textContent);
+                return isAscending ? semesterA - semesterB : semesterB - semesterA;
+            });
+
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+
+            document.getElementById('sortIcon').className = isAscending ? 'bi btn-outline-light bi-sort-down' : 'bi btn-outline-light bi-sort-up';
+            isAscending = !isAscending;
+        }
+
+        document.getElementById('sortSemester').addEventListener('click', sortTableBySemester);
+
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
     });
-});
 </script>

@@ -332,7 +332,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // menyimpan rejection reason modal
-        rejectionModal = new bootstrap.Modal(document.getElementById('rejectionReasonModal'));
+        // rejectionModal = new bootstrap.Modal(document.getElementById('rejectionReasonModal'));
 
         // Flag untuk melacak arah urutan: true = ascending, false = descending
         let isAscending = true;
@@ -423,18 +423,20 @@
         updateClassGroups(); // Initial creation
 
         // isi otomatis sks sesuai database MK
-        const kodeMkSelect = document.getElementById('kodemk');
-        const sksInput = document.getElementById('sks');
-        const plotSemesterInput = document.getElementById('plot_semester');
+        // const kodeMkSelect = document.getElementById('kodemk');
+        // const sksInput = document.getElementById('sks');
+        // const plotSemesterInput = document.getElementById('plot_semester');
 
-        kodeMkSelect.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const sks = selectedOption.getAttribute('data-sks');
-            const semester = selectedOption.getAttribute('data-semester');
+        // kodeMkSelect.addEventListener('change', function() {
+        //     const selectedOption = this.options[this.selectedIndex];
+        //     const sks = selectedOption.getAttribute('data-sks');
+        //     const semester = selectedOption.getAttribute('data-semester');
 
-            sksInput.value = sks || '';
-            plotSemesterInput.value = semester || '';
-        });
+        //     sksInput.value = sks || '';
+        //     plotSemesterInput.value = semester || '';
+        // });
+
+
 
         // fungsi Search 
         const searchInput = document.getElementById('searchInput');
@@ -464,33 +466,6 @@
             });
         });
 
-        function editJadwal(id) {
-            // Fetch data berdasarkan ID jadwal
-
-            const jadwal = JSON.parse('<?php echo json_encode($jadwalKuliah); ?>').find(j => j.id === id);
-
-            if (jadwal) {
-                document.getElementById('editJadwalId').value = jadwal.id;
-                document.getElementById('editKodemk').value = jadwal.matakuliah.kodemk;
-                document.getElementById('editDosenId').value = jadwal.pembimbingakd.nip;
-                document.getElementById('editHari').value = jadwal.hari;
-                document.getElementById('editJamMulai').value = jadwal.jam_mulai;
-                document.getElementById('editJamSelesai').value = jadwal.jam_selesai;
-                document.getElementById('editRuangKelas').value = jadwal.ruangKelas.koderuang;
-                document.getElementById('editSemester').value = jadwal.plot_semester;
-            }
-        }
-
-        function showRejectionReason(button) {
-            const reason = button.getAttribute('data-reason');
-
-            document.getElementById('rejectionReason').textContent = `<p>${reason}</p>`;
-            // Set alasan penolakan
-            document.getElementById('rejectionReason').textContent = reason;
-
-            // Tampilkan modal
-            rejectionModal.show();
-        }
 
         // Delete confirmation
         window.confirmDelete = function(id) {
@@ -498,6 +473,99 @@
                 window.location.href = `/kaprodi/jadwal/delete/${id}`;
             }
         };
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const kodeMkSelect = document.getElementById('kodemk');
+        const sksInput = document.getElementById('sks');
+        const plotSemesterInput = document.getElementById('plot_semester');
+
+        kodeMkSelect?.addEventListener('change', function() {
+            const selectedOption = this.selectedOptions[0];
+            sksInput.value = selectedOption.dataset.sks || '';
+            plotSemesterInput.value = selectedOption.dataset.semester || '';
+        });
+
+        function editJadwal(id) {
+            const jadwal = JSON.parse('<?php echo json_encode($jadwalKuliah); ?>').find(j => j.id === id);
+            if (!jadwal) return;
+
+            const editKodemk = document.getElementById('editKodemk');
+            document.getElementById('editJadwalId').value = jadwal.id;
+            editKodemk.value = jadwal.kodemk;
+            document.getElementById('editDosenId').value = jadwal.dosen_id;
+            document.getElementById('editHari').value = jadwal.hari;
+            document.getElementById('editJamMulai').value = jadwal.jam_mulai;
+            document.getElementById('editRuangKelas').value = jadwal.ruangkelas_id;
+            document.getElementById('editSemester').value = jadwal.plot_semester;
+
+            const selectedOption = editKodemk.selectedOptions[0];
+            document.getElementById('editSemester').value = selectedOption.dataset.semester || '';
+        }
+
+        window.editJadwal = editJadwal;
+
+
+        const groupCountSelect = document.getElementById('groupCount');
+        const classGroupsContainer = document.getElementById('classGroups');
+
+        function createClassGroupSection(groupNumber) {
+            const groupLetter = String.fromCharCode(65 + groupNumber - 1); // Convert 1 to A, 2 to B, etc.
+            return `
+                <div class="class-group-section mb-3">
+                    <h6 class="mb-3">Kelas ${groupLetter}</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label">Hari</label>
+                            <select class="form-select" name="hari_${groupLetter}" required>
+                                <option value="">Pilih Hari</option>
+                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $hari)
+                                <option value="{{ $hari }}">{{ $hari }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Jam Mulai</label>
+                            <select class="form-select" name="jam_mulai_${groupLetter}" required>
+                                <option value="">Pilih Jam</option>
+                                @foreach($timeSlots as $time)
+                                <option value="{{ $time }}">{{ $time }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Ruang Kelas</label>
+                            <select class="form-select @error('ruangkelas_id') is-invalid @enderror" name="ruangkelas_id_${groupLetter}" required>
+                                <option value="">Pilih Ruangan</option>
+                                
+                                    @foreach($ruangKelas as $ruang)
+                                    @php
+                                    $programStudiNama = $program_studi->firstWhere('id', $ruang->program_studi_id)->nama ?? 'Tidak Ditemukan';
+                                    @endphp
+                                    <option value="{{ $ruang->koderuang }}">{{ $ruang->koderuang }} - {{$programStudiNama }}</option>
+                                    @endforeach
+                            </select>
+                            @error('ruangkelas_id')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // grup kelas update
+        function updateClassGroups() {
+            const count = parseInt(groupCountSelect.value);
+            classGroupsContainer.innerHTML = '';
+            for (let i = 1; i <= count; i++) {
+                classGroupsContainer.innerHTML += createClassGroupSection(i);
+            }
+        }
+
+        groupCountSelect.addEventListener('change', updateClassGroups);
+        updateClassGroups(); // Initial creation
+
     });
 </script>
 @endsection

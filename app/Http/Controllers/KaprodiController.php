@@ -35,9 +35,9 @@ class KaprodiController extends Controller
     {
         // Ambil prodi_id kaprodi yang login
         $prodiId = DB::table('pembimbingakd')->where('nip', Auth::user()->nip)->value('prodi_id');
-        
+
         // Filter data sesuai prodi_id
-        $program_studi = ProgramStudi::all(); 
+        $program_studi = ProgramStudi::all();
         $ruangKelas = RuangKelas::where('program_studi_id', $prodiId)->get();
         $matakuliah = Matakuliah::where('prodi_id', $prodiId)->get();
         $dosen = PembimbingAkd::all(); // Tidak perlu filter
@@ -59,7 +59,7 @@ class KaprodiController extends Controller
 
         return view('kaprodi.buatjadwal', compact(
             'ruangKelas',
-            'matakuliah', 
+            'matakuliah',
             'dosen',
             'timeSlots',
             'jadwalKuliah',

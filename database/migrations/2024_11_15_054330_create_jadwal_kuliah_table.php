@@ -15,7 +15,7 @@ return new class extends Migration
             $table->integer('kodemk');
             $table->unsignedBigInteger('dosen_id');
             $table->integer('plot_semester');
-            $table->enum('class_group', ['A', 'B', 'C']); // Added class group field
+            $table->enum('class_group', ['A', 'B', 'C', 'D', 'E', 'F']); // Added class group field
             $table->enum('hari', ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']);
             $table->time('jam_mulai');
             $table->time('jam_selesai');
