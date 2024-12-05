@@ -229,7 +229,7 @@ class UsersSeeder extends Seeder
                 'semester' => 6,
             ],
         ];
-        
+
 
         foreach ($matakuliah as $mk) {
             Matakuliah::create($mk);
