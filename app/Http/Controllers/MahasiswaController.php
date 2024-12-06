@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Irs;
 use App\Models\JadwalKuliah;
+use App\Models\Mahasiswa;
 use App\Models\Matakuliah;
 use App\Models\PembimbingAkd;
 use App\Models\RuangKelas;
@@ -60,10 +61,6 @@ class MahasiswaController extends Controller
                         $item->tahun_ajaran
                     );
                 });
-
-            // Debug information
-            \Log::info('Current User:', ['mahasiswa' => $mahasiswa->toArray()]);
-            \Log::info('IRS Records:', ['records' => $irsRecords->toArray()]);
 
             return view('mahasiswa.akademikMhs.hasilirs', compact('irsRecords', 'mahasiswa'));
         } catch (\Exception $e) {
@@ -135,6 +132,73 @@ class MahasiswaController extends Controller
         }
     }
 
+
+    // public function buatIrs(Request $request)
+    // {
+    //     try {
+    //         $mahasiswa = Auth::user();
+    //         $semester = $request->input('semester');
+
+    //         // Get current IRS if exists
+    //         $currentIrs = Irs::where('nim', $mahasiswa->nim)
+    //             ->orderBy('created_at', 'desc')
+    //             ->first();
+
+    //         // If no IRS exists, create an empty one with approval = 0
+    //         if (!$currentIrs) {
+    //             $currentIrs = new Irs();
+    //             $currentIrs->approval = '0';
+    //         }
+
+    //         // Get jadwal data only if IRS is not approved
+    //         if ($currentIrs->approval == '0') {
+    //             $jadwalKuliah = JadwalKuliah::with(['matakuliah', 'ruangKelas'])
+    //                 ->orderBy('hari')
+    //                 ->orderBy('jam_mulai')
+    //                 ->get();
+
+    //             // Get all selected jadwal IDs
+    //             $selectedJadwalIds = [];
+    //             if ($currentIrs->id) {
+    //                 $selectedJadwalIds = $currentIrs->jadwalKuliah->pluck('id')->toArray();
+    //             }
+
+    //             $query = JadwalKuliah::with(['mataKuliah', 'ruangKelas', 'pembimbingakd'])
+    //                 ->orderBy('jam_mulai');
+
+    //             if ($semester) {
+    //                 $query->where('plot_semester', $semester);
+    //             }
+
+    //             $jadwalKuliah = $query->get();
+
+    //             // Create time matrix
+    //             $timeSlots = $this->createTimeSlots();
+    //             $scheduleMatrix = $this->createScheduleMatrix($timeSlots, $jadwalKuliah);
+
+    //             if ($request->expectsJson()) {
+    //                 return response()->json($jadwalKuliah);
+    //             }
+
+    //             return view('mahasiswa.akademikMhs.buatIrs', compact(
+    //                 'scheduleMatrix',
+    //                 'jadwalKuliah',
+    //                 'timeSlots',
+    //                 'selectedJadwalIds',
+    //                 'currentIrs',
+    //                 'semester'
+    //             ));
+    //         }
+
+    //         // If IRS is approved, redirect with message
+    //         return redirect()->back()->with('info', 'IRS Anda telah disetujui. Tidak dapat melakukan perubahan.');
+    //     } catch (\Exception $e) {
+    //         if ($request->expectsJson()) {
+    //             return response()->json(['error' => $e->getMessage()], 500);
+    //         }
+    //         return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    //     }
+    // }
     private function createTimeSlots()
     {
         $timeSlots = [];
@@ -177,16 +241,23 @@ class MahasiswaController extends Controller
     public function cetakIrs($tahunAjaran, $semester)
     {
         try {
-            $mahasiswa = Auth::user();
+            // Ambil user yang login
+            $user = Auth::user();
+
+            // Ambil data mahasiswa berdasarkan nim user, dengan relasi program studi
+            $mahasiswa = Mahasiswa::with(['prodi', 'pembimbingAkd'])
+                ->where('nim', $user->nim)
+                ->firstOrFail();
 
             $irs = Irs::where('nim', $mahasiswa->nim)
                 ->where('tahun_ajaran', $tahunAjaran)
                 ->where('semester', $semester)
                 ->with(['jadwalKuliah.matakuliah', 'jadwalKuliah.pembimbingakd'])
-                ->first();
+                ->firstOrFail();
 
-            if (!$irs) {
-                return back()->with('error', 'Data IRS tidak ditemukan');
+
+            if ($irs->approval !== '1') {
+                return back()->with('error', 'IRS belum disetujui dan tidak dapat dicetak');
             }
 
             $data = [
@@ -196,7 +267,14 @@ class MahasiswaController extends Controller
             ];
 
             $pdf = PDF::loadView('mahasiswa.akademikMhs.cetak-irs', $data);
-            return $pdf->stream('IRS-' . $mahasiswa->nim . '-' . $tahunAjaran . '-' . $semester . '.pdf');
+            $pdf->setPaper('A4', 'portrait');
+            $filename = sprintf(
+                'IRS-%s-%s-SMT%d.pdf',
+                $mahasiswa->nim,
+                str_replace('/', '-', $tahunAjaran),
+                $semester
+            );
+            return $pdf->stream($filename);
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal mencetak IRS: ' . $e->getMessage());
         }
