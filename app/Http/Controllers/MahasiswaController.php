@@ -64,7 +64,7 @@ class MahasiswaController extends Controller
 
             return view('mahasiswa.akademikMhs.hasilirs', compact('irsRecords', 'mahasiswa'));
         } catch (\Exception $e) {
-            \Log::error('Error in hasilirs:', ['error' => $e->getMessage()]);
+            Log::error('Error in hasilirs:', ['error' => $e->getMessage()]);
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -81,41 +81,48 @@ class MahasiswaController extends Controller
     public function buatIrs(Request $request)
     {
         try {
+            // Ambil data mahasiswa yang sedang login
             $mahasiswa = Auth::user();
+
+            // Dapatkan prodi_id mahasiswa dari tabel mahasiswa
+            $mhsProdiId = DB::table('mahasiswa')
+                ->where('nim', $mahasiswa->nim)
+                ->value('prodi_id');
+
+            // Ambil input semester dari request
             $semester = $request->input('semester');
-            $jadwalKuliah = JadwalKuliah::with(['matakuliah', 'ruangKelas'])
+
+            // Ambil jadwal kuliah sesuai prodi_id mahasiswa
+            $query = JadwalKuliah::with(['prodi', 'matakuliah', 'ruangKelas'])
+                ->where('prodi_id', $mhsProdiId) // Filter berdasarkan prodi_id mahasiswa
                 ->orderBy('hari')
-                ->orderBy('jam_mulai')
-                ->get();
-            // Get current IRS if exists
+                ->orderBy('jam_mulai');
+
+            if ($semester) {
+                $query->where('plot_semester', $semester); // Filter berdasarkan semester jika tersedia
+            }
+
+            $jadwalKuliah = $query->get();
+
+            // Ambil IRS saat ini jika ada
             $currentIrs = Irs::where('nim', $mahasiswa->nim)->first();
 
-            // Get all selected jadwal IDs
-
-            // Perubahan buat pada table IRS 1 nim 1 jadwal_id, dan data pada kolom nim dan jadwal_id yang berada pada satu kolom bisa sama, jadi memungkinkan untuk 1 nim mengambil banyak jadwal matkul (jadwal_id lebih dari 1)
+            // Ambil semua jadwal ID yang telah dipilih (jika ada)
             $selectedJadwalIds = [];
             if ($currentIrs) {
                 $selectedJadwalIds = $currentIrs->jadwalKuliah->pluck('id')->toArray();
             }
 
-            $query = JadwalKuliah::with(['mataKuliah', 'ruangKelas', 'pembimbingakd'])
-                ->orderBy('jam_mulai');
-
-            if ($semester) {
-                $query->where('plot_semester', $semester);
-            }
-
-
-            $jadwalKuliah = $query->get();
-
-            // Create time matrix
+            // Buat matriks jadwal berdasarkan slot waktu
             $timeSlots = $this->createTimeSlots();
             $scheduleMatrix = $this->createScheduleMatrix($timeSlots, $jadwalKuliah);
 
+            // Jika request berupa JSON, kembalikan data jadwal sebagai JSON
             if ($request->expectsJson()) {
                 return response()->json($jadwalKuliah);
             }
 
+            // Kembalikan view dengan data yang dibutuhkan
             return view('mahasiswa.akademikMhs.buatIrs', compact(
                 'scheduleMatrix',
                 'jadwalKuliah',
@@ -125,6 +132,7 @@ class MahasiswaController extends Controller
                 'semester'
             ));
         } catch (\Exception $e) {
+            // Jika terjadi error, tangani dan berikan respons sesuai format request
             if ($request->expectsJson()) {
                 return response()->json(['error' => $e->getMessage()], 500);
             }
@@ -218,8 +226,14 @@ class MahasiswaController extends Controller
         $scheduleMatrix = [];
         $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 
+        $mahasiswa = Auth::user();
+        $mhsProdiId = DB::table('mahasiswa')
+                ->where('nim', $mahasiswa->nim)
+                ->value('prodi_id');
+
         // Get all jadwal that are approved
         $jadwalKuliah = JadwalKuliah::with(['matakuliah', 'ruangKelas'])
+            ->where('prodi_id', $mhsProdiId)
             ->orderBy('jam_mulai')
             ->get();
 
@@ -238,6 +252,7 @@ class MahasiswaController extends Controller
 
         return $scheduleMatrix;
     }
+
     public function cetakIrs($tahunAjaran, $semester)
     {
         try {

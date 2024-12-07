@@ -38,4 +38,8 @@ class JadwalKuliah extends Model
     {
         return $this->belongsToMany(Irs::class, 'irs_jadwal', 'jadwal_id', 'irs_id');
     }
+    public function prodi(): BelongsTo
+    {
+        return $this->belongsTo(ProgramStudi::class, 'prodi_id', 'id');
+    }
 }
