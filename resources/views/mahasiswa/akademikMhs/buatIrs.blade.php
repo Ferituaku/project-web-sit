@@ -11,7 +11,39 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
+    {{-- Kondisional untuk IRS yang sudah disetujui atau tidak ada periode IRS --}}
+    @if(isset($existingIrs) && $existingIrs->approval === '1')
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+            </div>
+            <div class="mb-4">
+                <h3 class="mb-3">IRS Telah Disetujui</h3>
+                <p class="text-muted">
+                    IRS Anda untuk Semester {{ $existingIrs->semester }}
+                    Tahun Ajaran {{ $existingIrs->tahun_ajaran }} telah disetujui.
+                </p>
+                <p class="text-muted">
+                    Total SKS: <span class="fw-bold">{{ $existingIrs->total_sks }}</span>
+                </p>
+            </div>
 
+            <div class="mb-4">
+                <p class="text-secondary">
+                    <i class="fas fa-info-circle me-2"></i>
+                    IRS yang telah disetujui tidak dapat diubah.
+                </p>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{{ route('mahasiswa.akademikMhs.hasilirs') }}" class="btn btn-primary">
+                    <i class="fas fa-eye me-2"></i>Lihat Detail IRS
+                </a>
+            </div>
+        </div>
+    </div>
+    @else
     <div class="row">
         <!-- Left Panel - Course Selection -->
         <div class="col-md-4">
@@ -129,6 +161,7 @@
             </div>
         </div>
     </div>
+    @endif
 </div>
 
 
@@ -210,6 +243,7 @@
 @endsection
 
 @section('page-style')
+@if(!isset($existingIrs) || $existingIrs->approval !== '1')
 <style>
     .schedule-card {
         transition: transform 0.2s ease;
@@ -242,10 +276,12 @@
         display: block;
     }
 </style>
+@endif
 @endsection
 
-@section('page-scripts')
 
+@section('page-scripts')
+@if(!isset($existingIrs) || $existingIrs->approval !== '1')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // State management
@@ -588,7 +624,7 @@
         searchInput.addEventListener('input', filterCourses);
     });
 </script>
-
+@endif
 <!--<script>
     // Main IRS management script
     document.addEventListener('DOMContentLoaded', function() {

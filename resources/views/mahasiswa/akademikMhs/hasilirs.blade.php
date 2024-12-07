@@ -10,6 +10,7 @@
     </div>
     @endif
 
+
     <div class="card shadow-sm">
         <div class="card-header bg-white">
             <div class="d-flex justify-content-between align-items-center">
@@ -62,6 +63,7 @@
                                         <span class="fw-bold">{{ $irs->total_sks }}</span>
                                     </div>
                                 </div>
+                                @if($irs->approval == '1')
                                 <div>
                                     <a href="{{ route('mahasiswa.akademikMhs.cetak-irs', [
                                         'tahunAjaran' => $irs->tahun_ajaran,
@@ -71,6 +73,7 @@
                                         <i class="bi bi-printer"></i> Cetak IRS
                                     </a>
                                 </div>
+                                @endif
                             </div>
                         </div>
 

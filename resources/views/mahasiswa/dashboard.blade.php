@@ -16,14 +16,14 @@
 background: linear-gradient(90deg, rgba(99,181,255,1) 0%, rgba(39,123,255,1) 44%, rgba(0,177,255,1) 100%);">
                 <div class=" row card-body">
                     <div class="col-sm-4">
-                        <img src="{{ asset('img/pakvinsen.jpeg') }}" alt="avatar" class="rounded-circle img-fluid mb-3" style="width: 200px; margin:2rem">
+                        <img src="{{ asset('img/user.jpg') }}" alt="avatar" class="rounded-circle img-fluid mb-3" style="width: 200px; margin:2rem">
                     </div>
                     <div class="col-sm-4" style="margin-left:4rem; margin-top: 3.5rem;">
                         <h4>{{ auth()->user()->name }}</h4>
                         <p class="text-light mb-1">{{ auth()->user()->email }}</p>
-                        <p class="text-light mb-1">NIM: 242345678000</p>
-                        <p class="text-light mb-1">No. Telp: 08776565340 </p>
-                        <p class="text-light mb-0">Alamat: Pandeglang, Banten</p>
+                        <p class="text-light mb-1">NIM: {{auth()->user()->nip}}</p>
+                        <p class="text-light mb-1">No. Telp: - </p>
+                        <p class="text-light mb-0">Alamat: - - -</p>
                     </div>
                 </div>
             </div>
