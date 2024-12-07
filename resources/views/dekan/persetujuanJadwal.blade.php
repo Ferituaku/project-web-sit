@@ -130,60 +130,8 @@
     }
 
     function approveJadwal(jadwalId) {
-        fetch(`/dekan/jadwal/${jadwalId}/approve`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'sukses') {
-                    showAlert('success', data.message);
-                    location.reload();
-                } else {
-                    showAlert('error', data.message);
-                }
-            })
-            .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
-    }
-
-    function rejectJadwal(jadwalId) {
-        fetch(`/dekan/jadwal/${jadwalId}/reject`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    showAlert('success', data.message);
-                    location.reload();
-                } else {
-                    showAlert('error', data.message);
-                }
-            })
-            .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
-    }
-
-    // Event listener untuk sorting dan tooltips
-    document.addEventListener('DOMContentLoaded', function() {
-
-        function showAlert(type, message) {
-            const alertContainer = document.getElementById('alert-container');
-            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-            alertContainer.innerHTML = `
-        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    `;
-        }
-
-        function approveJadwal(jadwalId) {
+        if (confirm('Apakah Anda yakin ingin setujui jadwal ini?'))
+        {
             fetch(`/dekan/jadwal/${jadwalId}/approve`, {
                     method: 'POST',
                     headers: {
@@ -202,8 +150,11 @@
                 })
                 .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
         }
+    }
 
-        function rejectJadwal(jadwalId) {
+    function rejectJadwal(jadwalId) {
+        if (confirm('Apakah Anda yakin ingin menolak jadwal ini?'))
+        {
             fetch(`/dekan/jadwal/${jadwalId}/reject`, {
                     method: 'POST',
                     headers: {
@@ -221,6 +172,21 @@
                     }
                 })
                 .catch(error => showAlert('error', 'Terjadi kesalahan saat memproses permintaan'));
+        }
+    }
+
+    // Event listener untuk sorting dan tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+
+        function showAlert(type, message) {
+            const alertContainer = document.getElementById('alert-container');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            alertContainer.innerHTML = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
         }
 
         let isAscending = true;

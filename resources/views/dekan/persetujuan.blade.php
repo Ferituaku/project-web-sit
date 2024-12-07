@@ -132,45 +132,51 @@
     }
 
     function approveRoom(koderuang) {
-        fetch(`/dekan/ruangkelas/${koderuang}/approve`, {
-                method: 'PUT',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    showAlert('success', data.message);
-                    location.reload();
-                } else {
-                    showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
-                }
-            })
-            .catch(error => {
-                showAlert('error', 'Terjadi kesalahan sistem.');
-            });
+        if (confirm('Apakah Anda yakin ingin setujui ruang kelas ini?')) 
+        {
+            fetch(`/dekan/ruangkelas/${koderuang}/approve`, {
+                    method: 'PUT',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showAlert('success', data.message);
+                        location.reload();
+                    } else {
+                        showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
+                    }
+                })
+                .catch(error => {
+                    showAlert('error', 'Terjadi kesalahan sistem.');
+                });
+        }  
     }
 
     function rejectRoom(koderuang) {
-        fetch(`/dekan/ruangkelas/${koderuang}/reject`, {
-                method: 'PUT',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    showAlert('success', data.message);
-                    location.reload();
-                } else {
-                    showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
-                }
-            })
-            .catch(error => {
-                showAlert('error', 'Terjadi kesalahan sistem.');
-            });
+        if (confirm('Apakah Anda yakin ingin menolak ruang kelas ini?'))
+        {
+            fetch(`/dekan/ruangkelas/${koderuang}/reject`, {
+                    method: 'PUT',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showAlert('success', data.message);
+                        location.reload();
+                    } else {
+                        showAlert('error', data.message || 'Terjadi kesalahan. Silakan coba lagi.');
+                    }
+                })
+                .catch(error => {
+                    showAlert('error', 'Terjadi kesalahan sistem.');
+                });
+        }
     }
 
     // Search functionality
