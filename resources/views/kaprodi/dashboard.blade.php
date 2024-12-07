@@ -28,11 +28,11 @@
                     <img src="{{ asset('img/kaprodi.jpg') }}" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
                 </div>
                 <div class="text-center text-md-start">
-                    <h4 class="text-white">Kaprodi {{ auth()->user()->name }}</h4>
-                    <p class="text-white mb-1">{{ auth()->user()->email }}</p>
-                    <p class="text-white mb-1">NIP: 139945678000</p>
-                    <p class="text-white mb-1">No. Telp: (021) 765-43533</p>
-                    <p class="text-white mb-0">Alamat: Pati, Sukolilo</p>
+                    <h4 class="text-white">{{ auth()->user()->name }}</h4>
+                    <p class="text-white mb-1">Email : {{ auth()->user()->email }}</p>
+                    <p class="text-white mb-1">NIP : {{ auth()->user()->nip }}</p>
+                    <p class="text-white mb-1">No. Telp : 081259096818</p>
+                    <p class="text-white mb-0">Alamat : Semarang</p>
                 </div>
             </div>
         </div>

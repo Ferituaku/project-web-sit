@@ -31,6 +31,7 @@ class KaprodiController extends Controller
     {
         return view('dosen/dashboard');
     }
+    
     public function buatmatakuliah()
     {
         // Get the logged-in user's prodi_id from pembimbingakd table
@@ -203,7 +204,9 @@ class KaprodiController extends Controller
 
         // Filter data sesuai prodi_id
         $program_studi = ProgramStudi::all();
-        $ruangKelas = RuangKelas::where('program_studi_id', $prodiId)->get();
+        $ruangKelas = RuangKelas::where('program_studi_id', $prodiId)
+            ->where('approval', '1')
+            ->get();
         $matakuliah = Matakuliah::where('prodi_id', $prodiId)->get();
         $dosen = PembimbingAkd::all(); // Tidak perlu filter
 

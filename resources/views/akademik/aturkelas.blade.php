@@ -75,6 +75,7 @@
                                 @endif
                             </td>
                             <td>
+                                @if($ruang->approval == 0)
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-info me-1" onclick="editRoom('{{ $ruang->koderuang }}')">
                                         <i class="bi bi-pencil-square"></i>
@@ -83,6 +84,11 @@
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
+                                @elseif($ruang->approval == 1)
+                                <span class="text-muted">Sudah disetujui</span>
+                                @elseif($ruang->approval == 2)
+                                <span class="text-muted">Ditolak</span>
+                                @endif
                             </td>
                         </tr>
                         @endforeach
