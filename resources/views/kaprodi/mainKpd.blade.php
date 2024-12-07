@@ -176,7 +176,7 @@
         setActiveSidebarItem();
     });
 </script> -->
-<script>
+{{-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         function setActiveSidebarItem() {
             var currentPage = window.location.href;
@@ -193,7 +193,7 @@
         }
         setActiveSidebarItem();
     });
-</script>
+</script> --}}
 
 
 @endsections
