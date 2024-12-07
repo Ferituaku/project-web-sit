@@ -18,11 +18,11 @@ class ProgramStudi extends Model
 
     protected $fillable = ['id', 'nama'];
 
-    public function Maahsiswa()
+    public function Mahasiswa()
     {
         return $this->hasMany(Mahasiswa::class, 'prodi_id', 'id');
     }
-    public function prodiMk()
+    public function prodi()
     {
         return $this->hasMany(Matakuliah::class, 'prodi_id', 'id');
     }

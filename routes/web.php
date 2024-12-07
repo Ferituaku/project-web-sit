@@ -102,7 +102,16 @@ Route::group(['middleware' => 'auth'], function () {
     // Rute untuk kaprodi
     Route::group(['middleware' => 'role:kaprodi,dosen, dekan'], function () {
         Route::get('/kaprodi/dashboard', [KaprodiController::class, 'kaprodi'])->name('kaprodi.dashboard');
+        // buat matkul
+        Route::prefix('kaprodi/matkul')->group(function () {
+            Route::get('/', [KaprodiController::class, 'buatmatakuliah'])->name('kaprodi.buatmatakuliah');
+            Route::post('/create', [KaprodiController::class, 'buatmatkul'])->name('kaprodi.buatmatkul');
+            Route::get('/edit/{kodemk}', [KaprodiController::class, 'editmatkul'])->name('kaprodi.editmatkul');
+            Route::post('/update/{kodemk}', [KaprodiController::class, 'updateMatakuliah'])->name('kaprodi.updatematakuliah');
+            Route::delete('/delete/{kodemk}', [KaprodiController::class, 'destroyMatakuliah'])->name('kaprodi.deletematakuliah');
+        });
         // buat jadwal
+        Route::get('/kaprodi/buatmatakuliah', [KaprodiController::class, 'buatmatakuliah'])->name('kaprodi.buatmatakulah');
         Route::get('/kaprodi/buatjadwal', [KaprodiController::class, 'buatjadwal'])->name('kaprodi.buatjadwal');
         Route::post('/kaprodi/jadwal/store', [KaprodiController::class, 'simpanJadwal'])->name('kaprodi.jadwal.store');
         Route::put('/kaprodi/jadwal/update/{id}', [KaprodiController::class, 'updateJadwal'])->name('kaprodi.jadwal.update');

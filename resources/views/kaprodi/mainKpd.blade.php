@@ -98,6 +98,12 @@
                     </a>
                 </li>
                 <li class="nav-item mb-2">
+                    <a href={{route('kaprodi.buatmatakulah')}} class="nav-link d-flex align-items-center">
+                        <i class="bi bi-person-lines-fill me-2"></i>
+                        Buat Mata Kuliah
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
                     <a href="{{route('kaprodi.buatjadwal')}}" class="nav-link d-flex align-items-center">
                         <i class="bi bi-calendar me-2"></i>
                         Manajemen Jadwal
@@ -107,12 +113,6 @@
                     <a href="{{route('kaprodi.daftarJadwal')}}" class="nav-link d-flex align-items-center">
                         <i class="bi bi-calendar-week me-2"></i>
                         Daftar Jadwal
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="#" class="nav-link d-flex align-items-center">
-                        <i class="bi bi-person-lines-fill me-2"></i>
-                        Status Mahasiswa
                     </a>
                 </li>
             </ul>

@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class KaprodiController extends Controller
 {
@@ -30,7 +31,171 @@ class KaprodiController extends Controller
     {
         return view('dosen/dashboard');
     }
+    public function buatmatakuliah()
+    {
+        // Get the logged-in user's prodi_id from pembimbingakd table
+        $kaprodiProdiId = DB::table('pembimbingakd')
+            ->where('nip', Auth::user()->nip)
+            ->value('prodi_id');
 
+        // Get program studi data
+        $programStudi = ProgramStudi::where('id', $kaprodiProdiId)->get();
+
+        // Get mata kuliah for this specific prodi
+        $mataKuliah = Matakuliah::with('prodi')
+            ->where('prodi_id', $kaprodiProdiId)
+            ->get();
+
+        return view('kaprodi.buatmatakuliah', compact('programStudi', 'mataKuliah'));
+    }
+
+    public function buatmatkul(Request $request)
+    {
+        // Get kaprodi's prodi_id
+        $kaprodiProdiId = DB::table('pembimbingakd')
+            ->where('nip', Auth::user()->nip)
+            ->value('prodi_id');
+
+        $validator = Validator::make($request->all(), [
+            'kodemk' => 'required|integer|unique:matakuliah,kodemk',
+            'nama_mk' => 'required|string|max:255',
+            'sks' => 'required|integer|min:1|max:4',
+            'semester' => 'required|integer|min:1|max:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        try {
+            // Automatically set prodi_id to kaprodi's prodi
+            Matakuliah::create([
+                'kodemk' => $request->kodemk,
+                'nama_mk' => $request->nama_mk,
+                'sks' => $request->sks,
+                'semester' => $request->semester,
+                'prodi_id' => $kaprodiProdiId // Set prodi_id from kaprodi
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Mata kuliah berhasil ditambahkan'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal menambahkan mata kuliah: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function editmatkul($kodemk)
+    {
+        $kaprodiProdiId = DB::table('pembimbingakd')
+            ->where('nip', Auth::user()->nip)
+            ->value('prodi_id');
+
+        try {
+            $mataKuliah = Matakuliah::with('prodi')
+                ->where('kodemk', $kodemk)
+                ->where('prodi_id', $kaprodiProdiId) // Only allow editing matkul from same prodi
+                ->firstOrFail();
+
+            $programStudi = ProgramStudi::where('id', $kaprodiProdiId)->get();
+
+            return response()->json([
+                'status' => 'success',
+                'matakuliah' => $mataKuliah,
+                'programStudi' => $programStudi
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Mata kuliah tidak ditemukan'
+            ], 404);
+        }
+    }
+
+    public function updateMatakuliah(Request $request, $kodemk)
+    {
+        $kaprodiProdiId = DB::table('pembimbingakd')
+            ->where('nip', Auth::user()->nip)
+            ->value('prodi_id');
+
+        $validator = Validator::make($request->all(), [
+            'new_kodemk' => 'required|integer|unique:matakuliah,kodemk,' . $kodemk . ',kodemk',
+            'nama_mk' => 'required|string|max:255',
+            'sks' => 'required|integer|min:1|max:4',
+            'semester' => 'required|integer|min:1|max:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        try {
+            $mataKuliah = Matakuliah::where('kodemk', $kodemk)
+                ->where('prodi_id', $kaprodiProdiId) // Only allow updating matkul from same prodi
+                ->firstOrFail();
+
+            $mataKuliah->update([
+                'kodemk' => $request->new_kodemk,
+                'nama_mk' => $request->nama_mk,
+                'sks' => $request->sks,
+                'semester' => $request->semester,
+                'prodi_id' => $kaprodiProdiId // Maintain same prodi_id
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Mata kuliah berhasil diperbarui'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui mata kuliah: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function destroyMatakuliah($kodemk)
+    {
+        $kaprodiProdiId = DB::table('pembimbingakd')
+            ->where('nip', Auth::user()->nip)
+            ->value('prodi_id');
+
+        try {
+            $mataKuliah = Matakuliah::where('kodemk', $kodemk)
+                ->where('prodi_id', $kaprodiProdiId) // Only allow deleting matkul from same prodi
+                ->firstOrFail();
+
+            // Check if there are any related records in jadwal_kuliah
+            if ($mataKuliah->jadwalKuliah()->exists()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Tidak dapat menghapus mata kuliah karena masih terdapat jadwal kuliah terkait'
+                ], 422);
+            }
+
+            $mataKuliah->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Mata kuliah berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal menghapus mata kuliah: ' . $e->getMessage()
+            ], 500);
+        }
+    }
     public function buatjadwal()
     {
         // Ambil prodi_id kaprodi yang login
