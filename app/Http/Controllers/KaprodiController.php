@@ -417,11 +417,15 @@ class KaprodiController extends Controller
     public function daftarJadwal(Request $request)
     {
         try {
+            // Get kaprodi's prodi_id
+            $prodiId = DB::table('pembimbingakd')->where('nip', Auth::user()->nip)->value('prodi_id');
+
             // Get semester filter
             $semester = $request->input('semester');
 
-            // Base query with relationships
+            // Base query with relationships, filtered by prodi_id
             $query = JadwalKuliah::with(['mataKuliah', 'ruangKelas', 'pembimbingakd'])
+                ->where('prodi_id', $prodiId)
                 ->orderBy('jam_mulai');
 
             // Apply semester filter if selected
