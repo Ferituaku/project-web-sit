@@ -329,6 +329,11 @@
             confirmDeleteModal.show();
         }
 
+        function timeToMinutes(timeString) {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
         function validateScheduleConflict(newElement) {
             const newSchedule = extractScheduleInfo(newElement);
 
@@ -525,6 +530,7 @@
 
 
     });
+
     document.addEventListener('DOMContentLoaded', function() {
         // Inisialisasi toggle buttons
         const toggleButtons = document.querySelectorAll('.toggle-schedule');
