@@ -108,9 +108,10 @@
                         @endforeach
                     </tbody>
                 </table>
-                <div class="d-flex justify-content-end mt-3">
-                    {{ $jadwalKuliah->links() }}
-                </div>
+
+            </div>
+            <div>
+                {{ $jadwalKuliah->links('vendor.pagination.bootstrap-5') }}
             </div>
         </div>
     </div>
@@ -130,8 +131,7 @@
     }
 
     function approveJadwal(jadwalId) {
-        if (confirm('Apakah Anda yakin ingin setujui jadwal ini?'))
-        {
+        if (confirm('Apakah Anda yakin ingin setujui jadwal ini?')) {
             fetch(`/dekan/jadwal/${jadwalId}/approve`, {
                     method: 'POST',
                     headers: {
@@ -153,8 +153,7 @@
     }
 
     function rejectJadwal(jadwalId) {
-        if (confirm('Apakah Anda yakin ingin menolak jadwal ini?'))
-        {
+        if (confirm('Apakah Anda yakin ingin menolak jadwal ini?')) {
             fetch(`/dekan/jadwal/${jadwalId}/reject`, {
                     method: 'POST',
                     headers: {

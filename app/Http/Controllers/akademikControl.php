@@ -24,16 +24,16 @@ class akademikControl extends Controller
     public function aturkelas()
     {
         $programStudi = ProgramStudi::all();
-        $ruangKelas = RuangKelas::with('jadwalKuliah', 'programStudi')->paginate(10);
+        $ruangKelas = RuangKelas::with('jadwalKuliah', 'programStudi')->orderBy('created_at', 'desc')->paginate(10);
         return view('akademik.aturkelas', compact('ruangKelas', 'programStudi'));
     }
 
-    public function indexRuangKelas()
-    {
-        $programStudi = ProgramStudi::all();
-        $ruangKelas = RuangKelas::with('jadwalKuliah', 'programStudi');
-        return view('akademik.ruangkelas.index', compact('ruangKelas', 'programStudi'));
-    }
+    // public function indexRuangKelas()
+    // {
+    //     $programStudi = ProgramStudi::all();
+    //     $ruangKelas = RuangKelas::with('jadwalKuliah', 'programStudi');
+    //     return view('akademik.ruangkelas.index', compact('ruangKelas', 'programStudi'));
+    // }
 
     public function storeRuangKelas(Request $request)
     {

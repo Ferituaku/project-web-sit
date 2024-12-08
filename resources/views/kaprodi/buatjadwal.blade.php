@@ -135,6 +135,11 @@
                     </tbody>
                 </table>
             </div>
+            <div>
+                {{ $jadwalKuliah->links('vendor.pagination.bootstrap-5') }}
+            </div>
+
+
         </div>
     </div>
 </div>

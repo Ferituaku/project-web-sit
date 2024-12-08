@@ -97,11 +97,13 @@
             </div>
 
             <!-- Pagination -->
-            <div class="row align-items-center mt-4">
-                <div class="col-md-6">
 
-                </div>
+
+            <div>
+                {{ $ruangKelas->links('vendor.pagination.bootstrap-5') }}
             </div>
+
+
         </div>
     </div>
 </div>

@@ -31,7 +31,7 @@ class KaprodiController extends Controller
     {
         return view('dosen/dashboard');
     }
-    
+
     public function buatmatakuliah()
     {
         // Get the logged-in user's prodi_id from pembimbingakd table
@@ -45,7 +45,7 @@ class KaprodiController extends Controller
         // Get mata kuliah for this specific prodi
         $mataKuliah = Matakuliah::with('prodi')
             ->where('prodi_id', $kaprodiProdiId)
-            ->get();
+            ->paginate(10);
 
         return view('kaprodi.buatmatakuliah', compact('programStudi', 'mataKuliah'));
     }
@@ -214,7 +214,7 @@ class KaprodiController extends Controller
             ->where('prodi_id', $prodiId)
             ->orderBy('hari')
             ->orderBy('jam_mulai')
-            ->get();
+            ->paginate(10);
 
         // Generate timeslots seperti biasa
         $timeSlots = [];
