@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Mahasiswa;
+use App\Models\Matakuliah;
+use App\Models\PembimbingAkd;
 use App\Models\ProgramStudi;
 use App\Models\RuangKelas;
 use Illuminate\Http\Request;
@@ -14,10 +17,16 @@ class akademikControl extends Controller
     public function akademik()
     {
         $ruangKelas = RuangKelas::count();
+        $mahasiswa = Mahasiswa::count();
+        $matakuliah = Matakuliah::count();
+        $pembimbingakd = PembimbingAkd::count();
 
 
         return view('akademik.dashboard', compact(
             'ruangKelas',
+            'mahasiswa',
+            'matakuliah',
+            'pembimbingakd'
         ));
     }
 
