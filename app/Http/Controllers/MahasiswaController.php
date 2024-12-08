@@ -111,10 +111,23 @@ class MahasiswaController extends Controller
                 ->where('nim', $mahasiswa->nim)
                 ->value('prodi_id');
 
-            // Kode yang sudah ada untuk mengambil data jadwal dll
+            $semesterSekarang = DB::table('mahasiswa')
+                ->where('nim', $mahasiswa->nim)
+                ->value('semester');
+            
+            $semesterYangDitampilkan = [];
+            if ($semesterSekarang % 2 == 1) {
+                // Jika semester ganjil, tampilkan semester 1, 3, 5, 7
+                $semesterYangDitampilkan = [1, 3, 5, 7];
+            } else {
+                // Jika semester genap, tampilkan semester 2, 4, 6, 8
+                $semesterYangDitampilkan = [2, 4, 6, 8];
+            }
+
             $semester = $request->input('semester');
             $query = JadwalKuliah::with(['prodi', 'matakuliah', 'ruangKelas'])
                 ->where('prodi_id', $mhsProdiId)
+                ->whereIn('plot_semester', $semesterYangDitampilkan)
                 ->orderBy('hari')
                 ->orderBy('jam_mulai');
 
@@ -180,9 +193,23 @@ class MahasiswaController extends Controller
             ->where('nim', $mahasiswa->nim)
             ->value('prodi_id');
 
+        $semesterSekarang = DB::table('mahasiswa')
+            ->where('nim', $mahasiswa->nim)
+            ->value('semester');
+
+        $semesterYangDitampilkan = [];
+        if ($semesterSekarang % 2 == 1) {
+            // Jika semester ganjil, tampilkan semester 1, 3, 5, 7
+            $semesterYangDitampilkan = [1, 3, 5, 7];
+        } else {
+            // Jika semester genap, tampilkan semester 2, 4, 6, 8
+            $semesterYangDitampilkan = [2, 4, 6, 8];
+        }
+
         // Get all jadwal that are approved
         $jadwalKuliah = JadwalKuliah::with(['matakuliah', 'ruangKelas'])
             ->where('prodi_id', $mhsProdiId)
+            ->whereIn('plot_semester', $semesterYangDitampilkan)
             ->orderBy('jam_mulai')
             ->get();
 
