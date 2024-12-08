@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Irs;
 use App\Models\Mahasiswa;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DosenController extends Controller
@@ -26,7 +27,12 @@ class DosenController extends Controller
     }
     public function irs()
     {
+        $dosenID = Auth::user()->nip;
+
         $irs = Irs::with(['mahasiswa:nim,name'])
+            ->whereHas('mahasiswa', function($query) use ($dosenID) {
+                $query->where('dosen_id', $dosenID);
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
