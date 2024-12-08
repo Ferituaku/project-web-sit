@@ -281,29 +281,6 @@
         }
     }
 
-    // function editRoom(koderuang) {
-    //     fetch(`/akademik/ruangkelas/${koderuang}/edit`, {
-    //             headers: {
-    //                 'Accept': 'application/json'
-    //             }
-    //         })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             if (data.status === 'error') {
-    //                 showAlert('error', data.message);
-    //                 return;
-    //             }
-    //             const form = document.getElementById('editRoomForm');
-    //             form.elements['edit_koderuang'].value = data.koderuang;
-    //             form.elements['new_koderuang'].value = data.koderuang;
-    //             form.elements['kapasitas'].value = data.kapasitas;
-    //             $('#editRoomModal').modal('show');
-    //         })
-    //         .catch(error => {
-    //             console.error('Error:', error);
-    //             showAlert('error', 'Terjadi kesalahan saat mengambil data ruang.');
-    //         });
-    // }
     function editRoom(koderuang) {
         fetch(`/akademik/ruangkelas/${koderuang}/edit`, {
                 headers: {

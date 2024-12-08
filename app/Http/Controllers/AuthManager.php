@@ -18,16 +18,6 @@ class AuthManager extends Controller
         return view('login');
     }
 
-    // function register()
-    // {
-    //     if (Auth::check()) {
-    //         return redirect(route('dashboard'));
-    //     }
-    //     return view('register');
-    // }
-
-
-
     function loginPost(Request $request)
     {
         $request->validate(
@@ -61,25 +51,6 @@ class AuthManager extends Controller
         }
         return redirect(route('login'))->with("error", "Email atau password yang dimasukkan tidak sesuai");
     }
-
-    // function registerPost(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required',
-    //         'email' => 'required|email|unique:users',
-    //         'password' => 'required'
-    //     ]);
-
-    //     $data['name'] = $request->name;
-    //     $data['email'] = $request->email;
-    //     $data['password'] =  Hash::make($request->password);
-    //     $user = User::create($data);
-    //     if (!$user) {
-    //         return redirect(route('register'))->with("error", "Registrasi gagal/invalid");
-    //     }
-    //     return redirect(route('login'))->with("success", "Registrasi berhasil, Silakan Login");
-    // }
-
 
     function logout()
     {

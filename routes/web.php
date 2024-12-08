@@ -132,8 +132,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::put('/dekan/ruangkelas/{koderuang}/reject', [DekanController::class, 'rejectRoom'])->name('dekan.ruangkelas.reject');
         //Persetujuan Jadwal
         Route::get('/dekan/persetujuanJadwal', [DekanController::class, 'persetujuanJadwal'])->name('dekan.persetujuanJadwal');
-        // Route::get('/dekan/jadwal/approval', [DekanController::class, 'jadwalApproval'])->name('dekan.jadwal.approval');
-        // Rute untuk persetujuan jadwal oleh dekan
         Route::post('/dekan/jadwal/{id}/approve', [DekanController::class, 'approveJadwal'])->name('dekan.jadwal.approve');
         Route::post('/dekan/jadwal/{id}/reject', [DekanController::class, 'rejectJadwal'])->name('dekan.jadwal.reject');
     });

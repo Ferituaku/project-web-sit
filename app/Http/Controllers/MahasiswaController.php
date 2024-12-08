@@ -26,10 +26,6 @@ class MahasiswaController extends Controller
     {
         return view('mahasiswa/jadwal');
     }
-    // public function akademisi()
-    // {
-    //     return view('mahasiswa/akademisi');
-    // }
     public function herreg()
     {
         return view('mahasiswa/herreg');
@@ -77,70 +73,6 @@ class MahasiswaController extends Controller
     {
         return view('mahasiswa.akademikMhs.transkrip');
     }
-
-    // public function buatIrs(Request $request)
-    // {
-    //     try {
-    //         // Ambil data mahasiswa yang sedang login
-    //         $mahasiswa = Auth::user();
-
-    //         // Dapatkan prodi_id mahasiswa dari tabel mahasiswa
-    //         $mhsProdiId = DB::table('mahasiswa')
-    //             ->where('nim', $mahasiswa->nim)
-    //             ->value('prodi_id');
-
-    //         // Ambil input semester dari request
-    //         $semester = $request->input('semester');
-
-    //         // Ambil jadwal kuliah sesuai prodi_id mahasiswa
-    //         $query = JadwalKuliah::with(['prodi', 'matakuliah', 'ruangKelas'])
-    //             ->where('prodi_id', $mhsProdiId) // Filter berdasarkan prodi_id mahasiswa
-    //             ->orderBy('hari')
-    //             ->orderBy('jam_mulai');
-
-    //         if ($semester) {
-    //             $query->where('plot_semester', $semester); // Filter berdasarkan semester jika tersedia
-    //         }
-
-    //         $jadwalKuliah = $query->get();
-
-    //         // Ambil IRS saat ini jika ada
-    //         $currentIrs = Irs::where('nim', $mahasiswa->nim)->first();
-
-    //         // Ambil semua jadwal ID yang telah dipilih (jika ada)
-    //         $selectedJadwalIds = [];
-    //         if ($currentIrs) {
-    //             $selectedJadwalIds = $currentIrs->jadwalKuliah->pluck('id')->toArray();
-    //         }
-
-    //         // Buat matriks jadwal berdasarkan slot waktu
-    //         $timeSlots = $this->createTimeSlots();
-    //         $scheduleMatrix = $this->createScheduleMatrix($timeSlots, $jadwalKuliah);
-
-    //         // Jika request berupa JSON, kembalikan data jadwal sebagai JSON
-    //         if ($request->expectsJson()) {
-    //             return response()->json($jadwalKuliah);
-    //         }
-
-    //         // Kembalikan view dengan data yang dibutuhkan
-    //         return view('mahasiswa.akademikMhs.buatIrs', compact(
-    //             'scheduleMatrix',
-    //             'jadwalKuliah',
-    //             'timeSlots',
-    //             'selectedJadwalIds',
-    //             'currentIrs',
-    //             'semester'
-    //         ));
-    //     } catch (\Exception $e) {
-    //         // Jika terjadi error, tangani dan berikan respons sesuai format request
-    //         if ($request->expectsJson()) {
-    //             return response()->json(['error' => $e->getMessage()], 500);
-    //         }
-    //         return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-    //     }
-    // }
-
-
 
     public function buatIrs(Request $request)
     {
@@ -224,75 +156,6 @@ class MahasiswaController extends Controller
         }
     }
 
-
-
-
-    // public function buatIrs(Request $request)
-    // {
-    //     try {
-    //         $mahasiswa = Auth::user();
-    //         $semester = $request->input('semester');
-
-    //         // Get current IRS if exists
-    //         $currentIrs = Irs::where('nim', $mahasiswa->nim)
-    //             ->orderBy('created_at', 'desc')
-    //             ->first();
-
-    //         // If no IRS exists, create an empty one with approval = 0
-    //         if (!$currentIrs) {
-    //             $currentIrs = new Irs();
-    //             $currentIrs->approval = '0';
-    //         }
-
-    //         // Get jadwal data only if IRS is not approved
-    //         if ($currentIrs->approval == '0') {
-    //             $jadwalKuliah = JadwalKuliah::with(['matakuliah', 'ruangKelas'])
-    //                 ->orderBy('hari')
-    //                 ->orderBy('jam_mulai')
-    //                 ->get();
-
-    //             // Get all selected jadwal IDs
-    //             $selectedJadwalIds = [];
-    //             if ($currentIrs->id) {
-    //                 $selectedJadwalIds = $currentIrs->jadwalKuliah->pluck('id')->toArray();
-    //             }
-
-    //             $query = JadwalKuliah::with(['mataKuliah', 'ruangKelas', 'pembimbingakd'])
-    //                 ->orderBy('jam_mulai');
-
-    //             if ($semester) {
-    //                 $query->where('plot_semester', $semester);
-    //             }
-
-    //             $jadwalKuliah = $query->get();
-
-    //             // Create time matrix
-    //             $timeSlots = $this->createTimeSlots();
-    //             $scheduleMatrix = $this->createScheduleMatrix($timeSlots, $jadwalKuliah);
-
-    //             if ($request->expectsJson()) {
-    //                 return response()->json($jadwalKuliah);
-    //             }
-
-    //             return view('mahasiswa.akademikMhs.buatIrs', compact(
-    //                 'scheduleMatrix',
-    //                 'jadwalKuliah',
-    //                 'timeSlots',
-    //                 'selectedJadwalIds',
-    //                 'currentIrs',
-    //                 'semester'
-    //             ));
-    //         }
-
-    //         // If IRS is approved, redirect with message
-    //         return redirect()->back()->with('info', 'IRS Anda telah disetujui. Tidak dapat melakukan perubahan.');
-    //     } catch (\Exception $e) {
-    //         if ($request->expectsJson()) {
-    //             return response()->json(['error' => $e->getMessage()], 500);
-    //         }
-    //         return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-    //     }
-    // }
     private function createTimeSlots()
     {
         $timeSlots = [];
@@ -380,120 +243,6 @@ class MahasiswaController extends Controller
             return back()->with('error', 'Gagal mencetak IRS: ' . $e->getMessage());
         }
     }
-
-
-    // public function saveIrs(Request $request)
-    // {
-    //     try {
-    //         DB::beginTransaction();
-
-    //         $mahasiswa = Auth::user();
-    //         $selectedJadwals = $request->input('jadwals', []);
-
-    //         // Validasi input
-    //         if (empty($selectedJadwals)) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Pilih minimal satu mata kuliah'
-    //             ], 400);
-    //         }
-
-
-    //         // Ambil semester dari jadwal kuliah yang dipilih pertama
-    //         $jadwalKuliah = JadwalKuliah::find($selectedJadwals[0]);
-    //         $semester = $jadwalKuliah->plot_semester; // Mengambil semester dari jadwal kuliah
-
-    //         // Hitung total SKS
-    //         $totalSks = JadwalKuliah::whereIn('id', $selectedJadwals)
-    //             ->join('matakuliah', 'jadwalKuliah.kodemk', '=', 'matakuliah.kodemk')
-    //             ->sum('matakuliah.sks');
-
-    //         // Validasi batas SKS
-    //         if ($totalSks > 24) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Total SKS melebihi batas maksimum (24 SKS)'
-    //             ], 400);
-    //         }
-
-    //         // Cek konflik jadwal
-    //         if ($this->hasScheduleConflict($selectedJadwals)) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Terdapat jadwal yang bertabrakan'
-    //             ], 400);
-    //         }
-
-    //         // Set tahun ajaran
-    //         $currentYear = date('Y');
-    //         $month = date('n');
-    //         if ($month >= 8) { // Semester Ganjil
-    //             $tahunAjaran = $currentYear . '/' . ($currentYear + 1);
-    //         } else { // Semester Genap
-    //             $tahunAjaran = ($currentYear - 1) . '/' . $currentYear;
-    //         }
-
-    //         // Cari IRS yang sudah ada untuk semester dan tahun ajaran ini
-    //         $existingIrs = Irs::where('nim', $mahasiswa->nim)
-    //             ->where('semester', $semester)
-    //             ->where('tahun_ajaran', $tahunAjaran)
-    //             ->first();
-
-    //         if ($existingIrs) {
-    //             // Update IRS yang sudah ada
-    //             $existingIrs->total_sks = $totalSks;
-    //             $existingIrs->approval = '0'; // Reset status approval
-    //             $existingIrs->save();
-
-    //             // Hapus semua jadwal lama
-    //             DB::table('irs_jadwal')->where('irs_id', $existingIrs->id)->delete();
-
-    //             // Masukkan jadwal baru
-    //             foreach ($selectedJadwals as $jadwalId) {
-    //                 DB::table('irs_jadwal')->insert([
-    //                     'irs_id' => $existingIrs->id,
-    //                     'jadwal_id' => $jadwalId,
-    //                     'created_at' => now(),
-    //                     'updated_at' => now()
-    //                 ]);
-    //             }
-    //         } else { // Buat record IRS baru
-    //             $irs = new Irs();
-    //             $irs->nim = $mahasiswa->nim;
-    //             $irs->semester = $semester; // Menggunakan semester dari jadwal
-    //             $irs->tahun_ajaran = $tahunAjaran;
-    //             $irs->total_sks = $totalSks;
-    //             $irs->approval = '0';
-    //             $irs->save();
-
-    //             // Attach jadwal yang dipilih ke IRS melalui tabel pivot
-    //             foreach ($selectedJadwals as $jadwalId) {
-    //                 DB::table('irs_jadwal')->insert([
-    //                     'irs_id' => $irs->id,
-    //                     'jadwal_id' => $jadwalId,
-    //                     'created_at' => now(),
-    //                     'updated_at' => now()
-    //                 ]);
-    //             }
-    //         }
-
-
-    //         DB::commit();
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'IRS berhasil disimpan dan menunggu persetujuan dosen wali'
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         Log::error('Error saving IRS: ' . $e->getMessage());
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Terjadi kesalahan saat menyimpan IRS: ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
 
     public function saveIrs(Request $request)
     {

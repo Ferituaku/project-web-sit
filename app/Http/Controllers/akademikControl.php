@@ -37,13 +37,6 @@ class akademikControl extends Controller
         return view('akademik.aturkelas', compact('ruangKelas', 'programStudi'));
     }
 
-    // public function indexRuangKelas()
-    // {
-    //     $programStudi = ProgramStudi::all();
-    //     $ruangKelas = RuangKelas::with('jadwalKuliah', 'programStudi');
-    //     return view('akademik.ruangkelas.index', compact('ruangKelas', 'programStudi'));
-    // }
-
     public function storeRuangKelas(Request $request)
     {
         $validator = Validator::make($request->all(), [

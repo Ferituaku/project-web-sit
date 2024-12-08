@@ -54,9 +54,4 @@ class User extends Authenticatable
         return $this->hasOne(Mahasiswa::class, 'nim', 'nim')
             ->where('role', 'mahasiswa');
     }
-    // public function pembimbingakd(): HasOne
-    // {
-    //     return $this->hasOne(PembimbingAkd::class, 'nip', 'nip')
-    //         ->where('role', 'dosen, kaprodi, dekan');
-    // }
 }

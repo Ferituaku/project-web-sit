@@ -153,47 +153,5 @@
         </div>
     </main>
 </div>
-<!-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        function setActiveSidebarItem() {
-            // Dapatkan current route name dari Laravel
-            const currentRoute = '{{ Route::currentRouteName() }}';
-
-            // Pilih semua nav-link di sidebar
-            const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
-
-            sidebarLinks.forEach(link => {
-                // Reset semua active state
-                link.classList.remove('active');
-                // Jika route cocok dengan current route, set active
-                if (linkRoute && currentRoute === linkRoute) {
-                    link.classList.add('active');
-                }
-            });
-        }
-
-        // Jalankan fungsi saat halaman dimuat
-        setActiveSidebarItem();
-    });
-</script> -->
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        function setActiveSidebarItem() {
-            var currentPage = window.location.href;
-
-            var sidebarLinks = document.querySelectorAll('.sidebar .nav-link')
-
-            sidebarLinks.forEach(function(link) {
-                link.classList.remove('active');
-
-                if (currentPage == includes(link.getAttribute('href'))) {
-                    link.classList.add('active');
-                }
-            });
-        }
-        setActiveSidebarItem();
-    });
-</script> --}}
-
 
 @endsections
