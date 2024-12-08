@@ -172,35 +172,39 @@
         }
 
         window.approveIRS = function(id) {
-            fetch(`/dosen/irs/${id}/approve`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json'
-                    }
-                }).then(response => response.json())
-                .then(data => {
-                    showAlert(data.status === 'success' ? 'success' : 'error', data.message);
-                    if (data.status === 'success') location.reload();
-                }).catch(() => {
-                    showAlert('error', 'Terjadi kesalahan sistem');
-                });
+            if (confirm('Apakah Anda yakin ingin setujui IRS ini?')) {
+                fetch(`/dosen/irs/${id}/approve`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(response => response.json())
+                    .then(data => {
+                        showAlert(data.status === 'success' ? 'success' : 'error', data.message);
+                        if (data.status === 'success') location.reload();
+                    }).catch(() => {
+                        showAlert('error', 'Terjadi kesalahan sistem');
+                    });
+            }
         };
 
         window.rejectIRS = function(id) {
-            fetch(`/dosen/irs/${id}/reject`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json'
-                    }
-                }).then(response => response.json())
-                .then(data => {
-                    showAlert(data.status === 'success' ? 'success' : 'error', data.message);
-                    if (data.status === 'success') location.reload();
-                }).catch(() => {
-                    showAlert('error', 'Terjadi kesalahan sistem');
-                });
+            if (confirm('Apakah Anda yakin ingin menolak IRS ini?')) {
+                fetch(`/dosen/irs/${id}/reject`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(response => response.json())
+                    .then(data => {
+                        showAlert(data.status === 'success' ? 'success' : 'error', data.message);
+                        if (data.status === 'success') location.reload();
+                    }).catch(() => {
+                        showAlert('error', 'Terjadi kesalahan sistem');
+                    });
+            }
         };
     });
 
