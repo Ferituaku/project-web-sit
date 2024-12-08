@@ -99,6 +99,7 @@
             <!-- Pagination -->
             <div class="row align-items-center mt-4">
                 <div class="col-md-6">
+
                 </div>
             </div>
         </div>
