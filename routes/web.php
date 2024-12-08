@@ -91,12 +91,12 @@ Route::group(['middleware' => 'auth'], function () {
     // Rute untuk dosen
     Route::group(['middleware' => 'role:dosen,kaprodi,dekan'], function () {
         Route::get('/dosen/dashboard', [DosenController::class, 'dosen'])->name('dosen.dashboard');
-        Route::get('/dosen/verifikasi', [DosenController::class, 'verifikasi'])->name('dosen.verifikasi');
         Route::get('/dosen/lihatjadwal', [DosenController::class, 'lihatjadwal'])->name('dosen.lihatjadwal');
         Route::get('/dosen/konsultasi', [DosenController::class, 'konsultasi'])->name('dosen.konsultasi');
+        Route::get('/dosen/irs', [DosenController::class, 'irs'])->name('dosen.irs');
         Route::get('/dosen/irs/{id}/detail', [DosenController::class, 'showIrsDetail'])->name('dosen.irs.detail');
-        Route::put('/dosen/irs/{id}/approve', [DosenController::class, 'approveIrs'])->name('dosen.irs.approve');
-        Route::put('/dosen/irs/{id}/reject', [DosenController::class, 'rejectIrs'])->name('dosen.irs.reject');
+        Route::post('/dosen/irs/{id}/approve', [DosenController::class, 'approveIrs'])->name('dosen.irs.approve');
+        Route::post('/dosen/irs/{id}/reject', [DosenController::class, 'rejectIrs'])->name('dosen.irs.reject');
     });
 
     // Rute untuk kaprodi

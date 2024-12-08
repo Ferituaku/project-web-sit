@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 <style>
     .sidebar {
@@ -54,9 +54,9 @@
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="{{route('dosen.verifikasi')}}" class="nav-link d-flex align-items-center">
+                    <a href="{{route('dosen.irs')}}" class="nav-link d-flex align-items-center">
                         <i class="bi bi-file-earmark-check me-2"></i>
-                        Verifikasi IRS
+                        Setujui IRS
                     </a>
                 </li>
                 <li class="nav-item mb-2">
