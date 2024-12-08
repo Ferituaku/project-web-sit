@@ -49,7 +49,7 @@
                     <tbody>
                         @foreach($ruangKelas as $index => $ruang)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $loop->iteration + $ruangKelas->firstItem() - 1}}</td>
                             <td>{{ $ruang->koderuang }}</td>
                             <td>{{ $ruang->kapasitas }} orang</td>
                             <td>

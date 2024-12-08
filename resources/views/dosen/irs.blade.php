@@ -50,7 +50,7 @@
                     <tbody>
                         @forelse($irs as $index => $item)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $loop->iteration + $irs->firstItem() - 1}}</td>
                             <td>{{ $item->mahasiswa->nim }}</td>
                             <td>{{ $item->mahasiswa->name }}</td>
                             <td>{{ $item->semester }}</td>

@@ -67,7 +67,7 @@
                     <tbody>
                         @foreach($jadwalKuliah as $index => $jadwal)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $loop->iteration + $jadwalKuliah->firstItem() - 1}}</td>
                             <td>{{ $jadwal->matakuliah->kodemk }}</td>
                             <td>{{ $jadwal->matakuliah->nama_mk }}</td>
                             <td>{{ $jadwal->pembimbingakd->name }}</td>

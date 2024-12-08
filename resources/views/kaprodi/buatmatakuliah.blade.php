@@ -86,7 +86,7 @@
                     <tbody>
                         @foreach($mataKuliah as $index => $matkul)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $loop->iteration + $mataKuliah->firstItem() - 1}}</td>
                             <td>{{ $matkul->kodemk }}</td>
                             <td>{{ $matkul->nama_mk }}</td>
                             <td>
