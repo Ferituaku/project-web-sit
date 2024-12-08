@@ -114,7 +114,7 @@ class MahasiswaController extends Controller
             $semesterSekarang = DB::table('mahasiswa')
                 ->where('nim', $mahasiswa->nim)
                 ->value('semester');
-            
+
             $semesterYangDitampilkan = [];
             if ($semesterSekarang % 2 == 1) {
                 // Jika semester ganjil, tampilkan semester 1, 3, 5, 7
@@ -278,6 +278,8 @@ class MahasiswaController extends Controller
 
             $mahasiswa = Auth::user();
             $selectedJadwals = $request->input('jadwals', []);
+            $mahasiswaSemester = Mahasiswa::where('nim', $mahasiswa->nim)
+                ->value('semester');
 
             // Validasi input
             if (empty($selectedJadwals)) {
@@ -295,10 +297,6 @@ class MahasiswaController extends Controller
             } else {
                 $tahunAjaran = ($currentYear - 1) . '/' . $currentYear;
             }
-
-            // Ambil semester dari jadwal kuliah yang dipilih pertama
-            $jadwalKuliah = JadwalKuliah::find($selectedJadwals[0]);
-            $semester = $jadwalKuliah->plot_semester;
 
             // Cek IRS yang sudah ada
             $existingIrs = Irs::where('nim', $mahasiswa->nim)
@@ -336,6 +334,7 @@ class MahasiswaController extends Controller
 
             if ($existingIrs) {
                 // Update IRS yang sudah ada
+                $existingIrs->semester = $mahasiswaSemester;
                 $existingIrs->total_sks = $totalSks;
                 $existingIrs->approval = '0';
                 $existingIrs->save();
@@ -358,7 +357,7 @@ class MahasiswaController extends Controller
                 // Buat IRS baru
                 $irs = new Irs();
                 $irs->nim = $mahasiswa->nim;
-                $irs->semester = $semester;
+                $irs->semester = $mahasiswaSemester;
                 $irs->tahun_ajaran = $tahunAjaran;
                 $irs->total_sks = $totalSks;
                 $irs->approval = '0';

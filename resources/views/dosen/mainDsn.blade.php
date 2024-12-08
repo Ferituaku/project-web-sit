@@ -65,7 +65,7 @@
             <!-- Navigation Menu -->
             <ul class="nav nav-pills flex-column mb-auto">
                 <li class="nav-item mb-2">
-                    <a href="{{route('dosen.dashboard')}}" class="nav-link active d-flex align-items-center">
+                    <a href="{{route('dosen.dashboard')}}" class="nav-link d-flex active align-items-center">
                         <i class="bi bi-speedometer2 me-2"></i>
                         Dashboard
                     </a>
@@ -131,20 +131,27 @@
 
 
 <script>
-    function setActiveSidebarItem() {
-        var currentPage = window.location.href;
+    document.addEventListener('DOMContentLoaded', function() {
+        function setActiveSidebarItem() {
+            var currentPage = window.location.href;
 
-        var sidebarLinks = document.querySelectorAll('.sidebar .nav-link')
+            var sidebarLinks = document.querySelectorAll('.sidebar .nav-link')
 
-        sidebarLinks.forEach(function(link) {
-            link.classList.remove('active');
+            sidebarLinks.forEach(function(link) {
+                link.classList.remove('active');
 
-            if (currentPage == includes(link.getAttribute('href'))) {
-                link.classList.add('active');
-            }
-        });
+                if (currentPage == includes(link.getAttribute('href'))) {
+                    link.classList.add('active');
+                }
+            });
 
-    }
+        }
+
+
+        setActiveSidebarItem();
+
+        window.addEventListener('postate', setActiveSidebarItem);
+    });
 </script>
 
 @endsection
