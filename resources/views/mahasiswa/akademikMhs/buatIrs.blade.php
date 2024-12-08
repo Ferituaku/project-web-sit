@@ -372,11 +372,22 @@
 
         function validateScheduleConflict(newElement) {
             const newSchedule = extractScheduleInfo(newElement);
+            const newCourseInfo = extractCourseInfo(newElement);
 
+            // Check for duplicate courses first
             for (const [_, course] of selectedCourses) {
+                const existingCourseInfo = extractCourseInfo(course.element);
+                
+                // Check if the same course code is already selected
+                if (existingCourseInfo.code === newCourseInfo.code) {
+                    showAlert(`Mata kuliah ${newCourseInfo.name} (${newCourseInfo.code}) sudah dipilih`, 'warning');
+                    return false;
+                }
+
+                // Check time conflict
                 const existingSchedule = extractScheduleInfo(course.element);
                 if (hasTimeConflict(newSchedule, existingSchedule)) {
-                    showAlert(`Jadwal bertabrakan dengan mata kuliah ${existingSchedule.courseName}`, 'warning');
+                    showAlert(`Jadwal bertabrakan dengan mata kuliah ${existingCourseInfo.name}`, 'warning');
                     return false;
                 }
             }
@@ -470,6 +481,7 @@
             const cardBody = element.querySelector('.card-body');
             return {
                 name: cardBody.querySelector('small:nth-child(1)').textContent.trim(),
+                // Get clean course code by removing 'Kode: ' prefix
                 code: cardBody.querySelector('small:nth-child(2)').textContent.replace('Kode:', '').trim(),
                 group: cardBody.querySelector('small:nth-child(3)').textContent.replace('Kelas:', '').trim()
             };
@@ -543,28 +555,6 @@
                 showAlert('Terjadi kesalahan saat menyimpan IRS', 'error');
             }
         });
-
-        // Modify semester filter handler to only affect course visibility
-        // const semesterFilter = document.getElementById('semester-filter');
-        // semesterFilter.addEventListener('change', function() {
-        //     const selectedSemester = this.value;
-
-        //     // Hide/show courses based on semester
-        //     document.querySelectorAll('.schedule-item').forEach(item => {
-        //         const courseSemester = item.querySelector('small:nth-child(4)').textContent
-        //             .match(/SMT\((\d+)\)/)[1];
-
-        //         if (!selectedSemester || courseSemester === selectedSemester) {
-        //             item.style.display = 'block';
-        //         } else {
-        //             item.style.display = 'none';
-        //         }
-        //     });
-        // });
-
-        // Fetch and display all available courses
-
-
     });
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -625,316 +615,4 @@
     });
 </script>
 @endif
-<!--<script>
-    // Main IRS management script
-    document.addEventListener('DOMContentLoaded', function() {
-        // State management
-        let selectedCourses = new Map(); // Using Map to store course details
-        const MAX_SKS = 24;
-        let currentTotalSks = 0;
-
-        // Initialize modals
-        const confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
-        const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
-
-        // Initialize from existing selections
-        document.querySelectorAll('.schedule-item.border-success').forEach(item => {
-            const jadwalId = item.dataset.jadwalId;
-            const sks = parseInt(item.dataset.sks);
-            selectedCourses.set(jadwalId, {
-                id: jadwalId,
-                sks: sks,
-                element: item
-            });
-            currentTotalSks += sks;
-            updateSksCounter();
-        });
-
-        // Course selection handler
-        window.handleScheduleItemClick = function(element) {
-            const jadwalId = element.dataset.jadwalId;
-            const sks = parseInt(element.dataset.sks);
-
-            if (element.classList.contains('border-success')) {
-                showDeleteConfirmation(jadwalId, sks, element);
-            } else {
-                if (!validateCourseAddition(sks)) return;
-                if (!validateScheduleConflict(element)) return;
-
-                addCourse(jadwalId, sks, element);
-            }
-        };
-
-        // Validation functions
-        function validateCourseAddition(sks) {
-            if (currentTotalSks + sks > MAX_SKS) {
-                showAlert('Total SKS melebihi batas maksimum 24 SKS', 'warning');
-                return false;
-            }
-            return true;
-        }
-
-        function extractScheduleInfo(element) {
-            const cardBody = element.querySelector('.card-body');
-            const timeText = cardBody.querySelector('small:last-child').textContent.trim();
-            const [startTime, endTime] = timeText.split(' - ');
-
-            return {
-                day: element.closest('td').dataset.day,
-                startTime: startTime,
-                endTime: endTime,
-                courseName: cardBody.querySelector('small:first-child').textContent.trim()
-            };
-        }
-
-        function validateScheduleConflict(newElement) {
-            const newSchedule = extractScheduleInfo(newElement);
-
-            for (const [_, course] of selectedCourses) {
-                const existingSchedule = extractScheduleInfo(course.element);
-                if (hasTimeConflict(newSchedule, existingSchedule)) {
-                    showAlert(`Jadwal bertabrakan dengan mata kuliah ${existingSchedule.courseName}`, 'warning');
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        function hasTimeConflict(schedule1, schedule2) {
-            if (schedule1.day !== schedule2.day) return false;
-
-            const start1 = timeToMinutes(schedule1.startTime);
-            const end1 = timeToMinutes(schedule1.endTime);
-            const start2 = timeToMinutes(schedule2.startTime);
-            const end2 = timeToMinutes(schedule2.endTime);
-
-            return (start1 < end2 && start2 < end1);
-        }
-
-        // Course management functions
-        function addCourse(jadwalId, sks, element) {
-            selectedCourses.set(jadwalId, {
-                id: jadwalId,
-                sks: sks,
-                element: element
-            });
-            currentTotalSks += sks;
-            element.classList.replace('border-info', 'border-success');
-            updateDisplay();
-        }
-
-        function removeCourse(jadwalId) {
-            const course = selectedCourses.get(jadwalId);
-            if (!course) return;
-
-            currentTotalSks -= course.sks;
-            course.element.classList.replace('border-success', 'border-info');
-            selectedCourses.delete(jadwalId);
-            updateDisplay();
-        }
-
-        // UI update functions
-        function updateDisplay() {
-            updateSksCounter();
-            updateSelectedCoursesList();
-        }
-
-        function updateSksCounter() {
-            const totalSksElements = document.querySelectorAll('#total-sks');
-            const progressBars = document.querySelectorAll('.progress-bar');
-
-            totalSksElements.forEach(element => {
-                element.textContent = currentTotalSks;
-            });
-
-            const progressPercentage = (currentTotalSks / MAX_SKS) * 100;
-            progressBars.forEach(bar => {
-                bar.style.width = `${progressPercentage}%`;
-                bar.setAttribute('aria-valuenow', currentTotalSks);
-                updateProgressBarColor(bar, progressPercentage);
-            });
-        }
-
-        function updateProgressBarColor(bar, percentage) {
-            bar.className = 'progress-bar';
-            if (percentage > 100) {
-                bar.classList.add('bg-danger');
-            } else if (percentage >= 75) {
-                bar.classList.add('bg-warning');
-            } else {
-                bar.classList.add('bg-success');
-            }
-        }
-
-        // Save IRS implementation
-        document.getElementById('save-irs').addEventListener('click', async function() {
-            if (selectedCourses.size === 0) {
-                showAlert('Pilih minimal satu mata kuliah', 'warning');
-                return;
-            }
-
-            const semester = document.getElementById('semester-filter').value;
-            if (!semester) {
-                showAlert('Pilih semester terlebih dahulu', 'warning');
-                return;
-            }
-
-            try {
-                const response = await fetch('/mahasiswa/akademikMhs/save-irs', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        jadwals: Array.from(selectedCourses.keys()),
-                        semester: semester,
-                        tahun_ajaran: getTahunAjaran()
-                    })
-                });
-
-                const data = await response.json();
-                handleSaveResponse(data);
-            } catch (error) {
-                console.error('Error:', error);
-                showAlert('Terjadi kesalahan saat menyimpan IRS', 'error');
-            }
-        });
-
-        // Helper functions
-        function getTahunAjaran() {
-            const currentDate = new Date();
-            const currentYear = currentDate.getFullYear();
-            const currentMonth = currentDate.getMonth() + 1;
-
-            // If current month is >= 8 (August), it's the first semester of current/next year
-            // Otherwise, it's the second semester of previous/current year
-            const startYear = currentMonth >= 8 ? currentYear : currentYear - 1;
-            return `${startYear}/${startYear + 1}`;
-        }
-
-        function showAlert(message, type = 'info') {
-            const alertModal = document.getElementById('alertModal');
-            const alertMessage = alertModal.querySelector('#alert-message');
-            const alertIcon = alertModal.querySelector('#alert-icon');
-
-            alertMessage.textContent = message;
-
-            // Update icon and colors based on type
-            alertIcon.className = 'fas fa-3x mb-3';
-            switch (type) {
-                case 'success':
-                    alertIcon.classList.add('fa-check-circle', 'text-success');
-                    break;
-                case 'warning':
-                    alertIcon.classList.add('fa-exclamation-triangle', 'text-warning');
-                    break;
-                case 'error':
-                    alertIcon.classList.add('fa-times-circle', 'text-danger');
-                    break;
-                default:
-                    alertIcon.classList.add('fa-info-circle', 'text-info');
-            }
-
-            const modal = new bootstrap.Modal(alertModal);
-            modal.show();
-        }
-
-        function showDeleteConfirmation(jadwalId, sks, element) {
-            const courseInfo = extractCourseInfo(element);
-            document.getElementById('course-to-delete-info').textContent =
-                `${courseInfo.name} (${courseInfo.code})`;
-
-            document.getElementById('confirm-delete').onclick = () => {
-                removeCourse(jadwalId, sks, element);
-                confirmDeleteModal.hide();
-            };
-
-            confirmDeleteModal.show();
-        }
-
-        // function extractCourseInfo(element) {
-        //     const cardBody = element.querySelector('.card-body');
-        //     return {
-        //         name: cardBody.querySelector('small:nth-child(1)').textContent.trim(),
-        //         code: cardBody.querySelector('small:nth-child(2)').textContent.replace('Kode:', '').trim(),
-        //         group: cardBody.querySelector('small:nth-child(3)').textContent.replace('Kelas:', '').trim()
-        //     };
-        // }
-        function extractCourseInfo(scheduleItem) {
-            if (!scheduleItem) return null;
-
-            const cardBody = scheduleItem.querySelector('.card-body');
-            const nameMk = cardBody.querySelector('small:nth-child(1)').textContent.trim();
-            const code = cardBody.querySelector('small:nth-child(2)').textContent.replace('Kode:', '').trim();
-            const group = cardBody.querySelector('small:nth-child(3)').textContent.replace('Kelas:', '').trim();
-            const time = cardBody.querySelector('small:nth-child(4)').textContent.trim();
-
-            // Get day from parent cell
-            const cell = scheduleItem.closest('td');
-            const day = cell.dataset.day;
-
-            return {
-                name: nameMk,
-                code: code,
-                group: group,
-                time: time,
-                day: day
-            };
-        }
-
-        function handleSaveResponse(data) {
-            if (data.success) {
-                showAlert(data.message, 'success');
-                setTimeout(() => window.location.reload(), 1500);
-            } else {
-                showAlert(data.message || 'Gagal menyimpan IRS', 'error');
-            }
-        }
-
-        function timeToMinutes(time) {
-            const [hours, minutes] = time.split(':').map(Number);
-            return hours * 60 + minutes;
-        }
-
-        // Initialize course search functionality
-        initializeCourseSearch();
-    });
-
-    // Course search functionality
-    function initializeCourseSearch() {
-        const semesterFilter = document.getElementById('semester-filter');
-        const searchInput = document.getElementById('search-course');
-
-        semesterFilter.addEventListener('change', () => fetchAndDisplayCourses());
-        searchInput.addEventListener('input', debounce(fetchAndDisplayCourses, 300));
-    }
-
-    async function fetchAndDisplayCourses() {
-        const semester = document.getElementById('semester-filter').value;
-        const search = document.getElementById('search-course').value;
-
-        if (!semester && !search) {
-            document.getElementById('available-courses').style.display = 'none';
-            return;
-        }
-
-        try {
-            const response = await fetch(`/mahasiswa/akademikMhs/get-courses?semester=${semester}&search=${search}`);
-            const courses = await response.json();
-            displayAvailableCourses(courses);
-        } catch (error) {
-            console.error('Error fetching courses:', error);
-            showAlert('Gagal memuat mata kuliah', 'error');
-        }
-    }
-
-    function debounce(func, wait) {
-        let timeout;
-        return function(...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-    }
-</script> -->
 @endsection
