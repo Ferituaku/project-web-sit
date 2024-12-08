@@ -33,7 +33,7 @@
                 </div>
                 <div class="col-md-3 offset-md-6">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Cari ruang kelas..." id="searchInput">
+                        <input type="text" class="form-control" placeholder="Cari Jadwal Kuliah..." id="searchInput">
                         <button class="btn btn-outline-secondary" type="button">
                             <i class="bi bi-search"></i>
                         </button>
@@ -187,6 +187,18 @@
         </div>
     `;
         }
+
+        // fungsi Search 
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('tbody tr');
+
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
 
         let isAscending = true;
 

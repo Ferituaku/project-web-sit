@@ -90,12 +90,8 @@
                             <td>{{ $matkul->kodemk }}</td>
                             <td>{{ $matkul->nama_mk }}</td>
                             <td>
-                                @php
-                                $semester = $matkul->semester;
-                                $semesterText = $semester <= 8? "Semester $semester" : "Semester " .'('.($semester - 8).' - '.($semester - 1).' )';
-                                    @endphp
-                                    {{ $semesterText }}
-                                    </td>
+                                {{$matkul->semester}}
+                            </td>
                             <td>{{ $matkul->sks }}</td>
                             <td>{{ $matkul->prodi_id? $matkul->prodi->nama : 'Belum diatur' }}</td>
 
@@ -217,6 +213,34 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+
+        // Flag untuk melacak arah urutan: true = ascending, false = descending
+        let isAscending = true;
+        // Fungsi untuk mengurutkan tabel berdasarkan kolom semester
+        function sortTableBySemester() {
+            const tbody = document.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            rows.sort((a, b) => {
+                const semesterA = parseInt(a.querySelector('td:nth-child(4)').textContent);
+                const semesterB = parseInt(b.querySelector('td:nth-child(4)').textContent);
+                return isAscending ? semesterA - semesterB : semesterB - semesterA;
+            });
+
+            // Bersihkan isi tabel dan tambahkan baris yang sudah diurutkan
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+
+            // Perbarui ikon panah berdasarkan urutan
+            document.getElementById('sortIcon').className = isAscending ? 'bi btn-outline-light  bi-sort-down' : 'bi btn-outline-light bi-sort-up';
+
+            // Ubah arah urutan untuk klik berikutnya
+            isAscending = !isAscending;
+        }
+
+        // Event listener untuk tombol sort
+        document.getElementById('sortSemester').addEventListener('click', sortTableBySemester);
+
 
         // Show Add Modal
         const addButton = document.querySelector('[data-bs-target="#addMatkulModal"]');

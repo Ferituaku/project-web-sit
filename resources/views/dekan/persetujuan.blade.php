@@ -91,17 +91,11 @@
 
 
             <!-- Pagination -->
-            @if($ruangKelas->total() > 0)
-            <div class="card-footer d-flex justify-content-between align-items-center py-3">
-                <div class="text-sm text-muted">
-                    Menampilkan {{ $ruangKelas->firstItem() }} - {{ $ruangKelas->lastItem() }}
-                    dari {{ $ruangKelas->total() }} ruang kelas
-                </div>
-                <div>
-                    {{ $ruangKelas->links('vendor.pagination.bootstrap-5') }}
-                </div>
+
+            <div>
+                {{ $ruangKelas->links('vendor.pagination.bootstrap-5') }}
             </div>
-            @endif
+
         </div>
     </div>
 </div>
@@ -132,8 +126,7 @@
     }
 
     function approveRoom(koderuang) {
-        if (confirm('Apakah Anda yakin ingin setujui ruang kelas ini?')) 
-        {
+        if (confirm('Apakah Anda yakin ingin setujui ruang kelas ini?')) {
             fetch(`/dekan/ruangkelas/${koderuang}/approve`, {
                     method: 'PUT',
                     headers: {
@@ -152,12 +145,11 @@
                 .catch(error => {
                     showAlert('error', 'Terjadi kesalahan sistem.');
                 });
-        }  
+        }
     }
 
     function rejectRoom(koderuang) {
-        if (confirm('Apakah Anda yakin ingin menolak ruang kelas ini?'))
-        {
+        if (confirm('Apakah Anda yakin ingin menolak ruang kelas ini?')) {
             fetch(`/dekan/ruangkelas/${koderuang}/reject`, {
                     method: 'PUT',
                     headers: {

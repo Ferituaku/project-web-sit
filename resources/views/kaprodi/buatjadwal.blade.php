@@ -347,8 +347,8 @@
             const rows = Array.from(tbody.querySelectorAll('tr'));
 
             rows.sort((a, b) => {
-                const semesterA = parseInt(a.querySelector('td:nth-child(5)').textContent);
-                const semesterB = parseInt(b.querySelector('td:nth-child(5)').textContent);
+                const semesterA = parseInt(a.querySelector('td:nth-child(6)').textContent);
+                const semesterB = parseInt(b.querySelector('td:nth-child(6)').textContent);
                 return isAscending ? semesterA - semesterB : semesterB - semesterA;
             });
 
@@ -462,7 +462,7 @@
             const tableRows = document.querySelectorAll('tbody tr');
 
             tableRows.forEach(row => {
-                const semesterCell = row.querySelector('td:nth-child(5)');
+                const semesterCell = row.querySelector('td:nth-child(6)');
                 if (!semester || semesterCell.textContent === semester) {
                     row.style.display = '';
                 } else {
