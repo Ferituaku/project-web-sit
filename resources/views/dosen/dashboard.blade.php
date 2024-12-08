@@ -16,7 +16,7 @@
             <div class="card h-100 border-0" style="background: linear-gradient(45deg, #4158D0, #C850C0);">
                 <div class="card-body text-white">
                     <div class="text-center mb-3">
-                        <img src="{{ asset('img/budosen.jpg') }}" alt="avatar" class="rounded-circle img-fluid" style="width: 100px;">
+                        <img src="{{ asset('img/user.jpg') }}" alt="avatar" class="rounded-circle img-fluid" style="width: 100px;">
                     </div>
                     <h4 class="text-center">{{ auth()->user()->name }}</h4>
                     <p class="mb-1"><i class="bi bi-envelope me-2"></i>{{ auth()->user()->email }}</p>

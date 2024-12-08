@@ -43,7 +43,7 @@
                         </div>
                         <div>
                             <h6 class="card-subtitle text-muted">Mahasiswa</h6>
-                            <h2 class="card-title mb-0">1000</h2>
+                            <h2 class="card-title mb-0">{{$mahasiswa}}</h2>
                         </div>
                     </div>
                     <p class="card-text text-muted">Total mahasiswa aktif</p>
@@ -60,7 +60,7 @@
                         </div>
                         <div>
                             <h6 class="card-subtitle text-muted">Mata Kuliah</h6>
-                            <h2 class="card-title mb-0">10</h2>
+                            <h2 class="card-title mb-0">{{$matakuliah}}</h2>
                         </div>
                     </div>
                     <p class="card-text text-muted">Total mata kuliah tersedia</p>
@@ -77,7 +77,7 @@
                         </div>
                         <div>
                             <h6 class="card-subtitle text-muted">Dosen</h6>
-                            <h2 class="card-title mb-0">25</h2>
+                            <h2 class="card-title mb-0">{{$pembimbingakd}}</h2>
                         </div>
                     </div>
                     <p class="card-text text-muted">Total dosen aktif</p>
@@ -102,7 +102,7 @@
         height: 48px;
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: center
     }
 </style>
 @endpush
