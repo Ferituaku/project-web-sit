@@ -561,6 +561,7 @@ class MahasiswaController extends Controller
             if ($existingIrs) {
                 // Update IRS yang sudah ada
                 $existingIrs->total_sks = $totalSks;
+                $existingIrs->approval = '0';
                 $existingIrs->save();
 
                 // Hapus jadwal lama
