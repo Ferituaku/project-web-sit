@@ -35,9 +35,9 @@ class Mahasiswa extends Model
     {
         return $this->belongsTo(ProgramStudi::class, 'prodi_id', 'id');
     }
-    public function Irs(): HasOne
+    public function irs()
     {
-        return $this->hasOne(JadwalKuliah::class, Irs::class);
+        return $this->hasMany(Irs::class, 'nim', 'nim');
     }
     public function user(): BelongsTo
     {

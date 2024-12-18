@@ -27,18 +27,18 @@ class DosenController extends Controller
     {
         return view('dosen/konsultasi');
     }
+
     public function irs()
     {
         $dosenID = Auth::user()->nip;
 
-        $irs = Irs::with(['mahasiswa:nim,name'])
-            ->whereHas('mahasiswa', function ($query) use ($dosenID) {
-                $query->where('dosen_id', $dosenID);
-            })
-            ->orderBy('created_at', 'desc')
+        $mahasiswa = Mahasiswa::where('dosen_id', $dosenID)
+            ->with(['irs' => function($query) {
+                $query->latest();
+            }])
             ->paginate(10);
 
-        return view('dosen.irs', compact('irs'));
+        return view('dosen.irs', compact('mahasiswa'));
     }
 
     private function checkModificationPeriod($irs)

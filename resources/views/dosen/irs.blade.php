@@ -48,93 +48,113 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($irs as $index => $item)
+                        @forelse($mahasiswa as $index => $mhs)
                         <tr>
-                            <td>{{ $loop->iteration + $irs->firstItem() - 1}}</td>
-                            <td>{{ $item->mahasiswa->nim }}</td>
-                            <td>{{ $item->mahasiswa->name }}</td>
-                            <td>{{ $item->semester }}</td>
-                            <td>{{ $item->total_sks }} SKS</td>
+                            <td>{{ $loop->iteration + $mahasiswa->firstItem() - 1}}</td>
+                            <td>{{ $mhs->nim }}</td>
+                            <td>{{ $mhs->name }}</td>
                             <td>
-                                @switch($item->approval)
-                                @case(0)
-                                <span class="badge bg-warning">Pending</span>
-                                @break
-                                @case(1)
-                                <span class="badge bg-success">Disetujui</span>
-                                @break
-                                @case(2)
-                                <span class="badge bg-danger">Ditolak</span>
-                                @break
-                                @endswitch
+                                @if($mhs->irs->first())
+                                    {{ $mhs->irs->first()->semester }}
+                                @else
+                                    -
+                                @endif
                             </td>
                             <td>
-                                @if($item->approval == 0)
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-info me-1"
-                                        onclick="showIRSDetail('{{ $item->id }}')"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#irsDetailModal">
-                                        <i class="bi bi-eye me-1"></i>Detail
-                                    </button>
-                                    <button class="btn btn-sm btn-success me-1" onclick="approveIRS('{{ $item->id }}')">
-                                        <i class="bi bi-check-circle me-1"></i>Setujui
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" onclick="rejectIRS('{{ $item->id }}')">
-                                        <i class="bi bi-x-circle me-1"></i>Tolak
-                                    </button>
-                                </div>
-                                @elseif($item->approval == 1)
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-info me-1"
-                                        onclick="showIRSDetail('{{ $item->id }}')"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#irsDetailModal">
-                                        <i class="bi bi-eye me-1"></i>Detail
-                                    </button>
-                                    <button class="btn btn-primary btn-sm me-1" onclick="printIrsMhs('{{ $item->id }}')">
-                                        <i class="bi bi-printer me-1"></i>Cetak IRS
-                                    </button>
-                                    <!-- Add Edit button -->
-                                    <button class="btn btn-sm btn-primary me-1"
-                                        onclick="enableIRSEdit('{{ $item->id }}', '{{ $item->updated_at }}')"
-                                        title="Buka edit IRS">
-                                        <i class="bi bi-pencil me-1"></i>Edit Akses
-                                    </button>
-                                    <!-- Existing cancel button -->
-                                    <button class="btn btn-sm btn-warning"
-                                        onclick="cancelApprovedIRS('{{ $item->id }}', '{{ $item->updated_at }}')"
-                                        title="Batalkan IRS yang sudah disetujui">
-                                        <i class="bi bi-x-circle me-1"></i>Batalkan
-                                    </button>
-                                </div>
+                                @if($mhs->irs->first())
+                                    {{ $mhs->irs->first()->total_sks }} SKS
                                 @else
-                                <div class="btn-group">
-                                    <button class="btn btn-sm btn-danger" onclick="cancelIrs('{{ $item->id }}')">
-                                        <i class="bi bi-x-circle me-1"></i>Cancel
-                                    </button>
-                                </div>
+                                    -
+                                @endif
+                            </td>
+                            <td>
+                                @if(!$mhs->irs->first())
+                                    <span class="badge bg-secondary">Belum Ada IRS</span>
+                                @else
+                                    @switch($mhs->irs->first()->approval)
+                                        @case(0)
+                                            <span class="badge bg-warning">Pending</span>
+                                            @break
+                                        @case(1)
+                                            <span class="badge bg-success">Disetujui</span>
+                                            @break
+                                        @case(2)
+                                            <span class="badge bg-danger">Ditolak</span>
+                                            @break
+                                    @endswitch
+                                @endif
+                            </td>
+                            <td>
+                                @if($mhs->irs->first())
+                                    @if($mhs->irs->first()->approval == 0)
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-info me-1"
+                                                onclick="showIRSDetail('{{ $mhs->irs->first()->id }}')"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#irsDetailModal">
+                                                <i class="bi bi-eye me-1"></i>Detail
+                                            </button>
+                                            <button class="btn btn-sm btn-success me-1" onclick="approveIRS('{{ $mhs->irs->first()->id }}')">
+                                                <i class="bi bi-check-circle me-1"></i>Setujui
+                                            </button>
+                                            <button class="btn btn-sm btn-danger" onclick="rejectIRS('{{ $mhs->irs->first()->id }}')">
+                                                <i class="bi bi-x-circle me-1"></i>Tolak
+                                            </button>
+                                        </div>
+                                    @elseif($mhs->irs->first()->approval == 1)
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-info me-1"
+                                            onclick="showIRSDetail('{{ $mhs->irs->first()->id }}')"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#irsDetailModal">
+                                            <i class="bi bi-eye me-1"></i>Detail
+                                        </button>
+                                        <button class="btn btn-primary btn-sm me-1" onclick="printIrsMhs('{{ $mhs->irs->first()->id }}')">
+                                            <i class="bi bi-printer me-1"></i>Cetak IRS
+                                        </button>
+                                        <!-- Add Edit button -->
+                                        <button class="btn btn-sm btn-primary me-1"
+                                            onclick="enableIRSEdit('{{ $mhs->irs->first()->id }}', '{{ $mhs->irs->first()->updated_at }}')"
+                                            title="Buka edit IRS">
+                                            <i class="bi bi-pencil me-1"></i>Edit Akses
+                                        </button>
+                                        <!-- Existing cancel button -->
+                                        <button class="btn btn-sm btn-warning"
+                                            onclick="cancelApprovedIRS('{{ $mhs->irs->first()->id }}', '{{ $mhs->irs->first()->updated_at }}')"
+                                            title="Batalkan IRS yang sudah disetujui">
+                                            <i class="bi bi-x-circle me-1"></i>Batalkan
+                                        </button>
+                                    </div>
+                                    @else
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-danger" onclick="cancelIrs('{{ $mhs->irs->first()->id }}')">
+                                            <i class="bi bi-x-circle me-1"></i>Cancel
+                                        </button>
+                                    </div>
+                                    @endif
+                                @else
+                                    <span class="text-muted">Tidak ada aksi</span>
                                 @endif
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center">Tidak ada data IRS</td>
+                            <td colspan="7" class="text-center">Tidak ada mahasiswa</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
 
-            <!-- Pagination -->
-            @if($irs->total() > 0)
+            <!-- Update the pagination section -->
+            @if($mahasiswa->total() > 0)
             <div class="card-footer d-flex justify-content-between align-items-center py-3">
                 <div class="text-sm text-muted">
-                    Menampilkan {{ $irs->firstItem() }} - {{ $irs->lastItem() }}
-                    dari {{ $irs->total() }} IRS
+                    Menampilkan {{ $mahasiswa->firstItem() }} - {{ $mahasiswa->lastItem() }}
+                    dari {{ $mahasiswa->total() }} Mahasiswa
                 </div>
                 <div>
-                    {{ $irs->links('vendor.pagination.bootstrap-5') }}
+                    {{ $mahasiswa->links('vendor.pagination.bootstrap-5') }}
                 </div>
             </div>
             @endif
