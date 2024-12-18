@@ -15,9 +15,9 @@
         <div class="card-header bg-white">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">Rekap IRS</h5>
-                <div class="text-muted">
+                <!-- <div class="text-muted">
                     <small>Semester Aktif: {{ $mahasiswa->semester }} ({{ $mahasiswa->tahun_ajaran }})</small>
-                </div>
+                </div> -->
             </div>
         </div>
 

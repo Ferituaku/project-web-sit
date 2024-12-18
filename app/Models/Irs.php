@@ -13,7 +13,8 @@ class Irs extends Model
 
     // Specify the table name
     protected $table = 'irs';
-
+    protected $guarded = ['id'];
+    public $timestamps = true;
     // Define fillable attributes
     protected $fillable = [
         'nim',

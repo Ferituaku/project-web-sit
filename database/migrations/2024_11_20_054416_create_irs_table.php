@@ -18,7 +18,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('nim')->references('nim')->on('mahasiswa')->onDelete('cascade');
-            // $table->foreign('tahun_ajaran')->references('tahun_ajaran')->on('mahasiswa')->onDelete('cascade');
         });
 
         // Tabel pivot untuk relasi many-to-many antara IRS dan Jadwal Kuliah

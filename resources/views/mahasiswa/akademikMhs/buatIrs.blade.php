@@ -28,20 +28,35 @@
                     Total SKS: <span class="fw-bold">{{ $existingIrs->total_sks }}</span>
                 </p>
             </div>
+            @if(isset($canCancel) && $canCancel)
+            <!-- <div class="mt-4">
+                <button class="btn btn-danger" onclick="cancelIRS({{ $existingIrs->id }})">
+                    <i class="fas fa-times-circle me-2"></i>Batalkan IRS
+                </button>
+            </div> -->
+            <small class="text-muted mt-2 mb-4">
+                *Pembatalan IRS hanya dapat dilakukan dalam 4 minggu setelah persetujuan
 
-            <div class="mb-4">
+            </small>
+            @endif
+            <!-- <div class="mb-4">
                 <p class="text-secondary">
                     <i class="fas fa-info-circle me-2"></i>
                     IRS yang telah disetujui tidak dapat diubah.
                 </p>
-            </div>
+            </div> -->
 
-            <div class="d-flex justify-content-center gap-3">
+            <div class="d-flex justify-content-center gap-3 mt-2">
                 <a href="{{ route('mahasiswa.akademikMhs.hasilirs') }}" class="btn btn-primary">
                     <i class="fas fa-eye me-2"></i>Lihat Detail IRS
                 </a>
             </div>
         </div>
+    </div>
+    @elseif(isset($periodExpired) && $periodExpired)
+    <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        Periode perubahan IRS telah berakhir (2 minggu setelah pengisian)
     </div>
     @else
     <div class="row">
@@ -377,7 +392,7 @@
             // Check for duplicate courses first
             for (const [_, course] of selectedCourses) {
                 const existingCourseInfo = extractCourseInfo(course.element);
-                
+
                 // Check if the same course code is already selected
                 if (existingCourseInfo.code === newCourseInfo.code) {
                     showAlert(`Mata kuliah ${newCourseInfo.name} (${newCourseInfo.code}) sudah dipilih`, 'warning');

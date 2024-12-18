@@ -74,6 +74,24 @@ class MahasiswaController extends Controller
         return view('mahasiswa.akademikMhs.transkrip');
     }
 
+    private function checkModificationPeriod($irs)
+    {
+        $createdDate = Carbon::parse($irs->created_at);
+        $now = Carbon::now();
+        $daysSinceCreation = $createdDate->diffInDays($now);
+
+        return $daysSinceCreation <= 14; // 14 hari = 2 minggu
+    }
+
+    private function checkCancellationPeriod($irs)
+    {
+        $approvalDate = Carbon::parse($irs->updated_at);
+        $now = Carbon::now();
+        $daysSinceApproval = $approvalDate->diffInDays($now);
+
+        return $daysSinceApproval <= 28; // 28 hari = 4 minggu
+    }
+
     public function buatIrs(Request $request)
     {
         try {
@@ -91,20 +109,35 @@ class MahasiswaController extends Controller
                 ->where('tahun_ajaran', $tahunAjaran)
                 ->first();
 
-            // Cek apakah saat ini adalah periode pengisian IRS
-            $isIrsPeriod = true; // Logika pengecekan periode IRS bisa disesuaikan
-            if (!$isIrsPeriod && !$existingIrs) {
-                return view('mahasiswa.akademikMhs.buatIrs', [
-                    'noIrsPeriod' => true
-                ]);
+            if ($existingIrs) {
+                $canModify = true;
+                $canCancel = false;
+                $periodExpired = false;
+
+                if ($existingIrs->approval === '1') {
+                    // Cek periode pembatalan untuk IRS yang sudah disetujui
+                    $approvalDate = strtotime($existingIrs->updated_at);
+                    $now = time();
+                    $fourWeeks = 28 * 24 * 60 * 60;
+                    $canCancel = ($now - $approvalDate) <= $fourWeeks;
+                } else {
+                    // Cek periode modifikasi untuk IRS yang belum disetujui
+                    $creationDate = strtotime($existingIrs->created_at);
+                    $now = time();
+                    $twoWeeks = 14 * 24 * 60 * 60;
+                    $periodExpired = ($now - $creationDate) > $twoWeeks;
+                    $canModify = !$periodExpired;
+                }
+
+                if ($existingIrs->approval === '1' || $periodExpired) {
+                    return view('mahasiswa.akademikMhs.buatIrs', [
+                        'existingIrs' => $existingIrs,
+                        'canCancel' => $canCancel,
+                        'periodExpired' => $periodExpired
+                    ]);
+                }
             }
 
-            // Jika IRS sudah ada dan disetujui, tampilkan status
-            if ($existingIrs && $existingIrs->approval === '1') {
-                return view('mahasiswa.akademikMhs.buatIrs', [
-                    'existingIrs' => $existingIrs
-                ]);
-            }
 
             // Jika belum ada IRS atau belum disetujui, lanjutkan dengan kode yang ada
             $mhsProdiId = DB::table('mahasiswa')
@@ -390,6 +423,7 @@ class MahasiswaController extends Controller
             ], 500);
         }
     }
+
 
     private function validateIrsInput($selectedJadwals)
     {

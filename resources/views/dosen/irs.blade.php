@@ -84,8 +84,23 @@
                                         <i class="bi bi-x-circle me-1"></i>Tolak
                                     </button>
                                 </div>
+                                @elseif($item->approval == 1)
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-info me-1"
+                                        onclick="showIRSDetail('{{ $item->id }}')"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#irsDetailModal">
+                                        <i class="bi bi-eye me-1"></i>Detail
+                                    </button>
+                                    <!-- Tambahkan button pembatalan untuk IRS yang sudah disetujui -->
+                                    <button class="btn btn-sm btn-warning"
+                                        onclick="cancelApprovedIRS('{{ $item->id }}', '{{ $item->updated_at }}')"
+                                        title="Batalkan IRS yang sudah disetujui">
+                                        <i class="bi bi-x-circle me-1"></i>Batalkan
+                                    </button>
+                                </div>
                                 @else
-                                <span class="text-muted">{{ $item->approval == 1 ? 'Sudah disetujui' : 'Ditolak' }}</span>
+                                <span class="text-muted">Ditolak</span>
                                 @endif
                             </td>
                         </tr>
@@ -124,6 +139,10 @@
             </div>
             <div class="modal-body">
                 <div id="irsDetailContent">
+                    <div class="alert alert-info mb-3" id="cancellation-period-info" style="display: none;">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <span>Periode pembatalan IRS: <span id="remaining-days"></span> hari lagi</span>
+                    </div>
                     <div class="mb-3">
                         <h6>Total SKS: <span id="total-sks">0</span>/24</h6>
                         <div class="progress">
@@ -206,7 +225,59 @@
                     });
             }
         };
+        window.cancelApprovedIRS = function(id, approvalDate) {
+            // Cek periode pembatalan
+            const fourWeeks = 28 * 24 * 60 * 60 * 1000; // 4 minggu dalam milidetik
+            const approvalTime = new Date(approvalDate).getTime();
+            const now = new Date().getTime();
+
+            if ((now - approvalTime) > fourWeeks) {
+                showAlert('error', 'Periode pembatalan IRS telah berakhir (4 minggu setelah persetujuan)');
+                return;
+            }
+
+            if (confirm('Apakah Anda yakin ingin membatalkan IRS yang sudah disetujui ini? Mahasiswa harus mengisi ulang IRS setelah pembatalan.')) {
+                fetch(`/dosen/irs/${id}/cancel`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        showAlert(data.status === 'success' ? 'success' : 'error', data.message);
+                        if (data.status === 'success') {
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+                        }
+                    })
+                    .catch(() => {
+                        showAlert('error', 'Terjadi kesalahan sistem');
+                    });
+            }
+        };
     });
+
+    function updateCancellationPeriodInfo(approvalDate) {
+        const fourWeeks = 28 * 24 * 60 * 60 * 1000; // 4 minggu dalam milidetik
+        const approvalTime = new Date(approvalDate).getTime();
+        const now = new Date().getTime();
+        const remainingTime = fourWeeks - (now - approvalTime);
+
+        const periodInfo = document.getElementById('cancellation-period-info');
+        const remainingDays = document.getElementById('remaining-days');
+
+        if (remainingTime > 0) {
+            const days = Math.ceil(remainingTime / (24 * 60 * 60 * 1000));
+            remainingDays.textContent = days;
+            periodInfo.style.display = 'block';
+        } else {
+            periodInfo.style.display = 'none';
+        }
+    }
+
 
     document.addEventListener('DOMContentLoaded', function() {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
@@ -233,7 +304,9 @@
 
                     if (data.status === 'success') {
                         const irs = data.irs;
-
+                        if (irs.approval === '1') {
+                            updateCancellationPeriodInfo(irs.updated_at);
+                        }
                         // Update total SKS and progress bar
                         totalSksElement.textContent = irs.total_sks;
                         const progressPercentage = Math.min((irs.total_sks / 24) * 100, 100);

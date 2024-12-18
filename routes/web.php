@@ -97,6 +97,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dosen/irs/{id}/detail', [DosenController::class, 'showIrsDetail'])->name('dosen.irs.detail');
         Route::post('/dosen/irs/{id}/approve', [DosenController::class, 'approveIrs'])->name('dosen.irs.approve');
         Route::post('/dosen/irs/{id}/reject', [DosenController::class, 'rejectIrs'])->name('dosen.irs.reject');
+        Route::post('/dosen/irs/{id}/cancel', [DosenController::class, 'cancelApprovedIrs']);
     });
 
     // Rute untuk kaprodi
