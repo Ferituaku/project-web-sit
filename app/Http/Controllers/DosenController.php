@@ -231,7 +231,7 @@ class DosenController extends Controller
                 throw new \Exception('Periode pembatalan IRS telah berakhir');
             }
             // Update status IRS menjadi dibatalkan
-            $irs->approval = '2';
+            $irs->approval = '0';
 
             $irs->save();
 

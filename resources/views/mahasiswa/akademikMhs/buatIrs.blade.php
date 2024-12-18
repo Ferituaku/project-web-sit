@@ -53,11 +53,7 @@
             </div>
         </div>
     </div>
-    @elseif(isset($periodExpired) && $periodExpired)
-    <div class="alert alert-warning">
-        <i class="fas fa-exclamation-triangle me-2"></i>
-        Periode perubahan IRS telah berakhir (2 minggu setelah pengisian)
-    </div>
+
     @else
     <div class="row">
         <!-- Left Panel - Course Selection -->
