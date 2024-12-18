@@ -85,7 +85,14 @@
                                     </button>
                                 </div>
                                 @else
-                                <span class="text-muted">{{ $item->approval == 1 ? 'Sudah disetujui' : 'Ditolak' }}</span>
+                                <div class="btn-group">
+                                    <button class="btn btn-primary btn-sm me-1" onclick="printIrsMhs('{{ $item->id }}')">
+                                        <i class="bi bi-printer me-1"></i>Cetak IRS
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="cancelIrs('{{ $item->id }}')">
+                                        <i class="bi bi-x-circle me-1"></i>Cancel
+                                    </button>
+                                </div>
                                 @endif
                             </td>
                         </tr>
@@ -205,6 +212,28 @@
                         showAlert('error', 'Terjadi kesalahan sistem');
                     });
             }
+        };
+
+        window.cancelIrs = function(id) {
+            if (confirm('Apakah Anda yakin ingin cancel IRS ini?')) {
+                fetch(`/dosen/irs/${id}/cancel`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(response => response.json())
+                    .then(data => {
+                        showAlert(data.status === 'success' ? 'success' : 'error', data.message);
+                        if (data.status === 'success') location.reload();
+                    }).catch(() => {
+                        showAlert('error', 'Terjadi kesalahan sistem');
+                    });
+            }
+        };
+
+        window.printIrsMhs = function(id) {
+            window.open(`/dosen/irs/${id}/print`, '_blank');
         };
     });
 
