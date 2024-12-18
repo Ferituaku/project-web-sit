@@ -148,7 +148,41 @@ class DosenController extends Controller
             ], 500);
         }
     }
+    public function enableIrsEdit($id)
+    {
+        try {
+            DB::beginTransaction();
 
+            $irs = Irs::findOrFail($id);
+
+            // Verify if IRS is approved
+            if ($irs->approval !== '1') {
+                throw new \Exception('IRS tidak dalam status disetujui');
+            }
+
+            // Check if within 2 weeks period using existing method
+            if (!$this->checkModificationPeriod($irs)) {
+                throw new \Exception('Periode edit IRS telah berakhir (2 minggu setelah persetujuan)');
+            }
+
+            // Update IRS status to pending
+            $irs->approval = '0';
+            $irs->save();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'IRS berhasil dibuka untuk diedit'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal membuka edit IRS: ' . $e->getMessage()
+            ], 500);
+        }
+    }
     public function rejectIrs($id)
     {
         try {

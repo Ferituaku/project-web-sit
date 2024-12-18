@@ -92,7 +92,16 @@
                                         data-bs-target="#irsDetailModal">
                                         <i class="bi bi-eye me-1"></i>Detail
                                     </button>
-                                    <!-- Tambahkan button pembatalan untuk IRS yang sudah disetujui -->
+                                    <button class="btn btn-primary btn-sm me-1" onclick="printIrsMhs('{{ $item->id }}')">
+                                        <i class="bi bi-printer me-1"></i>Cetak IRS
+                                    </button>
+                                    <!-- Add Edit button -->
+                                    <button class="btn btn-sm btn-primary me-1"
+                                        onclick="enableIRSEdit('{{ $item->id }}', '{{ $item->updated_at }}')"
+                                        title="Buka edit IRS">
+                                        <i class="bi bi-pencil me-1"></i>Edit Akses
+                                    </button>
+                                    <!-- Existing cancel button -->
                                     <button class="btn btn-sm btn-warning"
                                         onclick="cancelApprovedIRS('{{ $item->id }}', '{{ $item->updated_at }}')"
                                         title="Batalkan IRS yang sudah disetujui">
@@ -101,9 +110,6 @@
                                 </div>
                                 @else
                                 <div class="btn-group">
-                                    <button class="btn btn-primary btn-sm me-1" onclick="printIrsMhs('{{ $item->id }}')">
-                                        <i class="bi bi-printer me-1"></i>Cetak IRS
-                                    </button>
                                     <button class="btn btn-sm btn-danger" onclick="cancelIrs('{{ $item->id }}')">
                                         <i class="bi bi-x-circle me-1"></i>Cancel
                                     </button>
@@ -292,7 +298,39 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        window.enableIRSEdit = function(id, approvalDate) {
+            // Check edit period
+            const twoWeeks = 14 * 24 * 60 * 60 * 1000; // 2 minggu dalam milidetik
+            const approvalTime = new Date(approvalDate).getTime();
+            const now = new Date().getTime();
 
+            if ((now - approvalTime) > twoWeeks) {
+                showAlert('error', 'Periode edit IRS telah berakhir (2 minggu setelah persetujuan)');
+                return;
+            }
+
+            if (confirm('Apakah Anda yakin ingin membuka edit IRS ini? Status IRS akan kembali menjadi pending.')) {
+                fetch(`/dosen/irs/${id}/enable-edit`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        showAlert(data.status === 'success' ? 'success' : 'error', data.message);
+                        if (data.status === 'success') {
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+                        }
+                    })
+                    .catch(() => {
+                        showAlert('error', 'Terjadi kesalahan sistem');
+                    });
+            }
+        };
         window.showIRSDetail = function(id) {
             const modalBody = document.getElementById('irsDetailContent');
             const totalSksElement = document.getElementById('total-sks');
