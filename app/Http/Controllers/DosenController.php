@@ -233,7 +233,6 @@ class DosenController extends Controller
 
             $pdf = PDF::loadView('mahasiswa.akademikMhs.cetak-irs', $data);
             $pdf->setPaper('A4', 'portrait');
-
             $filename = sprintf(
                 'IRS-%s-%s-SMT%d.pdf',
                 $irs->mahasiswa->nim,
