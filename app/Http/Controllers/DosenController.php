@@ -8,6 +8,7 @@ use App\Models\Mahasiswa;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DosenController extends Controller
 {
@@ -179,13 +180,13 @@ class DosenController extends Controller
     }
 
 
-
     public function cancelApprovedIrs($id)
     {
         try {
             DB::beginTransaction();
 
             $irs = Irs::findOrFail($id);
+
 
             // Cek apakah IRS sudah disetujui
             if ($irs->approval !== '1') {
@@ -197,20 +198,52 @@ class DosenController extends Controller
             }
             // Update status IRS menjadi dibatalkan
             $irs->approval = '2';
+
             $irs->save();
 
             DB::commit();
 
             return response()->json([
                 'status' => 'success',
+
                 'message' => 'IRS berhasil dibatalkan'
+
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'status' => 'error',
+
                 'message' => 'Gagal membatalkan IRS: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function printIrsMhs($id)
+    {
+        try {
+            // Langsung ambil data IRS berdasarkan ID beserta relasinya
+            $irs = Irs::findOrFail($id);
+
+            $data = [
+                'irs' => $irs,
+                'mahasiswa' => $irs->mahasiswa,
+                'semester_text' => $irs->semester % 2 == 1 ? 'Ganjil' : 'Genap'
+            ];
+
+            $pdf = PDF::loadView('mahasiswa.akademikMhs.cetak-irs', $data);
+            $pdf->setPaper('A4', 'portrait');
+
+            $filename = sprintf(
+                'IRS-%s-%s-SMT%d.pdf',
+                $irs->mahasiswa->nim,
+                str_replace('/', '-', $irs->tahun_ajaran),
+                $irs->semester
+            );
+
+            return $pdf->stream($filename);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal mencetak IRS: ' . $e->getMessage());
         }
     }
 }

@@ -100,7 +100,14 @@
                                     </button>
                                 </div>
                                 @else
-                                <span class="text-muted">Ditolak</span>
+                                <div class="btn-group">
+                                    <button class="btn btn-primary btn-sm me-1" onclick="printIrsMhs('{{ $item->id }}')">
+                                        <i class="bi bi-printer me-1"></i>Cetak IRS
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="cancelIrs('{{ $item->id }}')">
+                                        <i class="bi bi-x-circle me-1"></i>Cancel
+                                    </button>
+                                </div>
                                 @endif
                             </td>
                         </tr>
@@ -257,6 +264,10 @@
                         showAlert('error', 'Terjadi kesalahan sistem');
                     });
             }
+        };
+
+        window.printIrsMhs = function(id) {
+            window.open(`/dosen/irs/${id}/print`, '_blank');
         };
     });
 
